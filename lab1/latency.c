@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <mpi.h>
-// #include <ctime>
 
-// using namespace std;
+#ifndef DEBUG
+  #define debug_print(M, ...)
+#else
+  #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
+#endif
 
-#define NUM_TESTS   10          // num iterations of test
-#define SEND        0           // process sending message
-#define RECV        1           // process receiving message
+#define NUM_TESTS   10           // num iterations of test
+#define SEND_ID     0           // process sending message
+#define RECV_ID     1           // process receiving message
 #define TAG_TEST    4           // Indicates this message is being timed
 #define TAG_ACK     5           // Indicates this message is to acknowledge receipt of a test message
+
 
 int main (int argc, char **argv)
 {
@@ -24,34 +28,66 @@ int main (int argc, char **argv)
   {
     printf("Too few processes to run latency testing. Exiting program.\n");
     MPI_Finalize ();
-    exit(1);
+    return 0;
   }
 
-  if(myid == 0)
+  if(myid == SEND_ID)
   {
-      int array_time[NUM_TESTS];
       int i;
+
       for(i = 0; i < NUM_TESTS; ++i)
       {
-            printf("we ran the for loop for myid == 0");
-            // Log start time of message send
-            // time_t current_time = time(0);
-            // array_time[i] = current_time;
+          // Log start time of message send
+          double current_time = MPI_Wtime();
 
-            // // send test message
-            // MPI_Send(&i, sizeof(int), MPI_INT, 
-            //     RECV, TAG_TEST, MPI_COMM_WORLD);
+          // Send test message
+          MPI_Send(&current_time, 1, MPI_DOUBLE, RECV_ID, TAG_TEST, MPI_COMM_WORLD);
+          debug_print("SENDER: Message %d sent - %f.\n", i, current_time);
 
-            // // receieve acknowledgement of successful test message
-            // int recv_data = -1;
-            // MPI_Status status;
-            // MPI_Recv(&recv_data, sizeof(int), MPI_INT, 
-            //     RECV, TAG_ACK, MPI_COMM_WORLD, &status);
+          // Receieve acknowledgement of successful test message
+          int acknowledgement;
+          MPI_Status status;
+          MPI_Recv(&acknowledgement, 1, MPI_INT, RECV_ID, TAG_ACK, MPI_COMM_WORLD, &status);
+      }
+
+      debug_print("SENDER: Execution finished.\n");
+  }
+  else if(myid == RECV_ID)
+  {
+      int i;
+      double message_latency = 0.0;
+
+      for(i = 0; i < NUM_TESTS; ++i)
+      {
+
+          // Receieve message 
+          double send_time;
+          MPI_Status status;
+          MPI_Recv(&send_time, 1, MPI_DOUBLE, SEND_ID, TAG_TEST, MPI_COMM_WORLD, &status);
+
+          debug_print("RECEIVER: Message %d received - %f.\n", i, send_time);
+
+          // Compare how much time the message took between send and receive time
+          double receive_time = MPI_Wtime();
+          double result_time = receive_time - send_time;
+          debug_print("RECEIVER: Time elapsed -  %f seconds.\n", result_time);
+          message_latency += result_time;
+
+          // Send acknowledgement to sender
+          int acknowledgement = 1;
+          MPI_Send(&acknowledgement, 1, MPI_INT, SEND_ID, TAG_ACK, MPI_COMM_WORLD);
+          debug_print("RECEIVER: Acknowledgement sent.\n");
 
       }
+
+      debug_print("RECEIVER: Final message latency - %f.\n", message_latency/NUM_TESTS);
+      debug_print("RECEIVER: Execution finished.\n");
+
+      #ifndef DEBUG
+        printf("Final message latency - %f.\n", message_latency/NUM_TESTS);
+      #endif
   }
-  printf ("Hello, I am %d of %d processors!\n", myid, sz);
 
   MPI_Finalize ();
-  exit (0);
+  return 0;
 }
