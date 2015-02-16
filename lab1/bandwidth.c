@@ -9,7 +9,7 @@
 #endif
 
 #define NUM_TESTS   100          // num iterations of test
-#define PACKET_STEP 5           // step size of tests (i.e 5 packets, then 10 packets, etc)
+#define PACKET_STEP 100           // step size of tests (i.e 5 packets, then 10 packets, etc)
 #define NUM_MSGS    10          // num messages to send for every iteration of the test
 #define SEND_ID     0           // process sending message
 #define RECV_ID     1           // process receiving message
@@ -50,9 +50,7 @@ int main (int argc, char **argv)
         int i;
         for(i = 0; i < NUM_MSGS; ++i)
         {
-            // Log start time of message send
-            double current_time = MPI_Wtime();
-
+            
             // create test message
             double *time_array = (double *)malloc(packet_size * sizeof(double));
             if (!time_array) {
@@ -62,8 +60,11 @@ int main (int argc, char **argv)
             }
             int j;
             for(j = 0; j < packet_size; j++) {
-              time_array[j] = current_time;
+              time_array[j] = 0.0;
             }
+
+            // Log start time of message send
+            time_array[0] = MPI_Wtime();
 
             // Send test message
             MPI_Send(time_array, packet_size, MPI_DOUBLE, RECV_ID, TAG_TEST, MPI_COMM_WORLD);
