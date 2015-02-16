@@ -9,7 +9,7 @@
 #endif
 
 #define MASTER      0           // Master process ID
-#define ARRAY_SIZE  9          // Size of arrays for dot product
+#define ARRAY_SIZE  100000000   // Size of arrays for dot product
 #define WORK_MSG_1  1           // Array to be sent
 #define WORK_MSG_2  2           // Array to be sent
 #define RESULT_MSG  3           // The result of a dot product calculation
@@ -37,8 +37,14 @@ int main (int argc, char **argv)
   if(myid == MASTER)
   {
       // Initalize vectors 
-      double array1[ARRAY_SIZE];
-      double array2[ARRAY_SIZE];
+      double *array1 = (double *)malloc(ARRAY_SIZE * sizeof(double));
+      double *array2 = (double *)malloc(ARRAY_SIZE * sizeof(double));
+      if (!array1 || !array2) 
+      {
+        printf("Error: Array1 or Array2 failed to allocate with ARRAY_SIZE %d\n", ARRAY_SIZE);
+        MPI_Finalize();
+        return 0;
+      }
       int i;
       for(i = 0; i < ARRAY_SIZE; ++i)
       {
@@ -97,6 +103,12 @@ int main (int argc, char **argv)
     int work_length = ARRAY_SIZE / (sz - 1);
     double *work_array_1 = (double *)malloc(work_length * sizeof(double));
     double *work_array_2 = (double *)malloc(work_length * sizeof(double));
+    if (!work_array_1 || !work_array_2)
+    {
+      printf("A Work array failed to allocate on process %d\n", myid);
+      MPI_Finalize();
+      return 0;
+    }
     MPI_Status status1, status2;
     MPI_Recv(work_array_1, work_length, MPI_DOUBLE, MASTER, WORK_MSG_1, 
       MPI_COMM_WORLD, &status1);
