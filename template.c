@@ -18,9 +18,10 @@ int main (int argc, char **argv)
   MPI_Comm_rank (MPI_COMM_WORLD, &myid);
 
   // Send test message
-  MPI_Send(time_array, packet_size, MPI_DOUBLE, RECV_ID, TAG_TEST, MPI_COMM_WORLD);
-  MPI_Recv(&acknowledgement, 1, MPI_INT, RECV_ID, TAG_ACK, MPI_COMM_WORLD, &status);
-
+  MPI_Send(pointer_to_buffer, length_of_buffer, MPI_Type, receiver_id, 
+    message_tag, communicator__probably_Mpi_comm_world)
+  MPI_Recv(pointer_to_recv_buffer, length_of_buffer, MPI_Type, 
+    sender_id, message_tag, communicator__probably_Mpi_comm_world, poitner_to_mpi_status_var)
  
   
 
