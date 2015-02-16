@@ -1,2 +1,5 @@
 # Private keys
 *.pem
+
+# Object files
+*.o
