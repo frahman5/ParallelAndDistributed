@@ -11,7 +11,7 @@
 #define MASTER      0           // Master process ID
 #define ARRAY_SIZE  9          // Size of arrays for dot product
 #define WORK_MSG_1  1           // Array to be sent
-#define WORK_MSG_1  2           // Array to be sent
+#define WORK_MSG_2  2           // Array to be sent
 #define RESULT_MSG  3           // The result of a dot product calculation
 
 double dotProduct(double *a1, double *a2, int length) {
@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 
       // Calculate FLOPS
       double end_time = MPI_Wtime();
-      double flops = (end_time - start_time) / (ARRAY_SIZE * 2);
+      double flops = (ARRAY_SIZE * 2) / (end_time - start_time);
 
       // Add up all the results
       int j;
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
   else {
 
     // get the work
-    int work_length = ARRAY_SIZE / sz;
+    int work_length = ARRAY_SIZE / (sz - 1);
     double *work_array_1 = (double *)malloc(work_length * sizeof(double));
     double *work_array_2 = (double *)malloc(work_length * sizeof(double));
     MPI_Status status1, status2;
@@ -104,10 +104,10 @@ int main (int argc, char **argv)
       MPI_COMM_WORLD, &status2);
 
     // do the work
-    result = dotProduct(work_array1, work_array_2, work_length);
+    double result = dotProduct(work_array_1, work_array_2, work_length);
     MPI_Send(&result, 1, MPI_DOUBLE, MASTER, RESULT_MSG, MPI_COMM_WORLD);
     free(work_array_1);
-    free(work_array_2);å
+    free(work_array_2);
   }
 
   MPI_Finalize ();
