@@ -7,7 +7,7 @@
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
 
-#define NUM_TESTS   10           // num iterations of test
+#define NUM_TESTS   100000      // num iterations of test
 #define SEND_ID     0           // process sending message
 #define RECV_ID     1           // process receiving message
 #define TAG_TEST    4           // Indicates this message is being timed
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
       debug_print("RECEIVER: Execution finished.\n");
 
       #ifndef DEBUG
-        printf("Final message latency - %f.\n", message_latency/NUM_TESTS);
+        printf("Final message latency - %.11f.\n", message_latency/NUM_TESTS);
       #endif
   }
 

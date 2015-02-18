@@ -8,8 +8,8 @@
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
 
-#define NUM_TESTS   100          // num iterations of test
-#define PACKET_STEP 100           // step size of tests (i.e 5 packets, then 10 packets, etc)
+#define NUM_TESTS   100         // num iterations of test
+#define PACKET_STEP 1000        // step size of tests (i.e 5 packets, then 10 packets, etc)
 #define NUM_MSGS    10          // num messages to send for every iteration of the test
 #define SEND_ID     0           // process sending message
 #define RECV_ID     1           // process receiving message
@@ -21,6 +21,15 @@ void print_array(double *array, int size, char *array_name) {
   for(i = 0; i < size; i++) {
     printf("%s elem %d: %f\n", array_name, i, array[i]);
   }
+}
+
+// Given an array [packet_size in doubles, average time to send the packet], 
+// outputs bandwidth in megabytes/second
+double megabytesPerSecond(double *array) {
+    double num_doubles = array[0];
+    double ave_time = array[1];
+    double result = ((num_doubles * sizeof(double)) / 1000000) / ave_time;
+    return result;
 }
 
 int main (int argc, char **argv)
@@ -35,7 +44,7 @@ int main (int argc, char **argv)
   // Program begins for each process
   if(sz < 2)
   {
-    printf("Too few processes to run latency testing. Exiting program.\n");
+    printf("Too few processes to run bandwidth testing. Exiting program.\n");
     MPI_Finalize ();
     return 0;
   }
@@ -141,7 +150,7 @@ int main (int argc, char **argv)
         int i;
         for(i = 0; i < NUM_TESTS; i++) 
         {
-          printf("%d, %f\n", (int)results_array[i][0], results_array[i][1]);
+          printf("%d, %f\n", (int)results_array[i][0],megabytesPerSecond(results_array[i]));
         }
       #endif
 

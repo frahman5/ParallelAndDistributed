@@ -9,7 +9,7 @@
 #endif
 
 #define MASTER      0           // Master process ID
-#define ARRAY_SIZE  100000000   // Size of arrays for dot product
+#define ARRAY_SIZE  1000000000   // Size of arrays for dot product
 #define WORK_MSG_1  1           // Array to be sent
 #define WORK_MSG_2  2           // Array to be sent
 #define RESULT_MSG  3           // The result of a dot product calculation
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
         MPI_Finalize();
         return 0;
       }
-      int i;
+      unsigned long long i;
       for(i = 0; i < ARRAY_SIZE; ++i)
       {
           array1[i] = 1.0;
