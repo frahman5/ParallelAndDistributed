@@ -9,13 +9,13 @@
 #endif
 
 #define MASTER      0           // Master process ID
-#define ARRAY_SIZE  1000000000   // Size of arrays for dot product
+#define ARRAY_SIZE  1000000     // Size of arrays for dot product
 #define WORK_MSG_1  1           // Array to be sent
 #define WORK_MSG_2  2           // Array to be sent
 #define RESULT_MSG  3           // The result of a dot product calculation
 
-double dotProduct(double *a1, double *a2, int length) {
-  int i;
+double dotProduct(double *a1, double *a2, unsigned long long length) {
+  unsigned long long i;
   double result = 0.0;
   for(i = 0; i < length; i++) 
   {
@@ -50,6 +50,20 @@ int main (int argc, char **argv)
       {
           array1[i] = 1.0;
           array2[i] = 1.0;
+      }
+      
+      // If there's only one process, have the master do the work
+      if (sz == 1) 
+      {
+          printf("Executing dot product on the master. only 1 process!\n");
+          double start_time = MPI_Wtime();
+          double result = dotProduct(array1, array2, ARRAY_SIZE);
+          double end_time = MPI_Wtime();
+          double FLOPS = (ARRAY_SIZE * 2) / (end_time - start_time);
+          printf("FLOPS: %f\n", FLOPS);
+ 
+          MPI_Finalize();
+          return 0;
       }
 
       // Send each process the chunk they are going to calculate
