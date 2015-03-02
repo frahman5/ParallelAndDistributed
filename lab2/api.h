@@ -19,5 +19,6 @@ typedef struct one_result one_result_t;
 struct mw_fxns {
     // Create the entire work pool. Returns a NULL-terminated list of
     // one_work structs. On failure, return NULL
-    one_work_t **(*create_work_pool) (int dummy_input); 
+    one_work_t **(*create_work_pool) (int argc, char **argv); 
+    one_result_t *(*do_one_work) (one_work_t* work);
 };
