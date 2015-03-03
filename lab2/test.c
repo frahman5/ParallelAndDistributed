@@ -22,12 +22,10 @@ one_result_t *do_work(one_work_t* work)
     return NULL;
 }
 
-int main (int argc, char **argv) {ç
+int main (int argc, char **argv) {
     struct mw_fxns mw;
 
-    mw.create_work_pool = make_work;
-    
-
+    MW_Run (argc, argv, &mw);
 
     //make_work(1);
 
