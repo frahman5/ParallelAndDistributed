@@ -53,20 +53,42 @@ one_result_t *do_work(one_work_t* work)
     return result;
 }
 
+// struct one_result {
+//     int array[1];
+//     unsigned long long sz;
+//     int status;
+// } r;
 
-int main (int argc, char **argv) {
+// take an array of results and report the final result
+int report(int sz, one_result_t *result_array) {
+    int i;
+    int result = 0;
+    for (i = 0; i < sz; i++) {
+        result += result_array[i].array[0]
+    }
 
-    struct mw_fxns mw;
-
-    MW_Run (argc, argv, &mw);
-
-    //make_work(1);
+    printf("Result of computation: %d\n", reuslt);
 
     return 0;
 }
 
 
+int main (int argc, char **argv) {
 
+    // Create the api object and give it all its fields
+    struct mw_fxns mw;
+
+    mw.create_work_pool = make_work;
+    mw.do_one_work = do_work;
+    me.report_results = report;
+    mw.work_sz = sizeof(one_work);
+    mw.result_sz = sizeof(one_result);
+
+    // run the program
+    MW_Run (argc, argv, &mw);
+
+    return 0;
+}
 
  //  one_work_t **work_array;
    //  work_array = (one_work_t **)malloc(num_works * sizeof(one_work_t*));
