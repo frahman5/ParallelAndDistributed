@@ -59,11 +59,11 @@ one_result_t *do_work(one_work_t* work)
 // } r;
 
 // take an array of results and report the final result
-int report(int sz, one_result_t *result_array) {
+int report(int sz, one_result_t **result_array) {
     int i;
     int result = 0;
     for (i = 0; i < sz; i++) {
-        result += result_array[i].array[0];
+        result += result_array[i]->array[0];
     }
 
     printf("Result of computation: %d\n", result);

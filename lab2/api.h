@@ -23,7 +23,7 @@ struct mw_fxns {
     // one_work structs. On failure, return NULL
     one_work_t **(*create_work_pool) (int argc, char **argv); 
     one_result_t *(*do_one_work) (one_work_t* work);
-    int (*report_results)(int sz, one_result_t *result_array);
+    int (*report_results)(int sz, one_result_t **result_array);
     int work_sz, result_sz;
 };
 
