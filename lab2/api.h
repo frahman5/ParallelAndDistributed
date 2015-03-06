@@ -5,25 +5,26 @@
 struct one_work;
 struct one_result;
 typedef struct one_work one_work_t;
-/* one_work must have two fields with given names
-    1) array -- array of fixed size
-    2) sz -- unsigned long long that specifies array size
-*/
-
 typedef struct one_result one_result_t;
-/* one_result must have two fields with given names
-    1) array -- array of fixed size
-    2) sz -- unsigned long long that specifies array size
-    3) status -- int. 0 for success, 1 for failure
-*/
 
 // *** Functions to manipulate data *** //
 struct mw_fxns {
-    // Create the entire work pool. Returns a NULL-terminated list of
-    // one_work structs. On failure, return NULL
+
+    /* Creates the entire work, returning a NULL-terminated list of
+    one_work structs. On failure, returns NULL */
     one_work_t **(*create_work_pool) (int argc, char **argv); 
+
+    /* Computes the results of one piece of work, and returns it 
+    in a pointer to a one_result struct */
     one_result_t *(*do_one_work) (one_work_t* work);
+
+    /* Takes an array of pointers to one_results, and a size of that array. 
+    Prints the results to file or stdout, as per the user's desire. 
+
+    Returns 0 on failure, 1 on success */
     int (*report_results)(int sz, one_result_t **result_array);
+
+    /* Specify the size in bytes of one_work and one_result */
     int work_sz, result_sz;
 };
 
