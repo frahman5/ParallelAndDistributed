@@ -107,9 +107,15 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
     // workers do work
     else
     {
+      printf("Hola, desde processor %d\n", myid);
       int i = 1;
       while(i > 0) {
           one_work_t *work_chunk = (one_work_t *)malloc(f->work_sz);
+          if (!work_chunk) {
+              printf("Failed to allocate space for a work chunk on a worker\n");
+              exit(1);
+          }
+
           MPI_Status status;
           MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, 
             MPI_COMM_WORLD, &status);
@@ -117,24 +123,24 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           if (status.MPI_TAG == WORK_TAG) 
           {
               one_result_t *result = f->do_one_work(work_chunk);
-              MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
-                RESULT_TAG, MPI_COMM_WORLD);
-              free(result);
+              // MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
+              //   RESULT_TAG, MPI_COMM_WORLD);
+              // free(result);
           } 
-          else if(status.MPI_TAG == DONE_TAG)
-          {
-              i = -1;
-              debug_print("Worker %d says: He terminado!\n", myid);
-          }
-          else
-          {
-             printf("Unexpected Error... Process %d received message with unknown tag.\n", myid);
-          }
-          free(work_chunk);
+          // else if(status.MPI_TAG == DONE_TAG)
+          // {
+          //     i = -1;
+          //     debug_print("Worker %d says: He terminado!\n", myid);
+          // }
+          // else
+          // {
+          //    printf("Unexpected Error... Process %d received message with unknown tag.\n", myid);
+          // }
+          // free(work_chunk);
 
       }
     }
-    debug_print("Finished Running\n");
+    debug_print("Finished Running on processor %d\n", myid);
 
 }
 

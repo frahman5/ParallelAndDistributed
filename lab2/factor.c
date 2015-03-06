@@ -20,6 +20,55 @@ struct one_result {
     int *factors;
 };
 
+// Serializes the one_work struct into an array of ints
+int *(*serialize_one_work)(one_work_t *work) {
+
+    // Create the object that we serialize into
+    int *serial = (int *)malloc((2 + work->sz) * sizeof(int));
+    if (!serial) {
+        printf("Failed to allocate while serializing a work struct\n");
+        exit(1);
+    }
+
+    // Fill it up
+    serial[0] = work->multiple;
+    serial[1] = work->sz;
+    int i;
+    for (i = 0; i < work->sz; i++) {
+        serial[i + 2] = work->potential_factors[i];
+    }
+
+    // Return it
+    return serial;
+
+}
+
+// Derializes a serialized one_work struct back into a one_work struct
+one_work_t *(*deserialize_one_work)(int *sz_one_work) {
+
+    // Create the one_work_t object
+    one_work_t *work = (one_work_t *)malloc(sizeof(one_work_t));
+    if (!work) {
+        printf("Failed to allocate for a one_work struct space while deserializing a one_work struct\n");
+        exit(1);
+    }
+
+    // Fill it up
+    work->multiple = sz_one_work[0];
+    work->sz = sz_one_work[1];
+    work->potential_factors = (int *)malloc(work->sz * sizeof(int));
+    if (!work->potential_factors) {
+        printf("Failed to allocate space for work->potential_factors while deserializing a one_work_struct\n");
+        exit(1);
+    }
+    int i;
+    for (i = 0; i < work->sz; i++) {
+        work->potential_factors[i] = sz_one_work[i+2];
+    }
+
+    // Return it
+    return work;
+}
 // divide the factoring work into parallel pieces
 one_work_t **make_work(int argc, char **argv) {
 
@@ -34,7 +83,7 @@ one_work_t **make_work(int argc, char **argv) {
     // Create work items
     one_work_t **work_array;
     int size_of_one_potential_factors_array = (int) ceil(sqrt(sq_rt));
-    int num_work_items = ceil(sq_rt/(size_of_one_potential_factors_array); // e.g if multiple = 101, 11 / 4 = 3
+    int num_work_items = ceil(sq_rt/size_of_one_potential_factors_array); // e.g if multiple = 101, 11 / 4 = 3
     work_array = (one_work_t **)malloc((num_work_items + 1)* sizeof(one_work_t *)); // +1 for NULL at the end
 
     int work_array_index;
@@ -49,8 +98,8 @@ one_work_t **make_work(int argc, char **argv) {
         w->potential_factors = (int *)malloc(size_of_one_potential_factors_array * sizeof(int));
         int i;
         for (i = 0; i < size_of_one_potential_factors_array; i++) {
-          if (potential_factor <= sq_rt) {
-                  w->potential_factors[i] = potential_factor++;
+          if (possible_factor <= sq_rt) {
+                  w->potential_factors[i] = possible_factor++;
             }
             else {
                   w->potential_factors[i] = 0;
@@ -69,7 +118,10 @@ one_work_t **make_work(int argc, char **argv) {
     return work_array;
 }
 
-bool it_factors(int multiple, int factor) {
+int it_factors(int multiple, int factor) {
+    if (factor == 0) {
+        return 0;
+    }
     return (multiple % factor == 0);
 }
 
@@ -84,32 +136,33 @@ one_result_t *do_work(one_work_t* work)
     }
 
     // Create an array into which we can store true factors
-    int length = ceil(sqrt(work_sz));
+    int length = ceil(sqrt(work->sz));
     result->factors = (int *)malloc(length * sizeof(int));
     if (!(result->factors)) {
         printf("We failed to allocate a factors array for a one_result_t\n");
         exit(1);
     }
-    int result_factors_index = 0;
+    int result_factors_index = 2;
 
     int i;
     for (i = 0; i < length; i++) {
+        printf("We are accessing the %dth elem of work->potential_factors\n", i);
         int factor = work->potential_factors[i];
-        if it_factors(work->multiple, factor) {
-            if (result_factors_index == length) {
-                length *= 2;
-                result->factors = realloc(result_factors, length);
-                if (!(result->factors)) {
-                    printf("We failed to allocate a factors array for a one_result_t\n");
-                    exit(1);
-                }
-            }
-            result->factors[result_factors_index++] = factor;
-        }
+    //     if (it_factors(work->multiple, factor)) {
+    //         if (result_factors_index == length) {
+    //             length *= 2;
+    //             result->factors = realloc(result->factors, length);
+    //             if (!(result->factors)) {
+    //                 printf("We failed to allocate a factors array for a one_result_t\n");
+    //                 exit(1);
+    //             }
+    //         }
+    //         result->factors[result_factors_index++] = factor;
+    //     }
     }
 
-    // Null terminate the list
-    result-factors[result_factors_index] = NULL;
+    // // Null terminate the list
+    // result->factors[result_factors_index] = 0;
 
     return result;
 }
@@ -126,11 +179,11 @@ int report(int sz, one_result_t **result_array) {
         one_result_t *result = result_array[i];
         int j = 1;
         while (j > 0) {
-            if (result->factors[j] == NULL) {
+            if (result->factors[j] == 0) {
                 j = -1;
             }
             else {
-                printf("%d ", result->factors[j])
+                printf("%d ", result->factors[j]);
             }
         }
     }
