@@ -44,7 +44,8 @@ struct mw_fxns {
     int work_sz, result_sz;
 
     /* Whether or not your one_work and one_result functions need serialization */
-    bool serialize_work, serialize_result;
+    bool serialize_work = false; 
+    bool serialize_result = false;
 };
 
 void MW_Run (int argc, char **argv, struct mw_fxns *f);
