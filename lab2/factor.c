@@ -115,64 +115,50 @@ one_result_t *do_work(one_work_t* work)
 }
 
 
-// // take an array of results and report the final result
-// int report(int sz, one_result_t **result_array) {
-//     int i;
-//     int result = 0;
-//     for (i = 0; i < sz; i++) {
-//         result += result_array[i]->array[0];
-//     }
+// take an array of results and report the final result
+int report(int sz, one_result_t **result_array) {
+    printf(" *** Printing results ***\n");
+    printf("Factors: ");
 
-//     printf("Result of computation: %d\n", result);
-
-//     return 0;
-// }
-
-
-int main (int argc, char **argv) {
-
-
-    make_work(argc, argv);
-    // // Create the api object and give it all its fields
-    // struct mw_fxns mw;
-    // mw.create_work_pool = make_work;
-    // mw.do_one_work = do_work;
-    // mw.report_results = report;
-    // mw.work_sz = sizeof(one_work_t);
-    // mw.result_sz = sizeof(one_result_t);
-
-    // //Initialize MPI
-    // MPI_Init (&argc, &argv);
-
-    // // run the program
-    // MW_Run (argc, argv, &mw);
-
-    // MPI_Finalize();
-    
+    // print the factors
+    int i;
+    for (i = 0; i < sz; i++) {
+        one_result_t *result = result_array[i];
+        int j = 1;
+        while (j > 0) {
+            if (result->factors[j] == NULL) {
+                j = -1;
+            }
+            else {
+                printf("%d ", result->factors[j])
+            }
+        }
+    }
 
     return 0;
 }
 
 
-/*
-Questions:
-  - Are all processes loading mw? (print hello 4 times) Technically this is not an issue since it is just pointers to functions
-*/
+int main (int argc, char **argv) {
 
- //  one_work_t **work_array;
-   //  work_array = (one_work_t **)malloc(num_works * sizeof(one_work_t*));
-   //  int i;
-   //  for (i = 0; i < num_works; i++) {
-   //       one_work_t *w = (one_work_t*)malloc(sizeof(one_work_t));
-   //       w->sz = 3+i;
-   //       w->array = (int*)malloc((w->sz)*sizeof(int));
-   //       int j;
-   //       for(j = 0; j < w->sz; ++j)
-   //       {
-   //          w->array[j] = i;
-   //       }
-   //       work_array[i] = w;
-   //      //w->array = array;
-   //      work_array[i] = w;
-   // }
-   //  // printf("parameter received: %d\n", num_works);
+
+    // Create the api object and give it all its fields
+    struct mw_fxns mw;
+    mw.create_work_pool = make_work;
+    mw.do_one_work = do_work;
+    mw.report_results = report;
+    mw.work_sz = sizeof(one_work_t);
+    mw.result_sz = sizeof(one_result_t);
+
+    //Initialize MPI
+    MPI_Init (&argc, &argv);
+
+    // run the program
+    MW_Run (argc, argv, &mw);
+
+    MPI_Finalize();
+    
+
+    return 0;
+}
+
