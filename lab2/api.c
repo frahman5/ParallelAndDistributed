@@ -18,6 +18,7 @@
   - Change round robbin technique (optional)
   - Check report_results value to see if it succeeded or not
   - Check the create_work function to see if it suceeded or not 
+  - Check if malloc fails
   */
 
 /****

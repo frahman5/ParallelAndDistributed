@@ -11,6 +11,7 @@
 // one piece of work to do 
 struct one_work {
     int multiple;
+    int sz;
     int *potential_factors;
 };
 
@@ -55,6 +56,7 @@ one_work_t **make_work(int argc, char **argv) {
                   w->potential_factors[i] = 0;
             }
         }
+        w->sz = size_of_one_potential_factors_array;
 
         // put the one_work_t in the work_array
         work_array[work_array_index] = w;
@@ -67,23 +69,50 @@ one_work_t **make_work(int argc, char **argv) {
     return work_array;
 }
 
-// // do one unit of factoring work
-// one_result_t *do_work(one_work_t* work)
-// {
-//     // calculate the result
-//     int answer = 0;
-//     int i = 0;
-//     for (i = 0; i < WORK_ARRAY_SIZE; i++) {
-//         answer += work->array[i];
-//     }
+bool it_factors(int multiple, int factor) {
+    return (multiple % factor == 0);
+}
 
-//     // pack the result up and return it
-//     one_result_t *result = (one_result_t *)malloc(sizeof(one_result_t));
-//     result->array[0] = answer;
-//     result->status = 0;
+// do one unit of factoring work
+one_result_t *do_work(one_work_t* work)
+{
+    // Create a one_result_t
+    one_result_t *result = (one_result_t *)malloc(sizeof(one_result_t));
+    if (!result) {
+        printf("We failed to allocate a one_result_t\n");
+        exit(1);
+    }
 
-//     return result;
-// }
+    // Create an array into which we can store true factors
+    int length = ceil(sqrt(work_sz));
+    result->factors = (int *)malloc(length * sizeof(int));
+    if (!(result->factors)) {
+        printf("We failed to allocate a factors array for a one_result_t\n");
+        exit(1);
+    }
+    int result_factors_index = 0;
+
+    int i;
+    for (i = 0; i < length; i++) {
+        int factor = work->potential_factors[i];
+        if it_factors(work->multiple, factor) {
+            if (result_factors_index == length) {
+                length *= 2;
+                result->factors = realloc(result_factors, length);
+                if (!(result->factors)) {
+                    printf("We failed to allocate a factors array for a one_result_t\n");
+                    exit(1);
+                }
+            }
+            result->factors[result_factors_index++] = factor;
+        }
+    }
+
+    // Null terminate the list
+    result-factors[result_factors_index] = NULL;
+
+    return result;
+}
 
 
 // // take an array of results and report the final result
