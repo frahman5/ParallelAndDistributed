@@ -107,7 +107,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
     // workers do work
     else
     {
-      printf("Hola, desde processor %d\n", myid);
+      debug_print("Hola, desde processor %d\n", myid);
       int i = 1;
       while(i > 0) {
           one_work_t *work_chunk = (one_work_t *)malloc(f->work_sz);
@@ -123,20 +123,20 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           if (status.MPI_TAG == WORK_TAG) 
           {
               one_result_t *result = f->do_one_work(work_chunk);
-              // MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
-              //   RESULT_TAG, MPI_COMM_WORLD);
-              // free(result);
+              MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
+                RESULT_TAG, MPI_COMM_WORLD);
+              free(result);
           } 
-          // else if(status.MPI_TAG == DONE_TAG)
-          // {
-          //     i = -1;
-          //     debug_print("Worker %d says: He terminado!\n", myid);
-          // }
-          // else
-          // {
-          //    printf("Unexpected Error... Process %d received message with unknown tag.\n", myid);
-          // }
-          // free(work_chunk);
+          else if(status.MPI_TAG == DONE_TAG)
+          {
+              i = -1;
+              debug_print("Worker %d says: He terminado!\n", myid);
+          }
+          else
+          {
+             printf("Unexpected Error... Process %d received message with unknown tag.\n", myid);
+          }
+          free(work_chunk);
 
       }
     }

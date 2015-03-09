@@ -28,11 +28,10 @@ one_work_t **make_work(int argc, char **argv) {
 
     // Calculate the square root
     int sq_rt = (int) ceil(sqrt(multiple));
-    printf("the square root of %d is %d\n", multiple, sq_rt);
 
     // Create work items
     one_work_t **work_array;
-    int num_work_items = sq_rt / WORK_ARRAY_SIZE;
+    int num_work_items = (sq_rt / WORK_ARRAY_SIZE) + 1;
     work_array = (one_work_t **)malloc((num_work_items + 1)* sizeof(one_work_t *)); // +1 for NULL at the end
     if (!work_array) {
         printf("Failed to allocate space on the heap while creating work array\n");
@@ -45,7 +44,7 @@ one_work_t **make_work(int argc, char **argv) {
 
         // create a one_work_t
         one_work_t *w = (one_work_t *)malloc(sizeof(one_work_t));
-        if (!one_work_t) {
+        if (!w) {
             printf("Failed to allocate space on the heap while creating one_work_t\n");
             exit(1);
         }
@@ -80,6 +79,30 @@ int it_factors(int multiple, int factor) {
     return (multiple % factor == 0);
 }
 
+int isPrime(int factor) {
+
+    // Special Cases
+    if (factor < 2) {
+        return 0;
+    } else if (factor == 2) {
+        return 1;
+    } else if (factor % 2 == 0) {
+        return 0;
+    }
+
+    // check for factors
+    int i;
+    int sq_rt = (int)ceil(sqrt(factor));
+    for (i = 3; i <= sq_rt; i += 2) {
+        if (factor % i == 0) {
+            return 0;
+        }
+    }
+
+    // Otherwise, its prime!
+    return 1;
+
+}
 // do one unit of factoring work
 one_result_t *do_work(one_work_t* work)
 {
@@ -94,9 +117,8 @@ one_result_t *do_work(one_work_t* work)
     int i;
     int result_factors_index = 0;
     for (i = 0; i < WORK_ARRAY_SIZE; i++) {
-        printf("We are accessing the %dth elem of work->potential_factors\n", i);
         int factor = work->potential_factors[i];
-        if (it_factors(work->multiple, factor)) {
+        if (it_factors(work->multiple, factor) && isPrime(factor)) {
             result->factors[result_factors_index++] = factor;
         }
     }
@@ -115,19 +137,21 @@ int report(int sz, one_result_t **result_array) {
 
     // print the factors
     int i; // iterates through the result_array
+    printf("Value of sz in report function: %d\n", sz);
     for (i = 0; i < sz; i++) {
         one_result_t *result = result_array[i];
-        
-        int j = 1; // iterates through a single one_result_t factors arrray
-        while (j > 0) {
+
+        int j = 0; // iterates through a single one_result_t factors arrray
+        while (j > -1) {
             if (result->factors[j] == 0) {
-                j = -1; // exit the loop
+                j = -2; // exit the loop
             }
             else {
-                printf("%d ", result->factors[j]);
+                printf("%d ", result->factors[j++]);
             }
         }
     }
+    printf("\n");
 
     return 0;
 }
