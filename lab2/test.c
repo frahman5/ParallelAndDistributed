@@ -19,18 +19,19 @@ struct one_result {
 // we should make that a variable later
 one_work_t **make_work(int argc, char **argv) {
     one_work_t **work_array;
-    work_array = (one_work_t **)malloc(11 * sizeof(one_work_t *)); // 10 chunks work, 1 NULL
+    work_array = (one_work_t **)malloc(4 * sizeof(one_work_t *)); // 10 chunks work, 1 NULL
     int i;
     int array_elem = 1; // first array element
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 3; i++) {
         one_work_t *w = (one_work_t *)malloc(sizeof(one_work_t));
         int j;
         for (j = 0; j < WORK_ARRAY_SIZE; j++) {
+            printf("Array elem: %d\n", array_elem);
             w->array[j] = array_elem++;
         }
         work_array[i] = w;
     }
-    work_array[10] = NULL;
+    work_array[3] = NULL;
 
     return work_array;
 }
@@ -88,7 +89,7 @@ int main (int argc, char **argv) {
     MPI_Init (&argc, &argv);
 
     // run the program
-    MW_Run (argc, argv, &mw);
+    MW_Run_2 (argc, argv, &mw);
 
     MPI_Finalize();
     

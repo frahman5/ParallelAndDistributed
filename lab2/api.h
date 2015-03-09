@@ -29,3 +29,4 @@ struct mw_fxns {
 };
 
 void MW_Run (int argc, char **argv, struct mw_fxns *f);
+void MW_Run_2 (int argc, char **argv, struct mw_fxns *f);
