@@ -96,7 +96,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
       //Report result!
       f->report_results(work_chunk_count, result_array);
 
-      //Free memeory of results array
+      // Free memeory of results array
       for(i = 0; i < work_chunk_count; ++i)
       {
           free(result_array[i]);
