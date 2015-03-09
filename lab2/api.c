@@ -33,8 +33,10 @@
 
 void MW_Run (int argc, char **argv, struct mw_fxns *f){
 	
+    // Counts number of messages sent (for granularity)
+    unsigned long num_msgs = 0;
 
-	   // Initialization of parameters
+    // Initialization of parameters
     int sz, myid;
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
   	MPI_Comm_rank (MPI_COMM_WORLD, &myid); 
@@ -59,6 +61,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         debug_print("Process %d out of %d\n", process_num, sz);
         MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
           WORK_TAG, MPI_COMM_WORLD);
+        num_msgs++;
 
         if (++process_num >= sz) { // make sure we're roundrobbining.
           process_num = 1;
@@ -82,6 +85,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
 
           MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
             MPI_COMM_WORLD, &status);
+          num_msgs++;
 
           result_array[i] = result;
       }
@@ -91,10 +95,12 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
       {
           int num = 1;
           MPI_Send(&num, 1, MPI_INT, i, DONE_TAG, MPI_COMM_WORLD);
+          num_msgs++;
       }
 
       //Report result!
       f->report_results(work_chunk_count, result_array);
+      printf("Reporting from master. Num Msgs sent by all processors: %lu\n", num_msgs);
 
       // Free memeory of results array
       for(i = 0; i < work_chunk_count; ++i)
