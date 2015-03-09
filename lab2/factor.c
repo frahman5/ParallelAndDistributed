@@ -20,10 +20,8 @@
 // the multiple for which we are finding multiples
 mpz_t multiple;
 
-
 // one piece of work to do 
 struct one_work {
-    mpz_t multiple;
     unsigned long potential_factors[WORK_ARRAY_SIZE];
 };
 
@@ -49,12 +47,6 @@ void get_one_work_size(size_t *size, mpz_t multiple) {
 // // divide the factoring work into parallel pieces
 one_work_t **make_work(int argc, char **argv) {
 
-    // Check that argv is size 1, and extract the number to be factored
-    assert(argc == 2);
-    mpz_t multiple;
-    mpz_init_set_str(multiple, argv[1], 10);
-    gmp_printf("Multiple: %Zd\n", multiple);
-
     // Calculate the square root
     mpz_t sq_rt_gmp;
     unsigned long sq_rt;
@@ -68,7 +60,6 @@ one_work_t **make_work(int argc, char **argv) {
     one_work_t **work_array;        
     unsigned long num_work_items;   
     num_work_items = (sq_rt / WORK_ARRAY_SIZE) + 1ul;
-    gmp_printf("num work items is: %lu\n", num_work_items);
     work_array = (one_work_t **)malloc((num_work_items + 1)* sizeof(one_work_t *)); // +1 for NULL at the end
     if (!work_array) {
         printf("Failed to allocate space on the heap while creating work array\n");
@@ -82,15 +73,13 @@ one_work_t **make_work(int argc, char **argv) {
 
         // create a one_work_t
         size_t one_work_size;
-        get_one_work_size(&one_work_size, multiple);
-        one_work_t *w = (one_work_t *)malloc(one_work_size);
+        one_work_t *w = (one_work_t *)malloc(sizeof(one_work_t));
         if (!w) {
             printf("Failed to allocate space on the heap while creating one_work_t\n");
             exit(1);
         }
 
         // fill in the one_work_t with a multiple and factors
-        mpz_init_set(w->multiple, multiple);
         int i;
         for (i = 0; i < WORK_ARRAY_SIZE; i++) {
             if (possible_factor <= sq_rt) {
@@ -112,18 +101,17 @@ one_work_t **make_work(int argc, char **argv) {
     return work_array;
 }
 
-int it_factors(mpz_t multiple, unsigned long factor) {
+int it_factors(unsigned long factor) {
+
     if (factor == 0) {
         return 0;
     }
+
     mpz_t quotient;
     mpz_init(quotient);
-    gmp_printf("About to print the multiple in it_factors\n");
-    gmp_printf("The multiple in it_factors is: %Zd\n", multiple);
     unsigned long rem = mpz_cdiv_q_ui(quotient, multiple, factor);
 
-    // return (rem == 0ul);
-    return (5ul == 0ul);
+    return (rem == 0ul);
 }
 
 int isPrime(unsigned long factor) {
@@ -152,14 +140,8 @@ one_result_t *do_work(one_work_t* work)
     int i;
     int result_factors_index = 0;
     for (i = 0; i < WORK_ARRAY_SIZE; i++) {
-        printf("Factor %d: %d \n", i, work->potential_factors[i]);
         unsigned long factor = work->potential_factors[i];
-        // if (it_factors(work->multiple, factor) && isPrime(factor)) {
-        //     result->factors[result_factors_index++] = factor;
-        // }
-        printf("Going to try to print the multiple in do work\n");
-        gmp_printf("Multiple in do_work: %Zd\n", work->multiple);
-        if (it_factors(work->multiple, factor)) {
+        if (it_factors(factor) && isPrime(factor)) {
             result->factors[result_factors_index++] = factor;
         }
     }
@@ -199,27 +181,17 @@ int report(int sz, one_result_t **result_array) {
 
 int main (int argc, char **argv) {
 
+    // initalize the multiple variable
+    assert(argc == 2);
+    mpz_init_set_str(multiple, argv[1], 10);
+    gmp_printf("Multiple: %Zd\n", multiple);
 
     // Create the api object and give it all its fields
     struct mw_fxns mw;
     mw.create_work_pool = make_work;
     mw.do_one_work = do_work;
     mw.report_results = report;
-
-    // Define the upper limits on how big a one_work_t and one_result_t can be
-    size_t one_work_max_size;
-
-    mpz_t biggest_mpz_int;
-    mpz_init(biggest_mpz_int);
-
-    mpz_t biggest_unsigned_long_gmp;
-    mpz_init_set_ui(biggest_unsigned_long_gmp, ULONG_MAX);
-
-    mpz_mul(biggest_mpz_int, biggest_unsigned_long_gmp, biggest_unsigned_long_gmp); 
-    // get_one_work_size(&one_work_max_size, biggest_mpz_int);
-    get_one_work_size(&one_work_max_size, biggest_unsigned_long_gmp);
-    // mw.work_sz = one_work_max_size;
-    mw.work_sz = 1001 * sizeof(unsigned long);
+    mw.work_sz = sizeof(one_work_t);
     mw.result_sz = sizeof(one_result_t);
 
     //Initialize MPI
