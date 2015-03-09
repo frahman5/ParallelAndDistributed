@@ -64,7 +64,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           process_num = 1;
         }
 
-        debug_print("Nothing went wrong in iter %d\n", i);
+        debug_print("Nothing went while sending work chunk %d\n", i);
       }
       //This was allocated in the user's do_work function
       for(i = 0; i < work_chunk_count; ++i)

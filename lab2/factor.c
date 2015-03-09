@@ -1,15 +1,25 @@
+/* A short program to compute factors using a master-worker paradigm */
+
 #include <mpi.h>    // support for parallel computing
 #include <gmp.h>    // support for arbitrarily large integers
-
 #include <stdio.h>  // standard libraries
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-
+#include <limits.h>
 #include "api.h"    // support for master-worker parallelism on top of MPI
 
+
+// defines how many factors can be calculated in a piece of work/returned in a result
 #define WORK_ARRAY_SIZE     1000
-/* A short program to compute factors using a master-worker paradigm */
+
+// parameters for calculating the size of an mpz_t
+#define WORD_SIZE           1       // the number of bytes in a GMP word
+#define NAIL                0       // how many (most significant) bits of a word are ignoared
+
+// the multiple for which we are finding multiples
+mpz_t multiple;
+
 
 // one piece of work to do 
 struct one_work {
@@ -24,8 +34,16 @@ struct one_result {
 
 // set the size in bytes of a one work t, given the multiple we are working with
 void get_one_work_size(size_t *size, mpz_t multiple) {
-    *size = 500ul;
-    // TODO
+
+    // calculate the size of the array of factors
+    size_t factors_size = sizeof(unsigned long) * 1000;
+
+    // calculate the size of the mpz_t multiple
+    unsigned long numb = (8ul * WORD_SIZE) - NAIL;
+    size_t count = (mpz_sizeinbase(multiple, 2) + numb - 1) / numb;
+
+    // add 'em up and set the value
+    *size = factors_size + count;
 
 }
 // // divide the factoring work into parallel pieces
@@ -94,59 +112,60 @@ one_work_t **make_work(int argc, char **argv) {
     return work_array;
 }
 
-// int it_factors(int multiple, int factor) {
-//     if (factor == 0) {
-//         return 0;
-//     }
-//     return (multiple % factor == 0);
-// }
+int it_factors(mpz_t multiple, unsigned long factor) {
+    if (factor == 0) {
+        return 0;
+    }
+    mpz_t quotient;
+    mpz_init(quotient);
+    gmp_printf("About to print the multiple in it_factors\n");
+    gmp_printf("The multiple in it_factors is: %Zd\n", multiple);
+    unsigned long rem = mpz_cdiv_q_ui(quotient, multiple, factor);
 
-// int isPrime(int factor) {
+    // return (rem == 0ul);
+    return (5ul == 0ul);
+}
 
-//     // Special Cases
-//     if (factor < 2) {
-//         return 0;
-//     } else if (factor == 2) {
-//         return 1;
-//     } else if (factor % 2 == 0) {
-//         return 0;
-//     }
+int isPrime(unsigned long factor) {
 
-//     // check for factors
-//     int i;
-//     int sq_rt = (int)ceil(sqrt(factor));
-//     for (i = 3; i <= sq_rt; i += 2) {
-//         if (factor % i == 0) {
-//             return 0;
-//         }
-//     }
+    // convert the factor to a gmp int
+    mpz_t factor_gmp;
+    mpz_init_set_ui(factor_gmp, factor);
 
-//     // Otherwise, its prime!
-//     return 1;
+    int is_prime = mpz_probab_prime_p(factor_gmp, 25);
 
-// } 
+    return (is_prime > 0);
+
+} 
+
 // // do one unit of factoring work
 one_result_t *do_work(one_work_t* work)
 {
     // Create a one_result_t
     one_result_t *result = (one_result_t *)malloc(sizeof(one_result_t));
-//     if (!result) {
-//         printf("We failed to allocate a one_result_t\n");
-//         exit(1);
-//     }
+    if (!result) {
+        printf("We failed to allocate a one_result_t\n");
+        exit(1);
+    }
 
-//     // Store true factors
-//     int i;
-//     int result_factors_index = 0;
-//     for (i = 0; i < WORK_ARRAY_SIZE; i++) {
-//         int factor = work->potential_factors[i];
-//         if (it_factors(work->multiple, factor) && isPrime(factor)) {
-//             result->factors[result_factors_index++] = factor;
-//         }
-//     }
+    // Store true factors
+    int i;
+    int result_factors_index = 0;
+    for (i = 0; i < WORK_ARRAY_SIZE; i++) {
+        printf("Factor %d: %d \n", i, work->potential_factors[i]);
+        unsigned long factor = work->potential_factors[i];
+        // if (it_factors(work->multiple, factor) && isPrime(factor)) {
+        //     result->factors[result_factors_index++] = factor;
+        // }
+        printf("Going to try to print the multiple in do work\n");
+        gmp_printf("Multiple in do_work: %Zd\n", work->multiple);
+        if (it_factors(work->multiple, factor)) {
+            result->factors[result_factors_index++] = factor;
+        }
+    }
 
-//     // Null terminate the list
-//     result->factors[result_factors_index] = 0; // when reporting, we can stop scanning the list when we hit a 0
+    // Null terminate the list
+    result->factors[result_factors_index] = 0; // when reporting, we can stop scanning the list when we hit a 0
 
     return result;
 }
@@ -154,26 +173,25 @@ one_result_t *do_work(one_work_t* work)
 
 // // take an array of results and report the final result
 int report(int sz, one_result_t **result_array) {
-//     printf(" *** Printing results ***\n");
-//     printf("Factors: ");
+    printf(" *** Printing results ***\n");
+    printf("Factors: ");
 
-//     // print the factors
-//     int i; // iterates through the result_array
-//     printf("Value of sz in report function: %d\n", sz);
-//     for (i = 0; i < sz; i++) {
-//         one_result_t *result = result_array[i];
+    // print the factors
+    int i; // iterates through the result_array
+    for (i = 0; i < sz; i++) {
+        one_result_t *result = result_array[i];
 
-//         int j = 0; // iterates through a single one_result_t factors arrray
-//         while (j > -1) {
-//             if (result->factors[j] == 0) {
-//                 j = -2; // exit the loop
-//             }
-//             else {
-//                 printf("%d ", result->factors[j++]);
-//             }
-//         }
-//     }
-//     printf("\n");
+        int j = 0; // iterates through a single one_result_t factors arrray
+        while (j > -1) {
+            if (result->factors[j] == 0) {
+                j = -2; // exit the loop
+            }
+            else {
+                printf("%lu ", result->factors[j++]);
+            }
+        }
+    }
+    printf("\n");
 
     return 0;
 }
@@ -187,7 +205,21 @@ int main (int argc, char **argv) {
     mw.create_work_pool = make_work;
     mw.do_one_work = do_work;
     mw.report_results = report;
-    mw.work_sz = sizeof(one_work_t);
+
+    // Define the upper limits on how big a one_work_t and one_result_t can be
+    size_t one_work_max_size;
+
+    mpz_t biggest_mpz_int;
+    mpz_init(biggest_mpz_int);
+
+    mpz_t biggest_unsigned_long_gmp;
+    mpz_init_set_ui(biggest_unsigned_long_gmp, ULONG_MAX);
+
+    mpz_mul(biggest_mpz_int, biggest_unsigned_long_gmp, biggest_unsigned_long_gmp); 
+    // get_one_work_size(&one_work_max_size, biggest_mpz_int);
+    get_one_work_size(&one_work_max_size, biggest_unsigned_long_gmp);
+    // mw.work_sz = one_work_max_size;
+    mw.work_sz = 1001 * sizeof(unsigned long);
     mw.result_sz = sizeof(one_result_t);
 
     //Initialize MPI
