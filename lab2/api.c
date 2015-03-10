@@ -181,7 +181,8 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         {
             one_work_t *work_chunk = work_chunks[i];
             debug_print("MASTER: Sending chunk to process %d out of %d\n", myid, sz);
-            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD);
+            MPI_Request send_request;
+            MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD, &send_request);
             ++process_num;
 
             if(process_num < sz)
@@ -203,6 +204,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         }
         
         debug_print("MASTER: Finished results. Telling processes to stop running.\n");
+        
         //Tell workers to finish running
         for (process_num = 1; process_num < sz; ++process_num)
         {
@@ -224,7 +226,8 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
             {
                  debug_print("PROCESS %d: The message was a work chunk!\n", myid);
                  one_result_t *result = f->do_one_work(work_chunk);
-                 MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, RESULT_TAG, MPI_COMM_WORLD);
+                 MPI_Request send_request;
+                 MPI_Isend(result, f->result_sz, MPI_CHAR, MASTER, RESULT_TAG, MPI_COMM_WORLD, &send_request);
 
             }
             else
