@@ -170,7 +170,11 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     // Initialization of parameters
     int sz, myid;
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
-    MPI_Comm_rank (MPI_COMM_WORLD, &myid); 
+    MPI_Comm_rank (MPI_COMM_WORLD, &myid);
+
+    MPI_Group MPI_CURRENT_GROUP, NEW_GROUP;
+    MPI_Comm MPI_NEW_COMM;
+    MPI_Comm_group(MPI_COMM_WORLD, &MPI_CURRENT_GROUP); 
 
     int total_number_elements;
     int number_of_processes;
@@ -195,6 +199,16 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         } //Count number of processes necessary
 
         debug_print("Number of elements: %d", total_number_elements);
+
+        int x = 0;
+        int *ranks = (int*)malloc(sizeof(int)*total_number_elements);
+        for (x = 0; x < total_number_elements; ++x)
+        {
+            ranks[i] = x;
+        }
+        MPI_Group_incl(MPI_RELEVANT, total_number_elements, ranks, &NEW_GROUP);
+        MPI_Comm_create(MPI_COMM_WORLD, NEW_GROUP, &MPI_NEW_COMM); 
+
 
         if(total_number_elements <= sz)
         {
@@ -237,7 +251,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     
     // Scatter the random numbers to all processes
     MPI_Scatter(work_chunks, number_chunks_per_process*f->work_sz, MPI_BYTE, work_chunks_sub, 
-      number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
+      number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_NEW_COMM);
 
 
         results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
