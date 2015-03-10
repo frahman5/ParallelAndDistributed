@@ -204,9 +204,9 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         int *ranks = (int*)malloc(sizeof(int)*total_number_elements);
         for (x = 0; x < total_number_elements; ++x)
         {
-            ranks[i] = x;
+            ranks[x] = x;
         }
-        MPI_Group_incl(MPI_RELEVANT, total_number_elements, ranks, &NEW_GROUP);
+        MPI_Group_incl(MPI_CURRENT_GROUP, total_number_elements, ranks, &NEW_GROUP);
         MPI_Comm_create(MPI_COMM_WORLD, NEW_GROUP, &MPI_NEW_COMM); 
 
 
