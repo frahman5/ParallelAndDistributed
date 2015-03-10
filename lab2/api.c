@@ -188,7 +188,8 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     {
         work_chunks = f->create_work_pool(argc, argv);
 
-        int total_number_elements = -1;
+        int total_number_elements = -2;
+        printf("total elements, sz %d\n");
         while (work_chunks[total_number_elements++] != NULL); //Count number of processes necessary
 
         printf("total elements, sz %d, %d\n\n", total_number_elements, sz);
