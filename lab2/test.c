@@ -19,19 +19,18 @@ struct one_result {
 // we should make that a variable later
 one_work_t **make_work(int argc, char **argv) {
     one_work_t **work_array;
-    work_array = (one_work_t **)malloc(4 * sizeof(one_work_t *)); // 10 chunks work, 1 NULL
+    work_array = (one_work_t **)malloc(11 * sizeof(one_work_t *)); // 10 chunks work, 1 NULL
     int i;
     int array_elem = 1; // first array element
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 10; i++) {
         one_work_t *w = (one_work_t *)malloc(sizeof(one_work_t));
         int j;
         for (j = 0; j < WORK_ARRAY_SIZE; j++) {
-            printf("Array elem: %d\n", array_elem);
             w->array[j] = array_elem++;
         }
         work_array[i] = w;
     }
-    work_array[3] = NULL;
+    work_array[10] = NULL;
 
     return work_array;
 }
@@ -53,11 +52,6 @@ one_result_t *do_work(one_work_t* work)
     return result;
 }
 
-// struct one_result {
-//     int array[1];
-//     unsigned long long sz;
-//     int status;
-// } r;
 
 // take an array of results and report the final result
 int report(int sz, one_result_t **result_array) {
@@ -96,27 +90,3 @@ int main (int argc, char **argv) {
 
     return 0;
 }
-
-
-/*
-Questions:
-  - Are all processes loading mw? (print hello 4 times) Technically this is not an issue since it is just pointers to functions
-*/
-
- //  one_work_t **work_array;
-   //  work_array = (one_work_t **)malloc(num_works * sizeof(one_work_t*));
-   //  int i;
-   //  for (i = 0; i < num_works; i++) {
-   //       one_work_t *w = (one_work_t*)malloc(sizeof(one_work_t));
-   //       w->sz = 3+i;
-   //       w->array = (int*)malloc((w->sz)*sizeof(int));
-   //       int j;
-   //       for(j = 0; j < w->sz; ++j)
-   //       {
-   //          w->array[j] = i;
-   //       }
-   //       work_array[i] = w;
-   //      //w->array = array;
-   //      work_array[i] = w;
-   // }
-   //  // printf("parameter received: %d\n", num_works);
