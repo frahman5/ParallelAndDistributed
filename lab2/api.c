@@ -189,6 +189,7 @@ void MW_Run2 (int argc, char **argv, struct mw_fxns *f){
 
         if(total_number_elements <= sz)
         {
+            printf("HERE");
             number_of_processes = total_number_elements;
             number_chunks_per_process = 1;
         }
