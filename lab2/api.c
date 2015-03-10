@@ -193,7 +193,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
 
         // send the chunk to a processor, roundrobbin style
         
-        MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
+        MPI_Send(work_chunk, f->work_sz, MPI_BYTE, process_num,
           WORK_TAG, MPI_COMM_WORLD);
         debug_print("Process %d out of %d\n", process_num, sz);
         num_msgs++;
@@ -226,7 +226,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           }
           MPI_Status status;
 
-          MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
+          MPI_Recv(result, f->result_sz, MPI_BYTE, MPI_ANY_SOURCE, RESULT_TAG, 
             MPI_COMM_WORLD, &status);
           num_msgs++;
 
