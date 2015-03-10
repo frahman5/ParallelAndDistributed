@@ -194,17 +194,21 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         }
 
         debug_print("MASTER: Finished sending chunks. Collecting results.\n");
+        one_result_t **result_array = (one_result_t**)malloc((f->result_sz)*i);
+
         int j = 0;
         for(j = 0; j < i; j++)
         {
-            debug_print("MASTER: Collecting result %d out of %d", j, i);
+            debug_print("MASTER: Collecting result %d out of %dn", j, i);
             one_result_t *result = (one_result_t*)malloc(f->result_sz);
             MPI_Status status;
             MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, MPI_COMM_WORLD, &status);
+            result_array[j] = result;
         }
         
-        debug_print("MASTER: Finished results. Telling processes to stop running.\n");
-        
+        debug_print("MASTER: Finished collecting results. Presenting results.\n");
+        f->report_results(i, result_array);
+
         //Tell workers to finish running
         for (process_num = 1; process_num < sz; ++process_num)
         {
