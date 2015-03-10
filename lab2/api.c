@@ -46,50 +46,46 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     // master process sets up calculation
     if(myid == MASTER)
     {
-      /* Create all the work to be done and find out how much work we have total */
-      one_work_t **work_chunks = f->create_work_pool(argc, argv);
-      int total_work_chunk_count = 0;
-      while(work_chunks[total_work_chunk_count] != NULL) {
-            total_work_chunk_count += 1;
-      }
-      printf("How many work chunks?: %d\n", total_work_chunk_count);
+        /* Create all the work to be done and find out how much work we have total */
+        one_work_t **work_chunks = f->create_work_pool(argc, argv);
+        int total_num_chunks = 0;
+        while(work_chunks[total_num_chunks] != NULL) {
+            total_num_chunks += 1;
+        }
+        printf("How many work chunks?: %d\n", total_num_chunks);
 
-      /* Send out the first batch of work to workers round-robbin style */
-      int process_num;
-      int work_chunk_index = 0;
-      int work_chunk_count = 0;
-      for (process_num = 1; process_num < sz; process_num++) {
+        /* Send out the first batch of work to workers round-robbin style */
+        int process_num;
+        int current_work_chunk = 0;
+        for (process_num = 1; process_num < sz; process_num++) {
 
-          // Send the next work chunk
-          one_work_t *work_chunk = work_chunks[work_chunk_index++];
-          if (work_chunk) {
-              printf("Sending Process %d out of %d their first work chunk. Work chunk count: %d\n", process_num, sz, work_chunk_count);
-              MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
+            // Send the next work chunk
+            one_work_t *work_chunk = work_chunks[current_work_chunk];
+            if (work_chunk) {
+                printf("Sending Process %d out of %d their first work chunk. Work chunk count: %d\n", process_num, sz, current_work_chunk);
+                MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
                     WORK_TAG, MPI_COMM_WORLD);
-              work_chunk_count++;
-              num_msgs++;
-          } else {
-              process_num = sz; // exit the for loop
-          }
-          debug_print("Nothing went while sending work chunk %d\n", i);
-      }
-      printf("Work chunk sent out on initial round robbin pass: %d\n", work_chunk_count);
-
+                current_work_chunk++;
+                num_msgs++;
+            } else {
+                process_num = sz;                           // exit the for loop
+            }
+        }
+        printf("Work chunks sent out on initial round robbin pass: %d\n", current_work_chunk);
 
 
         /* If necessary, send out remaining work-chunks dynamically
             When a worker says they are done, send them new work! */
         int num_results_received = 0;
-        int result_array_index = 0;
-        one_result_t **result_array = (one_result_t**)malloc(sizeof(one_result_t*) * total_work_chunk_count);
+        one_result_t **result_array = (one_result_t **)malloc(sizeof(one_result_t*) * total_num_chunks);
         if (!result_array) {
             printf("MW library failed to allocate result_array on the heap\n");
             exit(1);
         }
-        while (num_results_received != total_work_chunk_count) {
+        while (num_results_received != total_num_chunks) {
 
             // Create a container for the result
-            printf("getting result %d of %d\n", num_results_received + 1, total_work_chunk_count);
+            printf("getting result %d of %d\n", num_results_received + 1, total_num_chunks);
             one_result_t *result = (one_result_t *)malloc((f->result_sz));
             if (!result) {
               printf("MW Library failed to allocate a result struct on the heap\n");
@@ -100,30 +96,26 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
             MPI_Status status;
             MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
                 MPI_COMM_WORLD, &status);
-            result_array[result_array_index++] = result;
-            num_results_received++;                 
+            result_array[num_results_received++] = result;        
             num_msgs++;                             // "global" message counter
 
             // If there's more work to be done, send the worker who just finished more work
-            if (work_chunk_count < total_work_chunk_count) {
+            if (current_work_chunk < total_num_chunks) {
 
                 // Which process do we send it to?
                 int process = status.MPI_SOURCE;
-                printf("Just received work from process %d\n", process);
 
                 // Extract the next work chunk
-                one_work_t *work_chunk = work_chunks[work_chunk_index++];
+                one_work_t *work_chunk = work_chunks[current_work_chunk++];
                 assert (work_chunk != NULL);
 
                 // Send it and increment relevant counters
-                printf("Sending Process %d out of %d work chunk %d out of %d\n", process, sz, work_chunk_count, total_work_chunk_count);
                 MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process,
                     WORK_TAG, MPI_COMM_WORLD);
-                work_chunk_count++;
                 num_msgs++;
             }
         }
-        assert (work_chunk_count == total_work_chunk_count);
+        assert (current_work_chunk == total_num_chunks);
 
         /* Free up work chunks: This was allocated in the user's do_work function */
         int i = 0;
@@ -132,8 +124,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         }
         free(work_chunks);
 
-
-        //Tell workers to stop running
+        /* Tell workers to stop running */
         for (i = 1; i < sz; ++i)
         {
             int num = 1;
@@ -141,13 +132,13 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
             num_msgs++;
         }
 
-        //Report result!
+        /* Report result! */
         printf("about to report results\n");
-        f->report_results(work_chunk_count, result_array);
+        f->report_results(total_num_chunks, result_array);
         printf("Reporting from master. Num Msgs sent by all processors: %lu\n", num_msgs);
 
-        // Free memeory of results array
-        for(i = 0; i < work_chunk_count; ++i)
+        /* Free memeory of results array */
+        for(i = 0; i < total_num_chunks; ++i)
         {
             free(result_array[i]);
         }
