@@ -188,6 +188,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
       while(work_chunks[i] != NULL) {
 
         work_chunk_count++;
+        i++;
         // // get the next work chunk
         // one_work_t *work_chunk = work_chunks[i++];
 
