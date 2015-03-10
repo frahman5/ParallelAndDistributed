@@ -30,21 +30,7 @@ struct one_result {
     unsigned long factors[WORK_ARRAY_SIZE];
 };
 
-// set the size in bytes of a one work t, given the multiple we are working with
-void get_one_work_size(size_t *size, mpz_t multiple) {
-
-    // calculate the size of the array of factors
-    size_t factors_size = sizeof(unsigned long) * 1000;
-
-    // calculate the size of the mpz_t multiple
-    unsigned long numb = (8ul * WORD_SIZE) - NAIL;
-    size_t count = (mpz_sizeinbase(multiple, 2) + numb - 1) / numb;
-
-    // add 'em up and set the value
-    *size = factors_size + count;
-
-}
-// // divide the factoring work into parallel pieces
+// divide the factoring work into parallel pieces
 one_work_t **make_work(int argc, char **argv) {
 
     // Calculate the square root
@@ -143,6 +129,7 @@ one_result_t *do_work(one_work_t* work)
         unsigned long factor = work->potential_factors[i];
         if (it_factors(factor) && isPrime(factor)) {
             result->factors[result_factors_index++] = factor;
+            printf("%lu", factor);
         }
     }
 
@@ -153,7 +140,7 @@ one_result_t *do_work(one_work_t* work)
 }
 
 
-// // take an array of results and report the final result
+// take an array of results and report the final result
 int report(int sz, one_result_t **result_array) {
     printf(" *** Printing results ***\n");
     printf("Factors: ");
@@ -175,7 +162,7 @@ int report(int sz, one_result_t **result_array) {
     }
     printf("\n");
 
-    return 0;
+    return 1;
 }
 
 
@@ -194,64 +181,13 @@ int main (int argc, char **argv) {
     mw.work_sz = sizeof(one_work_t);
     mw.result_sz = sizeof(one_result_t);
 
-    //Initialize MPI
+    // Initialize MPI
     MPI_Init (&argc, &argv);
 
     // run the program
-    MW_Run_2 (argc, argv, &mw);
+    MW_Run (argc, argv, &mw, 2);
 
     MPI_Finalize();
-    
 
     return 0;
 }
-
-// // // Serializes the one_work struct into an array of ints
-// // int *(*serialize_one_work)(one_work_t *work) {
-
-// //     // Create the object that we serialize into
-// //     int *serial = (int *)malloc((2 + work->sz) * sizeof(int));
-// //     if (!serial) {
-// //         printf("Failed to allocate while serializing a work struct\n");
-// //         exit(1);
-// //     }
-
-// //     // Fill it up
-// //     serial[0] = work->multiple;
-// //     serial[1] = work->sz;
-// //     int i;
-// //     for (i = 0; i < work->sz; i++) {
-// //         serial[i + 2] = work->potential_factors[i];
-// //     }
-
-// //     // Return it
-// //     return serial;
-
-// // }
-
-// // // Derializes a serialized one_work struct back into a one_work struct
-// // one_work_t *(*deserialize_one_work)(int *sz_one_work) {
-
-// //     // Create the one_work_t object
-// //     one_work_t *work = (one_work_t *)malloc(sizeof(one_work_t));
-// //     if (!work) {
-// //         printf("Failed to allocate for a one_work struct space while deserializing a one_work struct\n");
-// //         exit(1);
-// //     }
-
-// //     // Fill it up
-// //     work->multiple = sz_one_work[0];
-// //     work->sz = sz_one_work[1];
-// //     work->potential_factors = (int *)malloc(work->sz * sizeof(int));
-// //     if (!work->potential_factors) {
-// //         printf("Failed to allocate space for work->potential_factors while deserializing a one_work_struct\n");
-// //         exit(1);
-// //     }
-// //     int i;
-// //     for (i = 0; i < work->sz; i++) {
-// //         work->potential_factors[i] = sz_one_work[i+2];
-// //     }
-
-// //     // Return it
-// //     return work;
-// // }
