@@ -253,17 +253,20 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
       number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_NEW_COMM);
 
 
-        
+        results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
         int i;
-        if(myid < number_of_processes-1)
-        {
-            results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
+
             for(i = 0; i < number_chunks_per_process; ++i)
             {
-                results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
+              if(work_chunks_sub[i] != NULL)
+              {
+                  results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
+              }
+                
             }
 
-        }
+        
+
         
     
 
