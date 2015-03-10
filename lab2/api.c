@@ -22,12 +22,12 @@
 
 /****
 
-	This function does the following:
-		- Receives api object 
-		- Uses the create_work_pool function to get the array of workers
-		- Goes through the array and executes the necessary work for each
-		- Prints the results
-	
+    This function does the following:
+        - Receives api object 
+        - Uses the create_work_pool function to get the array of workers
+        - Goes through the array and executes the necessary work for each
+        - Prints the results
+    
 ****/
 
 /*==============================================================*/
@@ -238,6 +238,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         //Create a results array to collect the results
         debug_print("MASTER: Finished sending chunks. Collecting results.\n");
         one_result_t **result_array = (one_result_t**)malloc((f->result_sz)*i);
+        if (!result_array) {
+            printf("Failed to allocate result array while collecting results\n");
+            exit(1);
+        }
 
         int j = 0;
         for(j = 0; j < i; j++)
@@ -245,6 +249,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             //Go through each work chunk and collect its result form the process that executed it
             debug_print("MASTER: Collecting result %d out of %d\n", j, i);
             one_result_t *result = (one_result_t*)malloc(f->result_sz);
+            if (!result) {
+                printf("Failed to allocate a result while collecting worker results\n");
+                exit(1);
+            }
             MPI_Status status;
             MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, MPI_COMM_WORLD, &status);
             result_array[j] = result;
@@ -262,6 +270,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         for (process_num = 1; process_num < sz; ++process_num)
         {
             one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
+            if (!work_chunk) {
+                printf("Failed to allocate work_chunk while sending a done message\n");
+                exit(1);
+            }
             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
             num_msgs++;
         }
@@ -279,6 +291,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         {
             //Receive a work chunk
             one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
+            if (!work_chunk) {
+                printf("Failed to allocate a work_chunk on a worker\n");
+                exit(1);
+            }
             MPI_Status status;
             debug_print("PROCESS %d: Receiving message from master\n", myid);
             MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
