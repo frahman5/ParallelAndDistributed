@@ -63,7 +63,7 @@ int report(int sz, one_result_t **result_array) {
 
     printf("Result of computation: %d\n", result);
 
-    return 0;
+    return 1;
 }
 
 
@@ -83,7 +83,7 @@ int main (int argc, char **argv) {
     MPI_Init (&argc, &argv);
 
     // run the program
-    MW_Run_2 (argc, argv, &mw);
+    MW_Run (argc, argv, &mw, 1);
 
     MPI_Finalize();
     

@@ -28,5 +28,7 @@ struct mw_fxns {
 
 };
 
-void MW_Run (int argc, char **argv, struct mw_fxns *f);
-void MW_Run_2 (int argc, char **argv, struct mw_fxns *f);
+/* If style is 1, allocates work via a round robbin method. If style is 2, 
+allocates work dynamically, giving each worker more work as they finish */
+void MW_Run (int argc, char **argv, struct mw_fxns *f, int style);
+// void MW_Run_2 (int argc, char **argv, struct mw_fxns *f);
