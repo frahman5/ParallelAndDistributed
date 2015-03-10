@@ -233,6 +233,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
       }
 
       //Tell workers to stop running
+      debug_print("MASTER telling workers to stop running\n");
       for (i = 1; i < sz; ++i)
       {
           int num = 1;
