@@ -179,7 +179,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         int process_num = 1;
         while (work_chunks[i] != NULL)
         {
-            one_work_t work_chunk = work_chunks[i];
+            one_work_t *work_chunk = work_chunks[i];
             debug_print("MASTER: Sending chunk to process %d out of %d\n", process_num, sz);
             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD);
             ++process_num;
@@ -193,9 +193,9 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         }
         debug_print("MASTER: Finished sending chunks. Telling processes to stop running.\n");
         //Tell workers to finish running
-        for (process_num = 1; j < sz; ++j)
+        for (process_num = 1; process_num < sz; ++process_num)
         {
-            one_work_t work_chunk = (one_work_t*)malloc(sizeof(one_work_t*));
+            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
         }
     }
@@ -204,7 +204,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         int j = 0;
         while(j == 0)
         {
-            one_work_t work_chunk = (one_work_t*)malloc(sizeof(one_work_t*));
+            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
             MPI_Status status;
             debug_print("PROCESS %d: Receiving message from master\n", myid);
             MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
