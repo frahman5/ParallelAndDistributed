@@ -165,6 +165,8 @@
 /*==============================================================*/
 void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
+  printf("WWW");
+
     // Initialization of parameters
     int sz, myid;
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
