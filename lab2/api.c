@@ -221,7 +221,7 @@ void MW_Run2 (int argc, char **argv, struct mw_fxns *f){
     if(myid != 0)
     {
         // Create a buffer that will hold a subset of the work_chunks array
-        work_chunks_sub = malloc(f->work_sz * number_chunks_per_process);
+        work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
     }
     
     // Scatter the random numbers to all processes
