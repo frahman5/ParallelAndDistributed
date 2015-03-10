@@ -255,7 +255,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
         
         int i;
-        if(myid < number_of_processes)
+        if(myid < number_of_processes-1)
         {
             results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
             for(i = 0; i < number_chunks_per_process; ++i)
