@@ -192,9 +192,10 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         one_work_t *work_chunk = work_chunks[i++];
 
         // send the chunk to a processor, roundrobbin style
-        debug_print("Process %d out of %d\n", process_num, sz);
+        
         MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
           WORK_TAG, MPI_COMM_WORLD);
+        debug_print("Process %d out of %d\n", process_num, sz);
         num_msgs++;
 
         if (++process_num >= sz) { // make sure we're roundrobbining.
