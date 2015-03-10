@@ -199,67 +199,67 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
             number_of_processes = total_number_elements;
             number_chunks_per_process = 1;
         }
-        else if(total_number_elements%sz == 0)
-        {
-          printf("HERE2");
-            number_of_processes = sz;
-            number_chunks_per_process = total_number_elements/sz;
-        }
-        else
-        {
-          printf("HERE3");
-            number_of_processes = sz;
-            while(total_number_elements%number_of_processes != 0)
-            {
-                number_of_processes = number_of_processes - 1;
-                number_chunks_per_process = total_number_elements/sz;
-            }
-        }
+        // else if(total_number_elements%sz == 0)
+        // {
+        //   printf("HERE2");
+        //     number_of_processes = sz;
+        //     number_chunks_per_process = total_number_elements/sz;
+        // }
+        // else
+        // {
+        //   printf("HERE3");
+        //     number_of_processes = sz;
+        //     while(total_number_elements%number_of_processes != 0)
+        //     {
+        //         number_of_processes = number_of_processes - 1;
+        //         number_chunks_per_process = total_number_elements/sz;
+        //     }
+        // }
 
-        results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
+        // results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
     }
 
-    //Broadcast number of process and chunks per process to everyone
-    MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    // //Broadcast number of process and chunks per process to everyone
+    // MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    // MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    // MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
 
-    //Every process waits until they get to this point
-    MPI_Barrier(MPI_COMM_WORLD);
+    // //Every process waits until they get to this point
+    // MPI_Barrier(MPI_COMM_WORLD);
 
-    if(myid != 0)
-    {
-        // Create a buffer that will hold a subset of the work_chunks array
-        work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
-    }
+    // if(myid != 0)
+    // {
+    //     // Create a buffer that will hold a subset of the work_chunks array
+    //     work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
+    // }
     
-    // Scatter the random numbers to all processes
-    MPI_Scatter(work_chunks, number_chunks_per_process*f->work_sz, MPI_BYTE, work_chunks_sub, 
-      number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
+    // // Scatter the random numbers to all processes
+    // MPI_Scatter(work_chunks, number_chunks_per_process*f->work_sz, MPI_BYTE, work_chunks_sub, 
+    //   number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
 
 
-    if(myid != 0)
-    {
-        results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
-        int i;
-        for(i = 0; i < number_chunks_per_process; ++i)
-        {
-            results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
-        }
-    }
+    // if(myid != 0)
+    // {
+    //     results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
+    //     int i;
+    //     for(i = 0; i < number_chunks_per_process; ++i)
+    //     {
+    //         results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
+    //     }
+    // }
 
-    // Gather the results in the master
-    MPI_Gather(results_array_sub, number_chunks_per_process*f->result_sz, MPI_BYTE, results_array, 
-      number_chunks_per_process*f->result_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
+    // // Gather the results in the master
+    // MPI_Gather(results_array_sub, number_chunks_per_process*f->result_sz, MPI_BYTE, results_array, 
+    //   number_chunks_per_process*f->result_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
 
-    //Report the results
-    if(myid == 0)
-    {
-        if(f->report_results(total_number_elements, results_array) == 0)
-        {
-            printf("There was an error in the report_results function.\n");
-        }
-    }
+    // //Report the results
+    // if(myid == 0)
+    // {
+    //     if(f->report_results(total_number_elements, results_array) == 0)
+    //     {
+    //         printf("There was an error in the report_results function.\n");
+    //     }
+    // }
 
 }
 
