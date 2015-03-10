@@ -194,6 +194,8 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
             total_number_elements++;
         } //Count number of processes necessary
 
+        debug_print("Number of elements: %d", total_number_elements);
+
         if(total_number_elements <= sz)
         {
             number_of_processes = total_number_elements;
