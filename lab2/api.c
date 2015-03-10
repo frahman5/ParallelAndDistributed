@@ -163,7 +163,7 @@
 /*==============================================================*/
 /* MW_Run with Dynamic Process selection                        */
 /*==============================================================*/
-void MW_Run2 (int argc, char **argv, struct mw_fxns *f){
+void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
     // Initialization of parameters
     int sz, myid;
