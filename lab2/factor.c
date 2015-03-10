@@ -40,7 +40,7 @@ one_work_t **make_work(int argc, char **argv) {
     mpz_sqrt(sq_rt_gmp, multiple);
     sq_rt = mpz_get_ui(sq_rt_gmp);
     sq_rt += 1; // effectively taking the ceiling
-    gmp_printf("Sqrt of %Zd is %lu +/- 1\n", multiple, sq_rt);
+    // gmp_printf("Sqrt of %Zd is %lu +/- 1\n", multiple, sq_rt);
 
     // Allocate space for the work item array
     one_work_t **work_array;        
@@ -129,7 +129,6 @@ one_result_t *do_work(one_work_t* work)
         unsigned long factor = work->potential_factors[i];
         if (it_factors(factor) && isPrime(factor)) {
             result->factors[result_factors_index++] = factor;
-            printf("%lu", factor);
         }
     }
 
@@ -171,7 +170,7 @@ int main (int argc, char **argv) {
     // initalize the multiple variable
     assert(argc == 2);
     mpz_init_set_str(multiple, argv[1], 10);
-    gmp_printf("Multiple: %Zd\n", multiple);
+    // gmp_printf("Multiple: %Zd\n", multiple);
 
     // Create the api object and give it all its fields
     struct mw_fxns mw;
