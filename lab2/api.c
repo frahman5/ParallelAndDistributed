@@ -240,10 +240,15 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
         results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
         int i;
-        for(i = 0; i < number_chunks_per_process; ++i)
+        if(myid < number_of_processes)
         {
-            results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
+            for(i = 0; i < number_chunks_per_process; ++i)
+            {
+                results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
+            }
+
         }
+        
     
 
     // // Gather the results in the master
