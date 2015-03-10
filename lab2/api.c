@@ -191,7 +191,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         int total_number_elements = 0;
         while (work_chunks[total_number_elements++] != NULL); //Count number of processes necessary
 
-        printf("total elements: %d\n\n", total_number_elements);
+        printf("total elements, sz %d, %d\n\n", total_number_elements, sz);
 
         if(total_number_elements <= sz)
         {
