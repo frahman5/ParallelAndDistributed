@@ -226,8 +226,8 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     }
 
     int x = 0;
-        int *ranks = (int*)malloc(sizeof(int)*total_number_elements);
-        for (x = 0; x < total_number_elements; ++x)
+        int *ranks = (int*)malloc(sizeof(int)*number_of_processes);
+        for (x = 0; x < number_of_processes; ++x)
         {
             ranks[x] = x;
         }
