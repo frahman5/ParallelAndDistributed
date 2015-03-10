@@ -180,7 +180,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         while (work_chunks[i] != NULL)
         {
             one_work_t *work_chunk = work_chunks[i];
-            debug_print("MASTER: Sending chunk to process %d out of %d\n", process_num, sz);
+            debug_print("MASTER: Sending chunk to process %d out of %d\n", myid, sz);
             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD);
             ++process_num;
 
@@ -212,6 +212,8 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
             if (status.MPI_TAG == WORK_TAG)
             {
                  debug_print("PROCESS %d: The message was a work chunk!\n", myid);
+                 one_result_t *result = f->do_one_work(work_chunk);
+                 
             }
             else
             {
