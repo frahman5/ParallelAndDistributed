@@ -192,10 +192,9 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         one_work_t *work_chunk = work_chunks[i++];
 
         // send the chunk to a processor, roundrobbin style
-        
-        MPI_Send(work_chunk, f->work_sz, MPI_BYTE, process_num,
-          WORK_TAG, MPI_COMM_WORLD);
         debug_print("Process %d out of %d\n", process_num, sz);
+        MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
+          WORK_TAG, MPI_COMM_WORLD);
         num_msgs++;
 
         if (++process_num >= sz) { // make sure we're roundrobbining.
@@ -226,7 +225,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           }
           MPI_Status status;
 
-          MPI_Recv(result, f->result_sz, MPI_BYTE, MPI_ANY_SOURCE, RESULT_TAG, 
+          MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
             MPI_COMM_WORLD, &status);
           num_msgs++;
 
@@ -258,6 +257,11 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
     {
       debug_print("Hola, desde processor %d\n", myid);
       int i = 1;
+      int work_chunk_count = 0;
+
+      //We create array to store results
+      one_result_t **result_array = (one_result_t**)malloc(sizeof(one_result_t*));
+
       while(i > 0) {
           one_work_t *work_chunk = (one_work_t *)malloc(f->work_sz);
           if (!work_chunk) {
@@ -268,12 +272,13 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           MPI_Status status;
           MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, 
             MPI_COMM_WORLD, &status);
+          ++work_chunk_count;
 
           if (status.MPI_TAG == WORK_TAG) 
           {
+              realloc(result_array, sizeof(one_result_t*)*work_chunk_count);
               one_result_t *result = f->do_one_work(work_chunk);
-              MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
-                RESULT_TAG, MPI_COMM_WORLD);
+              result_array[work_chunk_count-1] = result;
               free(result);
           } 
           else if(status.MPI_TAG == DONE_TAG)
@@ -288,6 +293,15 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
           free(work_chunk);
 
       }
+
+      for(i = 0; i < work_chunk_count; ++i)
+      {
+          one_result_t *result = result_array[i];
+          MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, 
+                RESULT_TAG, MPI_COMM_WORLD);
+      }
+
+
     }
     debug_print("Finished Running on processor %d\n", myid);
 
