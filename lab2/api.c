@@ -231,7 +231,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         {
             ranks[x] = x;
         }
-        MPI_Group_incl(MPI_CURRENT_GROUP, total_number_elements, ranks, &NEW_GROUP);
+        MPI_Group_incl(MPI_CURRENT_GROUP, number_of_processes, ranks, &NEW_GROUP);
         MPI_Comm_create(MPI_COMM_WORLD, NEW_GROUP, &MPI_NEW_COMM); 
 
     results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
