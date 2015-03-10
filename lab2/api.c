@@ -265,6 +265,8 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
               {
                   results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
               }
+
+            }
                 
             
 
