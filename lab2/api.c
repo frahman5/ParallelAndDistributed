@@ -239,12 +239,12 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
 
     //Broadcast number of process and chunks per process to everyone
-    MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_NEW_COMM);
+    MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_NEW_COMM);
+    MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_NEW_COMM);
 
     //Every process waits until they get to this point
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_NEW_COMM);
 
     // Create a buffer that will hold a subset of the work_chunks array
     work_chunks_sub = (one_work_t**)malloc(f->work_sz * number_chunks_per_process); 
