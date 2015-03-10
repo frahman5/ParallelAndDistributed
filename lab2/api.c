@@ -195,11 +195,13 @@ void MW_Run2 (int argc, char **argv, struct mw_fxns *f){
         }
         else if(total_number_elements%sz == 0)
         {
+          printf("HERE2");
             number_of_processes = sz;
             number_chunks_per_process = total_number_elements/sz;
         }
         else
         {
+          printf("HERE3");
             number_of_processes = sz;
             while(total_number_elements%number_of_processes != 0)
             {
