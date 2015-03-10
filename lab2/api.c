@@ -230,7 +230,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     MPI_Barrier(MPI_COMM_WORLD);
 
     // Create a buffer that will hold a subset of the work_chunks array
-    work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
+    work_chunks_sub = (one_work_t**)malloc(f->work_sz * number_chunks_per_process); 
     
     
     // Scatter the random numbers to all processes
