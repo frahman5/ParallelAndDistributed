@@ -294,6 +294,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
 
       }
 
+      debug_print("Sending results from worker %d\n", myid);
       for(i = 0; i < work_chunk_count; ++i)
       {
           one_result_t *result = result_array[i];
