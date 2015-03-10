@@ -191,7 +191,18 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
 
             ++i;
         }
-        debug_print("MASTER: Finished sending chunks. Telling processes to stop running.\n");
+
+        debug_print("MASTER: Finished sending chunks. Collecting results.\n");
+        int j = 0;
+        for(j = 0; j < i; j++)
+        {
+            debug_print("MASTER: Collecting result %d out of %d", j, i);
+            one_result_t *result = (one_result_t*)malloc(f->result_sz);
+            MPI_Status status;
+            MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, MPI_COMM_WORLD, &status);
+        }
+        
+        debug_print("MASTER: Finished results. Telling processes to stop running.\n");
         //Tell workers to finish running
         for (process_num = 1; process_num < sz; ++process_num)
         {
@@ -213,7 +224,8 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
             {
                  debug_print("PROCESS %d: The message was a work chunk!\n", myid);
                  one_result_t *result = f->do_one_work(work_chunk);
-                 
+                 MPI_Send(result, f->result_sz, MPI_CHAR, MASTER, RESULT_TAG, MPI_COMM_WORLD);
+
             }
             else
             {
