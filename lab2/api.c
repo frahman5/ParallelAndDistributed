@@ -246,7 +246,7 @@ void MW_Run2 (int argc, char **argv, struct mw_fxns *f){
     //Report the results
     if(myid == 0)
     {
-        if(f->report_results(total_number_elements, result_arrays) == 0)
+        if(f->report_results(total_number_elements, results_array) == 0)
         {
             printf("There was an error in the report_results function.\n");
         }
