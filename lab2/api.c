@@ -234,7 +234,9 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         MPI_Group_incl(MPI_CURRENT_GROUP, number_of_processes, ranks, &NEW_GROUP);
         MPI_Comm_create(MPI_COMM_WORLD, NEW_GROUP, &MPI_NEW_COMM); 
 
-    results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
+    if(myid < number_of_processes)
+    {
+        results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
 
     //Broadcast number of process and chunks per process to everyone
     MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
@@ -256,7 +258,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         results_array_sub = (one_result_t**)malloc((f->result_sz)*number_chunks_per_process);
         int i;
 
-          if(myid < 2)
+       
             for(i = 0; i < number_chunks_per_process; ++i)
             {
               if(work_chunks_sub[i] != NULL)
@@ -264,8 +266,10 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
                   results_array_sub[i] = f->do_one_work(work_chunks_sub[i]);
               }
                 
-            }
+            
 
+    }
+    
         
 
         
