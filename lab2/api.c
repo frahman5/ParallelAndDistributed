@@ -199,7 +199,7 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f){
         int j = 0;
         for(j = 0; j < i; j++)
         {
-            debug_print("MASTER: Collecting result %d out of %dn", j, i);
+            debug_print("MASTER: Collecting result %d out of %d\n", j, i);
             one_result_t *result = (one_result_t*)malloc(f->result_sz);
             MPI_Status status;
             MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, MPI_COMM_WORLD, &status);
