@@ -165,7 +165,7 @@
 /*==============================================================*/
 void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
-  printf("WWW");
+
 
     // Initialization of parameters
     int sz, myid;
@@ -181,6 +181,8 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
     one_result_t **results_array;
     one_result_t **results_array_sub;
+
+    printf("WWW\n\n");
 
     if(myid == MASTER)
     {
