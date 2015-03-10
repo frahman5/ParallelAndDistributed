@@ -189,17 +189,13 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         work_chunks = f->create_work_pool(argc, argv);
 
         int total_number_elements = 0;
-        printf("total elements %d\n", total_number_elements);
         while (work_chunks[total_number_elements] != NULL)
         {
             total_number_elements++;
         } //Count number of processes necessary
 
-        printf("total elements, sz %d, %d\n\n", total_number_elements, sz);
-
         if(total_number_elements <= sz)
         {
-            printf("HERE\n");
             number_of_processes = total_number_elements;
             number_chunks_per_process = 1;
         }
@@ -233,15 +229,13 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     //Every process waits until they get to this point
     MPI_Barrier(MPI_COMM_WORLD);
 
-    // if(myid != 0)
-    // {
-    //     // Create a buffer that will hold a subset of the work_chunks array
-    //     work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
-    // }
+    // Create a buffer that will hold a subset of the work_chunks array
+    work_chunks_sub = malloc(f->work_sz * number_chunks_per_process); 
     
-    // // Scatter the random numbers to all processes
-    // MPI_Scatter(work_chunks, number_chunks_per_process*f->work_sz, MPI_BYTE, work_chunks_sub, 
-    //   number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
+    
+    // Scatter the random numbers to all processes
+    MPI_Scatter(work_chunks, number_chunks_per_process*f->work_sz, MPI_BYTE, work_chunks_sub, 
+      number_chunks_per_process*f->work_sz, MPI_BYTE, MASTER, MPI_COMM_WORLD);
 
 
     // if(myid != 0)
