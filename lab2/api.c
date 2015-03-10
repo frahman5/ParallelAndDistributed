@@ -199,22 +199,22 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
             number_of_processes = total_number_elements;
             number_chunks_per_process = 1;
         }
-        // else if(total_number_elements%sz == 0)
-        // {
-        //   printf("HERE2");
-        //     number_of_processes = sz;
-        //     number_chunks_per_process = total_number_elements/sz;
-        // }
-        // else
-        // {
-        //   printf("HERE3");
-        //     number_of_processes = sz;
-        //     while(total_number_elements%number_of_processes != 0)
-        //     {
-        //         number_of_processes = number_of_processes - 1;
-        //         number_chunks_per_process = total_number_elements/sz;
-        //     }
-        // }
+        else if(total_number_elements%sz == 0)
+        {
+          printf("HERE2");
+            number_of_processes = sz;
+            number_chunks_per_process = total_number_elements/sz;
+        }
+        else
+        {
+          printf("HERE3");
+            number_of_processes = sz;
+            while(total_number_elements%number_of_processes != 0)
+            {
+                number_of_processes = number_of_processes - 1;
+                number_chunks_per_process = total_number_elements/sz;
+            }
+        }
 
         // 
     }
