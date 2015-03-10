@@ -182,7 +182,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     one_result_t **results_array;
     one_result_t **results_array_sub;
 
-    printf("WWW\n\n");
+    
 
     if(myid == MASTER)
     {
@@ -191,7 +191,9 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
         int total_number_elements = 0;
         while (work_chunks[total_number_elements++] != NULL); //Count number of processes necessary
 
-        if(total_number_elements-1 <= sz)
+        printf("total elements: %d\n\n", total_number_elements);
+
+        if(total_number_elements <= sz)
         {
             printf("HERE");
             number_of_processes = total_number_elements;
