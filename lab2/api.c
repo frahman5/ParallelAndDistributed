@@ -188,7 +188,7 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
     {
         work_chunks = f->create_work_pool(argc, argv);
 
-        int total_number_elements = -2;
+        int total_number_elements = -1;
         printf("total elements, sz %d\n");
         while (work_chunks[total_number_elements++] != NULL); //Count number of processes necessary
 
@@ -222,13 +222,13 @@ void MW_Run_2 (int argc, char **argv, struct mw_fxns *f){
 
     results_array = (one_result_t**)malloc((f->result_sz)*total_number_elements);
 
-    // //Broadcast number of process and chunks per process to everyone
-    // MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    // MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
-    // MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    //Broadcast number of process and chunks per process to everyone
+    MPI_Bcast(&number_of_processes, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    MPI_Bcast(&number_chunks_per_process, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+    MPI_Bcast(&total_number_elements, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
 
-    // //Every process waits until they get to this point
-    // MPI_Barrier(MPI_COMM_WORLD);
+    //Every process waits until they get to this point
+    MPI_Barrier(MPI_COMM_WORLD);
 
     // if(myid != 0)
     // {
