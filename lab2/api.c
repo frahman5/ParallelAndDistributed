@@ -15,20 +15,7 @@
 #define DONE_TAG    2           // This is the master telling the worker it can stop
 #define RESULT_TAG  3           // Indicates that this message contains a finished piece of work
 
-/* **** TODO **** 
-  - Change round robbin technique (optional)
-  - Check the create_work function to see if it suceeded or not 
-  */
 
-/****
-
-    This function does the following:
-        - Receives api object 
-        - Uses the create_work_pool function to get the array of workers
-        - Goes through the array and executes the necessary work for each
-        - Prints the results
-    
-****/
 
 /*==============================================================*/
 /* MW_Run with Dynamic Process selection                        */
