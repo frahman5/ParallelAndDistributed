@@ -11,11 +11,11 @@
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
 
-#define MASTER      0           // Master process ID
-#define WORK_TAG    1           // This tag indicates a message contains a work load
-#define DONE_TAG    2           // This is the master telling the worker it can stop
-#define RESULT_TAG  3           // Indicates that this message contains a finished piece of work
-#define PROB_FAIL   0         // (Contrived...) Probability that a worker will fail
+#define MASTER          0           // Master process ID
+#define DONE_TAG        -1          // This is the master telling the worker it can stop
+#define PROB_FAIL       1           // (Contrived...) Probability that a worker will fail
+#define CHECK_INTERVAL  0.5         // Amount of time between successive checks by the master
+                                    // to see if workers are alive
 
 /* **** TODO **** 
   - Change round robbin technique (optional)
@@ -251,20 +251,91 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
     {
         printf("Running MW Round-Robbin style\n");
 
-        // Obtain work chunks
+        // Obtain and count work chunks
+        int num_work_chunks = 0;
         one_work_t **work_chunks = f->create_work_pool(argc, argv);
+        while (work_chunks[num_work_chunks] != NULL) {
+            num_work_chunks++;
+        }
+
+        // Create a data structure to keep track of whether or not workers are alive
+        // and what work we might need to redo if one dies 
+        int *work_chunk_completion = (int *)malloc(sizeof(int) * num_work_chunks);
+        int *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
+        if (!worker_status || !work_chunk_completion) {
+            printf("One of the master data structures for handling failures failed to allocate on the heap\n");
+            MPI_Finalize();
+            exit(0);
+        }
+        int j;
+        for(j = 0; j < num_work_chunks; j++) {
+            work_chunk_completion[j] = 0;           // all work chunks are incomplete at start
+        }
+        for(j = 0; j < sz - 1; j++) {
+            worker_status[j] = 1;                   // all workers are alive at start
+        }
+
 
         // Go through each work chunk
         int i = 0;
         int process_num = 1;
+        int we_have_live_workers = 0;
+        int result_index = 0;
+        MPI_Request receive_status;
+        unsigned int last_check_time = MPI_Wtime();
+        unsigned int cur_time = MPI_Wtime();
         while (work_chunks[i] != NULL)
         {
+            // if we can, receive a message
+            if (receive_status says we have received a message) {
+
+                // store the result
+                result_array[result_index++] = result;
+
+                // update the work_chunk_completion array
+                work_chunk_completion[receive_status]
+
+                // get a new result
+                one_result_t *result = (one_result_t*)malloc(f->result_sz);
+                if (!result) {
+                    printf("Failed to allocate a result while collecting worker results\n");
+                    exit(1);
+                }
+                MPI_IRecv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &receive_status);
+            }
+                
+            // check the last Ireceive, mark which worker sent it to you
+            // update the work_chunk_status array
+            // if (cur_time - last_check_time) >= CHECK_INterval
+                // if you haven't received a piece of work from a worker
+                // in the last CHECK_INTERVAL seconds, mark him dead
+            cur_time = MPI_Wtime();
+            if ((cur_time - last_check_time) >= CHECK_INTERVAL) {
+                check_worker_statuses(&worker_status);
+            }
+
+            // check if we have live workers
+            for(j = 0; j < sz - 1; j++) {
+                we_have_live_workers += worker_status[j];
+            }
+            if (we_have_live_workers == 0) {
+                printf("All the workers are dead! :(. This master is quitting ... \n");
+                MPI_Finalize();
+                exit(0);
+            }
+
             // For send a work chunk to a process using round robin
             one_work_t *work_chunk = work_chunks[i];
             debug_print("MASTER: Sending chunk to process %d out of %d\n", process_num, sz);
-            // MPI_Request send_request;
-            // MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD, &send_request);
-            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, WORK_TAG, MPI_COMM_WORLD);
+
+            while (worker_status[process_num] == 0) {
+                if (++process_num == sz) {
+                    process_num = 1;
+                }
+            }
+
+            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, i, MPI_COMM_WORLD);
+            debug_print("Errcode upon sending workchunk from master: %d\n", errcode);
             ++process_num;
             num_msgs++;
 
@@ -320,6 +391,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             num_msgs++;
         }
 
+        // free up data structures
+        free(work_chunk_completion);
+        free(worker_status);
+
         printf("Reporting from master. Num Msgs sent by all processors: %lu\n", num_msgs);
     }
 
@@ -342,14 +417,15 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
             //If work_tag then work and send result
-            if (status.MPI_TAG == WORK_TAG)
+            if (status.MPI_TAG >= 0)
             {
-                 debug_print("PROCESS %d: The message was a work chunk!\n", myid);
-                 one_result_t *result = f->do_one_work(work_chunk);
-                 MPI_Request send_request;
-                 F_ISend(result, f->result_sz, MPI_CHAR, MASTER, RESULT_TAG, MPI_COMM_WORLD, &send_request);
-                 free(result);
-
+                debug_print("PROCESS %d: The message was a work chunk!\n", myid);
+                int work_chunk_index = status.MPI_TAG;
+                 
+                one_result_t *result = f->do_one_work(work_chunk);
+                MPI_Request send_request;
+                F_ISend(result, f->result_sz, MPI_CHAR, MASTER, work_chunk_index, MPI_COMM_WORLD, &send_request);
+                free(result);
             }
 
             //If end tag then simply finish loop and exit
