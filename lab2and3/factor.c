@@ -161,7 +161,7 @@ int report(int sz, one_result_t **result_array) {
         one_result_t *result = result_array[i];
 
         int j = 0; // iterates through a single one_result_t factors arrray
-        printf("Printing the factors from the result at index %d\n", i);
+        printf("Printing results at index %d\n", i);
         while (j > -1) {
             if (result->factors[j] == 0) {
                 j = -2; // exit the loop

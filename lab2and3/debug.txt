@@ -1,102 +1,13 @@
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
-
- *** PRINTING MPI STATUS ***
-Printing MPI_Iprobe status
-MPI_SOURCE: 0
-MPI_TAG: 0
-MPI_ERROR: 0
+Running MW Round-Robbin style
+Work Chunk Completion Array
+[ 0 0 0 0 ]
+Master Probing
+Work Chunk Completion Array
+[ 0 0 0 0 ]
+Master Probing
+Work Chunk Completion Array
+[ 0 0 0 0 ]
+Master Probing
+Work Chunk Completion Array
+[ 0 0 0 0 ]
+Master Probing

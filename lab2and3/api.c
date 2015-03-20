@@ -388,112 +388,85 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         unsigned int last_check_time = MPI_Wtime();
         unsigned int cur_time = MPI_Wtime();
         int received = -10;
-        MPI_Request receive_status;                                 // contains metadata on Irecv messages
-        MPI_Status status;                                          // contains metadata about results messages
-        one_result_t *result;                                       // holds a result from workers
-        one_result_t **result_array;                                // points to all results from workers
+        MPI_Status probe_status;                               // contains metadata about probed messages
+        MPI_Status recv_status;                                // contains metadata about received messages   
+        one_result_t *result;                                  // holds a result from workers
+        one_result_t **result_array;                           // points to all results from workers
         result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
         assert(checkPointer(result_array, "Failed to allocate result array while collecting results"));
       
 
-        // while (work_chunks[i] != NULL)
-        // while (work_chunk_iterator < num_work_chunks)
         while (result_index < num_work_chunks) 
         {
-            cleanMPIStatus(&status);
-
-            // Let's run the next master loop
+            
             waitForUser();
+            // Let us know which work chunks have we received so far
             printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array");
             
+            if (received == 1) {
+                result_index++;
+                debug_print("We received something\n");
+        //         result_index++;
+        //         // debug_print("There is something in the masters mail box\n");
+
+        //         // // Go get the message waiting for us in our mailbox
+        //         // result = (one_result_t *)malloc(f->result_sz);
+        //         // assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
+        //         // debug_print("About to receive a message on the master\n");
+        //         // MPI_Recv(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, 
+        //         //     probe_status.MPI_TAG, MPI_COMM_WORLD, &recv_status);
+        //         // assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
+        //         // assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
+
+        //         // // Update the result_array, result_index, and work_chumk_completion array
+        //         // updateResults(recv_status.MPI_TAG - 1, result_array, &result_index, 
+        //         //         result, work_chunk_completion);
+        //         received = 0;           // Reset the received tag
+
+            }
+
             // Have we received anything?
-            debug_print("Before we probe, received is %d\n", received);
-            MPI_Iprobe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &received, &status);
-            // MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &status);
-            printMPIStatus(status, "Printing MPI_Iprobe status");
-            debug_print("After we probe, received is: %d\n", received);
+            debug_print("Master Probing\n");
+            MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
             
+        //     // If we have, store it
 
-            // If we have, store it, and then receive another reuslt
-            debug_print("We're right before the receiving if loop\n");
-            debug_print("Result_index, num_work_chunks, work_chunk_iterator: %d, %d, %d\n", result_index, num_work_chunks, work_chunk_iterator);
-            if (received == 1 || work_chunk_iterator == 0) {
-
-                debug_print("Master entered the result collection loop, with work_chunk_iterator: %d\n", work_chunk_iterator);
-                if (work_chunk_iterator != 0) {
-
-                    // Get the message, update data structures
-                    updateResults(status.MPI_TAG - 1, result_array, &result_index, 
-                        result, work_chunk_completion);   
-                    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array");                               
-                    received = 0;       // Reset the received tag
-                }
-                
-                // If we're trying to receive the last message, do a blocking recv
-                if (result_index == num_work_chunks - 1) {
-                    debug_print("Sending out the final recv as a blocking recv \n");
-                    MPI_Status status_block_recv;
-                    printMPIStatus(status_block_recv, "Printing last receive status before we recv");
-                    cleanMPIStatus(&status_block_recv);
-                    printMPIStatus(status_block_recv, "Printing last receive status after cleaning");
-
-                    result = (one_result_t *)malloc(f->result_sz);
-                    assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
-                   
-                    MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status_block_recv);
-                    printMPIStatus(status_block_recv, "Printing last receive status after we recv");
-                    debug_print("Received work_chunk %d\n", status_block_recv.MPI_TAG - 1);
-
-                    updateResults(status_block_recv.MPI_TAG - 1, result_array, &result_index, 
-                        result, work_chunk_completion); 
-                    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array");
 
                 
-                // Otherwise, do a non-blocking receive
-                } else {
-                    result = (one_result_t *)malloc(f->result_sz);
-                    assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
-                    MPI_Irecv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &receive_status);
-                }
+        //     // check the last Ireceive, mark which worker sent it to you
+        //     // update the work_chunk_status array
+        //     // if (cur_time - last_check_time) >= CHECK_INterval
+        //         // if you haven't received a piece of work from a worker
+        //         // in the last CHECK_INTERVAL seconds, mark him dead
+        //     // cur_time = MPI_Wtime();
+        //     // if ((cur_time - last_check_time) >= CHECK_INTERVAL) {
+        //     //     check_worker_statuses(&worker_status);
+        //     // }
 
+        //     // check if we have live workers. If not, exit the program
+        //     assert (checkForLiveWorkers(worker_status, sz));
 
-            }
-                
-            // check the last Ireceive, mark which worker sent it to you
-            // update the work_chunk_status array
-            // if (cur_time - last_check_time) >= CHECK_INterval
-                // if you haven't received a piece of work from a worker
-                // in the last CHECK_INTERVAL seconds, mark him dead
-            // cur_time = MPI_Wtime();
-            // if ((cur_time - last_check_time) >= CHECK_INTERVAL) {
-            //     check_worker_statuses(&worker_status);
-            // }
+        //     // If we DO have live workers, send them some work!
+        //     if (work_chunks[work_chunk_iterator] != NULL) {
 
-            // check if we have live workers. If not, exit the program
-            assert (checkForLiveWorkers(worker_status, sz));
+        //         // Send a work chunk to a process using round robin
+        //         one_work_t *work_chunk = work_chunks[work_chunk_iterator];
+        //         debug_print("MASTER: Sending chunk %d to process %d out of %d\n", work_chunk_iterator, process_num, sz);
 
-            // If we DO have live workers, send them some work!
-            if (work_chunks[work_chunk_iterator] != NULL) {
+        //         // find the the next live worker
+        //         while (worker_status[process_num] == 0) {
+        //             process_num++;
+        //             assert(resetProcessNum(&process_num, sz));
+        //         }
 
-                // Send a work chunk to a process using round robin
-                one_work_t *work_chunk = work_chunks[work_chunk_iterator];
-                debug_print("MASTER: Sending chunk %d to process %d out of %d\n", work_chunk_iterator, process_num, sz);
+        //         int tag = work_chunk_iterator + 1;          // tag is always 1 off the iterator
+        //         MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD);
+        //         debug_print("We just sent the work chunk at index %d\n", work_chunk_iterator);
+        //         process_num++; num_msgs++; work_chunk_iterator++;
 
-                // find the the next live worker
-                while (worker_status[process_num] == 0) {
-                    process_num++;
-                    assert(resetProcessNum(&process_num, sz));
-                }
-
-                int tag = work_chunk_iterator + 1;          // tag is always 1 off the iterator
-                MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD);
-                debug_print("We just sent the work chunk at index %d\n", work_chunk_iterator);
-                debug_print("We have total %d work chunks\n", num_work_chunks);
-                process_num++; num_msgs++; work_chunk_iterator++;
-
-                // Reset the process id if necessary, ensuring round robbin-ness.
-                assert(resetProcessNum(&process_num, sz));
-            }
+        //         // Reset the process id if necessary, ensuring round robbin-ness.
+        //         assert(resetProcessNum(&process_num, sz));
+        //     }
 
         }
 
@@ -519,12 +492,12 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         // }
         
         // Present results (while checking for errors)
-        printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array before reporting results");
-        debug_print("MASTER: Finished collecting results. Presenting results.\n");
-        if (f->report_results(num_work_chunks, result_array) == 0)
-        {
-            printf("There was an error in the report_results function.\n");
-        }
+        // printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array before reporting results");
+        // debug_print("MASTER: Finished collecting results. Presenting results.\n");
+        // if (f->report_results(num_work_chunks, result_array) == 0)
+        // {
+        //     printf("There was an error in the report_results function.\n");
+        // }
 
 
         // Tell workers to finish running
@@ -563,7 +536,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             //If work_tag then work and send result
             if (status.MPI_TAG > 0)
             {
-                debug_print("PROCESS %d: The message was a work chunk with tag %d!\n", myid, status.MPI_TAG);
+                // debug_print("PROCESS %d: The message was a work chunk with tag %d!\n", myid, status.MPI_TAG);
                 int masters_work_tag = status.MPI_TAG;
                  
                 one_result_t *result = f->do_one_work(work_chunk);
@@ -576,7 +549,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             else
             {
                 assert(status.MPI_TAG == DONE_TAG);
-                debug_print("PROCESS %d: The message was to end!\n", myid);
+                // debug_print("PROCESS %d: The message was to end!\n", myid);
                 j = 1;
             }
         } 
