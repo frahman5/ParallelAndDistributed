@@ -83,6 +83,16 @@ int checkPointer(void *pointer, char *error_message) {
     return 1;
 }
 
+int initializeIntArray(int* array, int size, int value){
+    int j = 0;
+    for(j = 0; j < size; ++j)
+    {
+        array[j] = value;
+    }
+    return 1;
+}
+
+
 /*==============================================================*/
 /* MW_Run with Dynamic Process selection                        */
 /*==============================================================*/
@@ -248,6 +258,9 @@ int checkPointer(void *pointer, char *error_message) {
 
 // }
 
+
+
+
 /*==============================================================*/
 /* MW_Run Round Robbin style                                    */
 /*==============================================================*/
@@ -279,24 +292,12 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         int *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
         assert (checkPointer(worker_status, "worker_status failed to allocate on heap"));
         assert (checkPointer(work_chunk_completion, "work_chunk_completion failed to allocate on heap"));
-        // if (!worker_status || !work_chunk_completion) {
-        //     printf("One of the master data structures for handling failures failed to allocate on the heap\n");
-        //     MPI_Finalize();
-        //     exit(0);
-        // }
-        int j;
-        for(j = 0; j < num_work_chunks; j++) {
-            work_chunk_completion[j] = 0;           // all work chunks are incomplete at start
-        }
-        for(j = 0; j < sz - 1; j++) {
-            worker_status[j] = 1;                   // all workers are alive at start
-        }
-
+        initializeIntArray(work_chunk_completion, num_work_chunks, 0);   // all work chunks are incomplete at start
+        initializeIntArray(worker_status, sz - 1, 1);   // all workers are alive at start
 
         // Go through each work chunk
         // int i = 0;
         int work_chunk_iterator = 0;
-        int num_results_received = 0;
         int process_num = 1;
         int we_have_live_workers = 0;
         int result_index = 0;
@@ -308,20 +309,13 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         one_result_t *result;                                       // holds a result from workers
         one_result_t **result_array;                                // points to all results from workers
         result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
-        if (!result_array) {
-            printf("Failed to allocate result array while collecting results\n");
-            exit(1);
-        }
+        assert(checkPointer(result_array, "Failed to allocate result array while collecting results"));
+      
 
         // while (work_chunks[i] != NULL)
         // while (work_chunk_iterator < num_work_chunks)
         while (num_results_received < num_work_chunks) 
         {
-            // Give the user control over iteration
-            char str1[20];
-            printf("Press enter\n");
-            scanf("%s", &str1);
-
             // Have we received anything?
             debug_print("Before we probe, received is %d\n", received);
             MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &status);
@@ -338,9 +332,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                     // Go read the message that currently is in our mailbox
                     int index_of_work_chunk_received = status.MPI_TAG - 1;
                     result_array[result_index++] = result;                      // store the result
-                    work_chunk_completion[index_of_work_chunk_received] = 1 ;   // update the work_chunk_completion array
-                    num_results_received++;                                     // update our count of received messages
-                    debug_print("After storing result. Result_index, num_results_received: %d, %d\n", result_index, num_results_received);
+                    work_chunk_completion[index_of_work_chunk_received] = 1 ;   // update the work_chunk_completion array                                    // update our count of received messages
                     // debug_print("We just received result %d of %d\n", num_results_received, num_work_chunks);
 
                     // Reset the received tag
@@ -348,29 +340,23 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 }
                 
                 // Wait for another message to arrive in our mailbox
-                if (num_results_received == num_work_chunks - 1) {
+                if (result_index == num_work_chunks - 1) {
                     debug_print("Sending out the final recv as a blocking recv \n");
                     MPI_Status status1;
                     result = (one_result_t *)malloc(f->result_sz);
-                    if (!result) {
-                        printf("Failed to allocate a result while collecting worker results\n");
-                        exit(1);
-                    }
+                    assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
+                   
                     MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status1);
                     debug_print("Before storing result. Result_index, num_results_received: %d, %d\n", result_index, num_results_received);
                     int index_of_work_chunk_received = status1.MPI_TAG - 1;
                     result_array[result_index++] = result;
                     work_chunk_completion[index_of_work_chunk_received] = 1;
-                    num_results_received++;
-                    debug_print("After storing result. Result_index, num_results_received: %d, %d\n", result_index, num_results_received);
+                   
                 } else {
 
                     debug_print("Sending out an Irecv from master. We've already received %d results\n", num_results_received);
                     result = (one_result_t *)malloc(f->result_sz);
-                    if (!result) {
-                        printf("Failed to allocate a result while collecting worker results\n");
-                        exit(1);
-                    }
+                    assert(result, "Failed to allocate a result while collecting worker results");
                     MPI_Irecv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &receive_status);
                 }
 
