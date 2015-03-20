@@ -32,13 +32,12 @@ struct one_result {
 
 /* REMOVE THIS WHEN DONE DBEUGGING !!!!!!!!!!!!!!!!!!!!!!!! */
 /* Assumes that the result has already been allocated */
-one_result_t *initializeResult() {
-    one_result_t *result = (one_result_t *)malloc(sizeof(one_result_t));
-    printf("\n\n\n\n\n\n******Entered initialize result****\n\n\n\n\n");
+one_result_t *initializeResult(one_result_t *result) {
     int i;
     for(i = 0; i < WORK_ARRAY_SIZE; i++) {
-        result->factors[i] = i;
+        result->factors[i] = i + 10;
     }
+
     return result;
 }
 

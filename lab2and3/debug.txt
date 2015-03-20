@@ -1,0 +1,60 @@
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 0
+MPI_TAG: 0
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 0
+MPI_TAG: 0
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 0
+MPI_TAG: 0
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 2
+MPI_TAG: 2
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 3
+MPI_TAG: 3
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 0
+MPI_TAG: 0
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing MPI_Iprobe status
+MPI_SOURCE: 1
+MPI_TAG: 4
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing last receive status before we recv
+MPI_SOURCE: 228106616
+MPI_TAG: 1
+MPI_ERROR: 64
+
+ *** PRINTING MPI STATUS ***
+Printing last receive status after cleaning
+MPI_SOURCE: 0
+MPI_TAG: 0
+MPI_ERROR: 0
+
+ *** PRINTING MPI STATUS ***
+Printing last receive status after we recv
+MPI_SOURCE: 1
+MPI_TAG: 4
+MPI_ERROR: 0
