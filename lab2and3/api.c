@@ -71,6 +71,18 @@ int F_ISend(void *buf, int count, MPI_Datatype datatype, int dest,
     }
 }
 
+// This function checks for failed allocations on the heap
+// Suggested usage: assert(checkPointer(p, m)))
+int checkPointer(void *pointer, char *error_message) {
+    if (pointer == NULL) {
+        printf("%s\n", error_message);
+        MPI_Finalize();
+        exit(0);
+    }
+
+    return 1;
+}
+
 /*==============================================================*/
 /* MW_Run with Dynamic Process selection                        */
 /*==============================================================*/
@@ -265,11 +277,13 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         // and what work we might need to redo if one dies 
         int *work_chunk_completion = (int *)malloc(sizeof(int) * num_work_chunks);
         int *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
-        if (!worker_status || !work_chunk_completion) {
-            printf("One of the master data structures for handling failures failed to allocate on the heap\n");
-            MPI_Finalize();
-            exit(0);
-        }
+        assert (checkPointer(worker_status, "worker_status failed to allocate on heap"));
+        assert (checkPointer(work_chunk_completion, "work_chunk_completion failed to allocate on heap"));
+        // if (!worker_status || !work_chunk_completion) {
+        //     printf("One of the master data structures for handling failures failed to allocate on the heap\n");
+        //     MPI_Finalize();
+        //     exit(0);
+        // }
         int j;
         for(j = 0; j < num_work_chunks; j++) {
             work_chunk_completion[j] = 0;           // all work chunks are incomplete at start

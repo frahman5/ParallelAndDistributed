@@ -5,6 +5,7 @@ But if you ONLY Recv it, it seems to work. It could be something else. We need t
 
 0. Clean up declarations right before main master loop
 0.1: Modularize before MW_Run_2
+    -> Make a function for checking heap allocation
 0.2: Update the "tell workers to stop running" part to account for dead workers
 0.3: Think about what other data structures we now need to free
 
