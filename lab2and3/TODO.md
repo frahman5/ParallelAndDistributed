@@ -11,3 +11,5 @@ But if you ONLY Recv it, it seems to work. It could be something else. We need t
 
 1. Find a way to see if a worker is dead
 2. Resend unfinished worker work if a worker is dead
+
+Get rid of bogus debugging function
