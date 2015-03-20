@@ -94,7 +94,7 @@ int initializeIntArray(int* array, int size, int value){
 int updateResults(int work_chunk_index, one_result_t** result_array, 
     int *result_index, one_result_t* result, int* work_chunk_completion)
 {
-    result_array[(*result_index)++] = result;
+    result_array[ (*result_index)++ ] = result;
     work_chunk_completion[work_chunk_index] = 1;
 
     return 1;
@@ -408,19 +408,21 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             
             // Have we received anything?
             debug_print("Before we probe, received is %d\n", received);
-            MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &status);
+            MPI_Iprobe(MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &received, &status);
+            // MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &status);
             printMPIStatus(status, "Printing MPI_Iprobe status");
             debug_print("After we probe, received is: %d\n", received);
             
 
             // If we have, store it, and then receive another reuslt
+            debug_print("We're right before the receiving if loop\n");
+            debug_print("Result_index, num_work_chunks, work_chunk_iterator: %d, %d, %d\n", result_index, num_work_chunks, work_chunk_iterator);
             if (received == 1 || work_chunk_iterator == 0) {
 
                 debug_print("Master entered the result collection loop, with work_chunk_iterator: %d\n", work_chunk_iterator);
                 if (work_chunk_iterator != 0) {
 
                     // Get the message, update data structures
-
                     updateResults(status.MPI_TAG - 1, result_array, &result_index, 
                         result, work_chunk_completion);   
                     printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array");                               
@@ -449,10 +451,9 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 
                 // Otherwise, do a non-blocking receive
                 } else {
-
                     result = (one_result_t *)malloc(f->result_sz);
                     assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
-                    MPI_Irecv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &receive_status);
+                    MPI_Irecv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &receive_status);
                 }
 
 
@@ -555,6 +556,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             //Receive a work chunk
             one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
             assert(checkPointer(work_chunk, "Failed to allocate a work_chunk on a worker"));
+
             MPI_Status status;
             MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
