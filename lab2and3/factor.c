@@ -30,17 +30,6 @@ struct one_result {
     unsigned long factors[WORK_ARRAY_SIZE];
 };
 
-/* REMOVE THIS WHEN DONE DBEUGGING !!!!!!!!!!!!!!!!!!!!!!!! */
-/* Assumes that the result has already been allocated */
-one_result_t *initializeResult(one_result_t *result) {
-    int i;
-    for(i = 0; i < WORK_ARRAY_SIZE; i++) {
-        result->factors[i] = i + 10;
-    }
-
-    return result;
-}
-
 // divide the factoring work into parallel pieces
 one_work_t **make_work(int argc, char **argv) {
 
@@ -161,7 +150,6 @@ int report(int sz, one_result_t **result_array) {
         one_result_t *result = result_array[i];
 
         int j = 0; // iterates through a single one_result_t factors arrray
-        printf("Printing results at index %d\n", i);
         while (j > -1) {
             if (result->factors[j] == 0) {
                 j = -2; // exit the loop
@@ -191,11 +179,6 @@ int main (int argc, char **argv) {
     mw.report_results = report;
     mw.work_sz = sizeof(one_work_t);
     mw.result_sz = sizeof(one_result_t);
-
-    /* REMOVE THIS WHEN YOURE DONE DEBUGGING!!!!!!!!!!!!!!!!
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-    mw.initializeResult = initializeResult;
 
     // Initialize MPI
     MPI_Init (&argc, &argv);

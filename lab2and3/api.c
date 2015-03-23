@@ -479,7 +479,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         }
 
         //Present results (while checking for errors)
-        printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array before reporting results");
+        // printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array before reporting results");
         debug_print("MASTER: Finished collecting results. Presenting results.\n");
         if (f->report_results(num_work_chunks, result_array) == 0)
         {

@@ -23,9 +23,6 @@ struct mw_fxns {
     Returns 0 on failure, 1 on success */
     int (*report_results)(int sz, one_result_t **result_array);
 
-    // bogus debugging function
-    one_result_t *(*initializeResult) (one_result_t *result);
-
     /* Specify the size in bytes of one_work and one_result */
     int work_sz, result_sz;
 
