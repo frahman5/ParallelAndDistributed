@@ -14,7 +14,7 @@
 
 #define MASTER          0           // Master process ID
 #define DONE_TAG        0           // This is the master telling the worker it can stop
-#define PROB_FAIL       0           // (Contrived...) Probability that a worker will fail
+#define PROB_FAIL       0.25        // (Contrived...) Probability that a worker will fail
 #define DEATH_INTERVAL  5           // If a worker hasn't sent anything in these seconds he is dead
 #define DEBUG_FILE      "debug.txt"                                     
 
@@ -50,6 +50,11 @@ void logToFileWithInt(char* formatString, int var)
 
 }
 
+void logToFileWithFloat(char *formatString, float var) {
+    FILE* fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, formatString, var);
+    fclose(fp);
+}
 void findNextLiveWorker(int *worker_status, int *process_num, int sz) {
     while (worker_status[*process_num] == 0) {
         (*process_num)++;
@@ -60,11 +65,10 @@ void findNextLiveWorker(int *worker_status, int *process_num, int sz) {
 /* Returns 1 if the worker should fail, 0 otherwise */
 int random_fail() {
 
-    // Seed the pseudo-random number generator
-    srand((unsigned int)time(NULL));
-
     // Generate a random float between 0 and 1.0
+    // logToFileWithInt("Rand Max: %d\n", RAND_MAX);
     float rand_float = (float)rand()/(float)(RAND_MAX);
+    logToFileWithFloat("Rand_float: %f\n", rand_float);
 
     // Compare to PROB_FAIL and return
     if (rand_float <= PROB_FAIL) {
@@ -82,8 +86,7 @@ int random_fail() {
 
 int F_Send(void *buf, int count, MPI_Datatype datatype, int dest, 
     int tag, MPI_Comm comm, MPI_Request *request) {
-    // if (random_fail() || (tag == 1)) {
-    if(tag == -1){
+    if (random_fail()) {
         logToFile("Uh oh ... A worker failed\n");
         MPI_Finalize();
         exit(0);
@@ -134,7 +137,7 @@ int updateResults(int work_chunk_index, one_result_t** result_array,
     //Store result and increment the index
     if(work_chunk_completion[work_chunk_index] == 1)
     {
-        logToFileWithInt("repeated result work chunk index: %d\n", work_chunk_index);
+        // logToFileWithInt("repeated result work chunk index: %d\n", work_chunk_index);
         return 1;
     }
     
@@ -142,7 +145,7 @@ int updateResults(int work_chunk_index, one_result_t** result_array,
     
     //Mark the corresponding work chunk as completed
     work_chunk_completion[work_chunk_index] = 1;
-    logToFileWithInt("Received result for work chunk: %d\n", work_chunk_index);
+    // logToFileWithInt("Received result for work chunk: %d\n", work_chunk_index);
 
     return 1;
 }
@@ -431,6 +434,9 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
     MPI_Comm_rank (MPI_COMM_WORLD, &myid); 
 
+    // Seed the pseudo-random number generator
+    srand(myid * (unsigned int)time(NULL));
+
     //Master process
     if(myid == MASTER)
     {
@@ -530,15 +536,12 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             // If we DO have live workers, send them some work!
             int lowest_undone_work_index = workLeftToDo(work_chunk_completion, num_work_chunks);
 
-            // if (work_chunks[work_chunk_iterator] != NULL) {
             if (work_chunks[work_chunk_iterator] != NULL || lowest_undone_work_index != -1) {
 
                 // Send a work chunk to a process using round robin
                 one_work_t *work_chunk;
                 int tag;
 
-                // work_chunk = work_chunks[work_chunk_iterator++];
-                // tag = work_chunk_iterator + 1;
                 if(work_chunks[work_chunk_iterator] != NULL)
                 {
                     tag = work_chunk_iterator + 1;
@@ -548,7 +551,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 {
                     work_chunk = work_chunks[lowest_undone_work_index];
                     tag = lowest_undone_work_index + 1;
-                    logToFile("All other work chunks have been sent. Now looking at the ones where a worker failed.\n"); 
+                    // logToFile("All other work chunks have been sent. Now looking at the ones where a worker failed.\n"); 
                 }
 
                 
@@ -560,7 +563,8 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 // Make an ISend because if process is still working when sending for some reason it fails with Send
                 MPI_Request master_send_request;
                 MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
-                logToFileWithInt("Sent Work Chunk %d\n", tag - 1);
+                // logToFileWithInt("Sent Work Chunk %d\n", tag - 1);
+                // logToFileWithInt("Sent to process %d\n", process_num);
 
                 debug_print("We just sent the work chunk at index %d\n", tag - 1);
                 process_num++; num_msgs++;
@@ -647,6 +651,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
 /* Master MW_Run function.                                      */
 /*==============================================================*/
 void MW_Run (int argc, char **argv, struct mw_fxns *f, int style) {
+
     assert(style == 1 || style == 2);
     logToFile("\n*** new run\n");
     if (style == 1) {
