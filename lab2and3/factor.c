@@ -11,7 +11,7 @@
 
 
 // defines how many factors can be calculated in a piece of work/returned in a result
-#define WORK_ARRAY_SIZE     1000
+#define WORK_ARRAY_SIZE     100
 
 // parameters for calculating the size of an mpz_t
 #define WORD_SIZE           1       // the number of bytes in a GMP word

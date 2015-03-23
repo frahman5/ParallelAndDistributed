@@ -1,13 +1,27 @@
-Running MW Round-Robbin style
-Work Chunk Completion Array
-[ 0 0 0 0 ]
-Master Probing
-Work Chunk Completion Array
-[ 0 0 0 0 ]
-Master Probing
-Work Chunk Completion Array
-[ 0 0 0 0 ]
-Master Probing
-Work Chunk Completion Array
-[ 0 0 0 0 ]
-Master Probing
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+All other work chunks have been sent. Now looking at the ones where a worker failed.
+repeated result work chunk index: 44
+All other work chunks have been sent. Now looking at the ones where a worker failed.

@@ -15,8 +15,8 @@
 #define MASTER          0           // Master process ID
 #define DONE_TAG        0           // This is the master telling the worker it can stop
 #define PROB_FAIL       0           // (Contrived...) Probability that a worker will fail
-#define CHECK_INTERVAL  0.5         // Amount of time between successive checks by the master
-                                    // to see if workers are alive
+#define DEATH_INTERVAL  1         // If a worker hasn't sent anything in these seconds he is dead
+#define DEBUG_FILE      "debug.txt"                                     
 
 /* **** TODO **** 
   - Change round robbin technique (optional)
@@ -33,6 +33,22 @@
     
 ****/
 
+
+void logToFile(char* message)
+{
+    FILE* fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, message);
+    fclose(fp);
+
+}
+
+void logToFileWithInt(char* formatString, int var)
+{
+    FILE* fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, formatString, var);
+    fclose(fp);
+
+}
 
 /* Returns 1 if the worker should fail, 0 otherwise */
 int random_fail() {
@@ -59,8 +75,9 @@ int random_fail() {
 
 int F_Send(void *buf, int count, MPI_Datatype datatype, int dest, 
     int tag, MPI_Comm comm, MPI_Request *request) {
-    if (random_fail()) {
-        printf("Uh oh ... A worker failed\n");
+    // if (random_fail() || (tag == 1)) {
+    if(tag == -1){
+        logToFile("Uh oh ... A worker failed\n");
         MPI_Finalize();
         exit(0);
         return 0;
@@ -91,10 +108,32 @@ int initializeIntArray(int* array, int size, int value){
     return 1;
 }
 
+int initializeDoubleArray(double* array, int size, double value){
+    int j = 0;
+    for(j = 0; j < size; ++j)
+    {
+        array[j] = value;
+    }
+    return 1;
+}
+
 int updateResults(int work_chunk_index, one_result_t** result_array, 
-    int *result_index, one_result_t* result, int* work_chunk_completion)
+    int *result_index, one_result_t* result, int* work_chunk_completion, double* worker_last_time, int worker_index)
 {
+
+    //Mark the time at which the corresponding worker sent us a result
+    worker_last_time[worker_index] = MPI_Wtime();
+
+    //Store result and increment the index
+    if(work_chunk_completion[work_chunk_index] == 1)
+    {
+        logToFileWithInt("repeated result work chunk index: %d\n", work_chunk_index);
+        return 1;
+    }
+        
     result_array[ (*result_index)++ ] = result;
+    
+    //Mark the corresponding work chunk as completed
     work_chunk_completion[work_chunk_index] = 1;
 
     return 1;
@@ -178,6 +217,29 @@ void cleanMPIStatus(MPI_Status *status) {
     status->MPI_SOURCE = 0;
     status->MPI_TAG = 0;
     status->MPI_ERROR = 0;
+}
+
+//Returns the len of a NULL terminted array of one_work_t
+int len(one_work_t **array)
+{
+    int num = 0;
+    while(array[num])
+    {
+        num++;
+    }
+    return num;
+}
+
+//Returns the lowest index of a work chunk in the array that hasnt been completed, else -1
+int workLeftToDo(int *work_chunk_completion, int num_work_chunks)
+{
+    int i;
+    for (i = 0; i < num_work_chunks; ++i)
+    {
+        if(work_chunk_completion[i] == 0)
+            return i;
+    }
+    return -1;
 }
 
 /*==============================================================*/
@@ -367,11 +429,9 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         printf("Running MW Round-Robbin style\n");
 
         // Obtain and count work chunks
-        int num_work_chunks = 0;
         one_work_t **work_chunks = f->create_work_pool(argc, argv);
-        while (work_chunks[num_work_chunks] != NULL) {
-            num_work_chunks++;
-        }
+        int num_work_chunks = len(work_chunks);
+
 
         debug_print("Number of processes: %d \n", sz);
         debug_print("Number of work chunks: %d \n", num_work_chunks);
@@ -388,16 +448,25 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         debug_print("work_chunk_completion array created and initialized... \n");
         debug_print("worker_status array created and initialized... \n");
 
-        // Go through each work chunk
-        // int i = 0;
+        /* Initialize variables that are used throughout */
+
+            // For keeping track of dead workers
+        double last_check_time = MPI_Wtime();
+        double cur_time = MPI_Wtime();
+        double *worker_last_time = (double*)malloc((sz-1)*sizeof(double)); //array[i] = last time ith + 1 process sent result
+        assert(checkPointer(worker_last_time, "worker_last_time failed to allocate on heap"));
+        initializeDoubleArray(worker_last_time, sz - 1, cur_time);
+
+
+            // For tracking sent work chunks and received completed work chunks
         int work_chunk_iterator = 0;
         int process_num = 1;
         int result_index = 0;
-        unsigned int last_check_time = MPI_Wtime();
-        unsigned int cur_time = MPI_Wtime();
         int received = -10;
         MPI_Status probe_status;                               // contains metadata about probed messages
-        MPI_Status recv_status;                                // contains metadata about received messages   
+        MPI_Status recv_status;                                // contains metadata about received messages
+
+            // For storing results   
         one_result_t *result;                                  // holds a result from workers
         one_result_t **result_array;                           // points to all results from workers
         result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
@@ -406,9 +475,13 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
 
         while (result_index < num_work_chunks) 
         {
-            
             // waitForUser();
-            
+
+            // Have we received anything?
+            debug_print("Master Probing...\n");
+            MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
+             
+            //Receive results if possible
             if (received == 1) {
                 
                 // Go get the message waiting for us in our mailbox
@@ -417,45 +490,58 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 MPI_Recv(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, 
                     probe_status.MPI_TAG, MPI_COMM_WORLD, &recv_status);
 
+                // Make sure we got what we expected
                 assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
                 assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
-
                 debug_print("We received something with tag %d from process %d\n", probe_status.MPI_TAG, probe_status.MPI_SOURCE);
 
                 // Update the result_array, result_index, and work_chumk_completion array
                 updateResults(recv_status.MPI_TAG - 1, result_array, &result_index, 
-                        result, work_chunk_completion);
+                        result, work_chunk_completion, worker_last_time, recv_status.MPI_SOURCE - 1);
 
-                received = 0;           // Reset the received tag
+                // Reset the received tag
+                received = 0;           
 
             }
 
-            // Let us know which work chunks have we received so far
-            // printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array");
-
-            // Have we received anything?
-            debug_print("Master Probing...\n");
-            MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
-              
-        //     // check the last Ireceive, mark which worker sent it to you
-        //     // update the work_chunk_status array
-        //     // if (cur_time - last_check_time) >= CHECK_INterval
-        //         // if you haven't received a piece of work from a worker
-        //         // in the last CHECK_INTERVAL seconds, mark him dead
-        //     // cur_time = MPI_Wtime();
-        //     // if ((cur_time - last_check_time) >= CHECK_INTERVAL) {
-        //     //     check_worker_statuses(&worker_status);
-        //     // }
+            //Check for dead workers
+            cur_time = MPI_Wtime();
+            int t = 0;
+            for (t = 0; t < (sz-1); ++t)
+            {
+                if((cur_time - worker_last_time[t]) > DEATH_INTERVAL)
+                {
+                    worker_status[t] = 0;
+                }
+            }
+            printIntArray(worker_status, sz-1, "Worker status: ");
 
             // check if we have live workers. If not, exit the program
             assert (checkForLiveWorkers(worker_status, sz));
 
             // If we DO have live workers, send them some work!
-            if (work_chunks[work_chunk_iterator] != NULL) {
+            int lowest_undone_work_index = workLeftToDo(work_chunk_completion, num_work_chunks);
+
+            if (work_chunks[work_chunk_iterator] != NULL || lowest_undone_work_index != -1) {
 
                 // Send a work chunk to a process using round robin
-                one_work_t *work_chunk = work_chunks[work_chunk_iterator];
-                debug_print("MASTER: Sending chunk %d to process %d out of %d\n", work_chunk_iterator, process_num, sz);
+                one_work_t *work_chunk;
+                int tag;
+
+                if(work_chunks[work_chunk_iterator] != NULL)
+                {
+                    work_chunk = work_chunks[work_chunk_iterator++];
+                    tag = work_chunk_iterator + 1;
+                }
+                else
+                {
+                    work_chunk = work_chunks[lowest_undone_work_index];
+                    tag = lowest_undone_work_index + 1;
+                    logToFile("All other work chunks have been sent. Now looking at the ones where a worker failed.\n"); 
+                }
+
+                
+                debug_print("MASTER: Sending chunk %d to process %d out of %d\n", tag -1, process_num, sz);
 
                 // find the the next live worker
                 while (worker_status[process_num] == 0) {
@@ -463,14 +549,12 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                     assert(resetProcessNum(&process_num, sz));
                 }
 
-                int tag = work_chunk_iterator + 1;          // tag is always 1 off the iterator
-
-                //Make an ISend because if process is still working when sending for some reason it fails with Send
+                // Make an ISend because if process is still working when sending for some reason it fails with Send
                 MPI_Request master_send_request;
                 MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
 
-                debug_print("We just sent the work chunk at index %d\n", work_chunk_iterator);
-                process_num++; num_msgs++; work_chunk_iterator++;
+                debug_print("We just sent the work chunk at index %d\n", tag - 1);
+                process_num++; num_msgs++;
 
                 // Reset the process id if necessary, ensuring round robbin-ness.
                 resetProcessNum(&process_num, sz);
@@ -478,8 +562,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
 
         }
 
-        //Present results (while checking for errors)
-        // printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array before reporting results");
+        // Present results (while checking for errors)
         debug_print("MASTER: Finished collecting results. Presenting results.\n");
         if (f->report_results(num_work_chunks, result_array) == 0)
         {
@@ -487,7 +570,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         }
 
 
-        // Tell workers to finish running
+        // Tell workers to finish running // NEED TO UPDATe TO NTO SEND DEAD WORKERS MESSAGES
         for (process_num = 1; process_num < sz; ++process_num)
         {
             one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
@@ -503,6 +586,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         free(worker_status);
 
         printf("Reporting from master. Num Msgs sent by all processors: %lu\n", num_msgs);
+        printIntArray(worker_status, sz-1, "Worker status at end of master: ");
     }
 
     //For any other process... 
@@ -551,6 +635,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
 /*==============================================================*/
 void MW_Run (int argc, char **argv, struct mw_fxns *f, int style) {
     assert(style == 1 || style == 2);
+    logToFile("\n*** new run\n");
     if (style == 1) {
         MW_Run_1(argc, argv, f);
     }
