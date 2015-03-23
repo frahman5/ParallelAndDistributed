@@ -33,6 +33,13 @@
     
 ****/
 
+void free_array(void **array, int sz) {
+    int i;
+    for(i = 0; i < sz; i++) {
+        free(array[i]);
+    }
+    free(array);
+}
 
 void logToFile(char* message)
 {
@@ -426,9 +433,6 @@ int workLeftToDo(int *work_chunk_completion, int num_work_chunks)
 /*==============================================================*/
 void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
 
-    // Counts number of messages sent (for granularity)
-    unsigned long num_msgs = 0;
-
     // Initialization of parameters
     int sz, myid;
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
@@ -446,10 +450,6 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         one_work_t **work_chunks = f->create_work_pool(argc, argv);
         int num_work_chunks = len(work_chunks);
 
-
-        debug_print("Number of processes: %d \n", sz);
-        debug_print("Number of work chunks: %d \n", num_work_chunks);
-
         // Create a data structure to keep track of whether or not workers are alive
         // and what work we might need to redo if one dies 
         int *work_chunk_completion = (int *)malloc(sizeof(int) * num_work_chunks);
@@ -459,19 +459,13 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         initializeIntArray(work_chunk_completion, num_work_chunks, 0);   // all work chunks are incomplete at start
         initializeIntArray(worker_status, sz - 1, 1);   // all workers are alive at start
 
-        debug_print("work_chunk_completion array created and initialized... \n");
-        debug_print("worker_status array created and initialized... \n");
-
         /* Initialize variables that are used throughout */
-
             // For keeping track of dead workers
         double last_check_time = MPI_Wtime();
         double cur_time = MPI_Wtime();
         double *worker_last_time = (double*)malloc((sz-1)*sizeof(double)); //array[i] = last time ith + 1 process sent result
         assert(checkPointer(worker_last_time, "worker_last_time failed to allocate on heap"));
         initializeDoubleArray(worker_last_time, sz - 1, cur_time);
-
-
             // For tracking sent work chunks and received completed work chunks
         int work_chunk_iterator = 0;
         int process_num = 1;
@@ -479,20 +473,15 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         int received = -10;
         MPI_Status probe_status;                               // contains metadata about probed messages
         MPI_Status recv_status;                                // contains metadata about received messages
-
             // For storing results   
         one_result_t *result;                                  // holds a result from workers
         one_result_t **result_array;                           // points to all results from workers
         result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
         assert(checkPointer(result_array, "Failed to allocate result array while collecting results"));
       
-
         while (result_index < num_work_chunks) 
         {
-            // waitForUser();
-
             // Have we received anything?
-            debug_print("Master Probing...\n");
             MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
              
             //Receive results if possible
@@ -507,7 +496,6 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 // Make sure we got what we expected
                 assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
                 assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
-                debug_print("We received something with tag %d from process %d\n", probe_status.MPI_TAG, probe_status.MPI_SOURCE);
 
                 // Update the result_array, result_index, and work_chumk_completion array
                 updateResults(recv_status.MPI_TAG - 1, result_array, &result_index, 
@@ -551,11 +539,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 {
                     work_chunk = work_chunks[lowest_undone_work_index];
                     tag = lowest_undone_work_index + 1;
-                    // logToFile("All other work chunks have been sent. Now looking at the ones where a worker failed.\n"); 
                 }
-
-                
-                debug_print("MASTER: Sending chunk %d to process %d out of %d\n", tag -1, process_num, sz);
 
                 // find the the next live worker
                 findNextLiveWorker(worker_status, &process_num, sz);
@@ -563,11 +547,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 // Make an ISend because if process is still working when sending for some reason it fails with Send
                 MPI_Request master_send_request;
                 MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
-                // logToFileWithInt("Sent Work Chunk %d\n", tag - 1);
-                // logToFileWithInt("Sent to process %d\n", process_num);
-
-                debug_print("We just sent the work chunk at index %d\n", tag - 1);
-                process_num++; num_msgs++;
+                process_num++;
 
                 // Reset the process id if necessary, ensuring round robbin-ness.
                 resetProcessNum(&process_num, sz);
@@ -576,7 +556,6 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         }
 
         // Present results (while checking for errors)
-        debug_print("MASTER: Finished collecting results. Presenting results.\n");
         if (f->report_results(num_work_chunks, result_array) == 0)
         {
             printf("There was an error in the report_results function.\n");
@@ -590,20 +569,21 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             if (worker_status[process_num - 1] == 1) {
                 one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
                 assert(checkPointer(work_chunk, "Failed to allocate work_chunk while sending a done message"));
-
-                debug_print("MASTER: Telling process %d to stop execution.\n", process_num);
                 MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
-                num_msgs++;
+                free(work_chunk);
             }
             
         }
 
+        // What is the state of the world according to the master at the end of execution?
+        printIntArray(worker_status, sz-1, "Worker status at end of master: ");
+
         // free up data structures
+        free_array((void **) result_array, num_work_chunks);
+        free_array((void **) work_chunks, num_work_chunks);
         free(work_chunk_completion);
         free(worker_status);
-
-        printf("Reporting from master. Num Msgs sent by all processors: %lu\n", num_msgs);
-        printIntArray(worker_status, sz-1, "Worker status at end of master: ");
+        free(worker_last_time);
     }
 
     //For any other process... 
@@ -626,12 +606,10 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             {
                 
                 int masters_work_tag = status.MPI_TAG;
-                 
                 one_result_t *result = f->do_one_work(work_chunk);
                 MPI_Request send_request;
                 F_Send(result, f->result_sz, MPI_CHAR, MASTER, masters_work_tag, MPI_COMM_WORLD, &send_request);
-                debug_print("PROCESS %d: Sending result of work_chunk with tag %d!\n", myid, status.MPI_TAG);
-                free(result);
+                free(result); free(work_chunk);
             }
 
             //If end tag then simply finish loop and exit
@@ -642,8 +620,6 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             }
         } 
     }
-
-    debug_print("PROCESS %d: Finished execution!\n", myid);
 
 }
 
