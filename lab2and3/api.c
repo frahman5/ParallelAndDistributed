@@ -416,6 +416,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
                 MPI_Recv(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, 
                     probe_status.MPI_TAG, MPI_COMM_WORLD, &recv_status);
+
                 assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
                 assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
 
@@ -435,7 +436,7 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             // Have we received anything?
             debug_print("Master Probing...\n");
             MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
-                
+              
         //     // check the last Ireceive, mark which worker sent it to you
         //     // update the work_chunk_status array
         //     // if (cur_time - last_check_time) >= CHECK_INterval
@@ -463,7 +464,11 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 }
 
                 int tag = work_chunk_iterator + 1;          // tag is always 1 off the iterator
-                MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD);
+
+                //Make an ISend because if process is still working when sending for some reason it fails with Send
+                MPI_Request master_send_request;
+                MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
+
                 debug_print("We just sent the work chunk at index %d\n", work_chunk_iterator);
                 process_num++; num_msgs++; work_chunk_iterator++;
 
