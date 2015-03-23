@@ -15,7 +15,7 @@
 #define MASTER          0           // Master process ID
 #define DONE_TAG        0           // This is the master telling the worker it can stop
 #define PROB_FAIL       0           // (Contrived...) Probability that a worker will fail
-#define DEATH_INTERVAL  1         // If a worker hasn't sent anything in these seconds he is dead
+#define DEATH_INTERVAL  5           // If a worker hasn't sent anything in these seconds he is dead
 #define DEBUG_FILE      "debug.txt"                                     
 
 /* **** TODO **** 
@@ -48,6 +48,13 @@ void logToFileWithInt(char* formatString, int var)
     fprintf(fp, formatString, var);
     fclose(fp);
 
+}
+
+void findNextLiveWorker(int *worker_status, int *process_num, int sz) {
+    while (worker_status[*process_num] == 0) {
+        (*process_num)++;
+        assert(resetProcessNum(process_num, sz));
+    }
 }
 
 /* Returns 1 if the worker should fail, 0 otherwise */
@@ -130,11 +137,12 @@ int updateResults(int work_chunk_index, one_result_t** result_array,
         logToFileWithInt("repeated result work chunk index: %d\n", work_chunk_index);
         return 1;
     }
-        
+    
     result_array[ (*result_index)++ ] = result;
     
     //Mark the corresponding work chunk as completed
     work_chunk_completion[work_chunk_index] = 1;
+    logToFileWithInt("Received result for work chunk: %d\n", work_chunk_index);
 
     return 1;
 }
@@ -522,16 +530,19 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
             // If we DO have live workers, send them some work!
             int lowest_undone_work_index = workLeftToDo(work_chunk_completion, num_work_chunks);
 
+            // if (work_chunks[work_chunk_iterator] != NULL) {
             if (work_chunks[work_chunk_iterator] != NULL || lowest_undone_work_index != -1) {
 
                 // Send a work chunk to a process using round robin
                 one_work_t *work_chunk;
                 int tag;
 
+                // work_chunk = work_chunks[work_chunk_iterator++];
+                // tag = work_chunk_iterator + 1;
                 if(work_chunks[work_chunk_iterator] != NULL)
                 {
-                    work_chunk = work_chunks[work_chunk_iterator++];
                     tag = work_chunk_iterator + 1;
+                    work_chunk = work_chunks[work_chunk_iterator++];
                 }
                 else
                 {
@@ -544,14 +555,12 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
                 debug_print("MASTER: Sending chunk %d to process %d out of %d\n", tag -1, process_num, sz);
 
                 // find the the next live worker
-                while (worker_status[process_num] == 0) {
-                    process_num++;
-                    assert(resetProcessNum(&process_num, sz));
-                }
+                findNextLiveWorker(worker_status, &process_num, sz);
 
                 // Make an ISend because if process is still working when sending for some reason it fails with Send
                 MPI_Request master_send_request;
                 MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
+                logToFileWithInt("Sent Work Chunk %d\n", tag - 1);
 
                 debug_print("We just sent the work chunk at index %d\n", tag - 1);
                 process_num++; num_msgs++;
@@ -570,15 +579,19 @@ void MW_Run_1 (int argc, char **argv, struct mw_fxns *f){
         }
 
 
-        // Tell workers to finish running // NEED TO UPDATe TO NTO SEND DEAD WORKERS MESSAGES
+        // Tell workers to finish running
         for (process_num = 1; process_num < sz; ++process_num)
         {
-            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
-            assert(checkPointer(work_chunk, "Failed to allocate work_chunk while sending a done message"));
+            // if the worker is alive, tell him to quit yo, else fuggedaboutit
+            if (worker_status[process_num - 1] == 1) {
+                one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
+                assert(checkPointer(work_chunk, "Failed to allocate work_chunk while sending a done message"));
 
-            debug_print("MASTER: Telling process %d to stop execution.\n", process_num);
-            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
-            num_msgs++;
+                debug_print("MASTER: Telling process %d to stop execution.\n", process_num);
+                MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
+                num_msgs++;
+            }
+            
         }
 
         // free up data structures
