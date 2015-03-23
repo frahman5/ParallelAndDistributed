@@ -3214,3 +3214,1608 @@ Rand_float: 0.403201
 Rand_float: 0.261714
 Rand_float: 0.621483
 Rand_float: 0.269082
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.084943
+Rand_float: 0.918911
+Uh oh ... A worker failed
+Rand_float: 0.420830
+Rand_float: 0.882679
+Rand_float: 0.183777
+Uh oh ... A worker failed
+Rand_float: 0.131146
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.671789
+Rand_float: 0.758445
+Rand_float: 0.186863
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.922749
+Rand_float: 0.634211
+Rand_float: 0.189949
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.833983
+Rand_float: 0.759228
+Rand_float: 0.342865
+Rand_float: 0.524177
+Rand_float: 0.838678
+Rand_float: 0.665176
+Rand_float: 0.609805
+
+*** new run
+Rand_float: 0.985682
+Rand_float: 0.363689
+Rand_float: 0.335902
+Rand_float: 0.517101
+Rand_float: 0.510760
+Rand_float: 0.920793
+Rand_float: 0.349037
+Rand_float: 0.770168
+Rand_float: 0.262106
+Rand_float: 0.207632
+Uh oh ... A worker failed
+Rand_float: 0.223644
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.837821
+Rand_float: 0.254813
+Rand_float: 0.262293
+
+*** new run
+Rand_float: 0.355209
+Rand_float: 0.641907
+Rand_float: 0.000036
+Uh oh ... A worker failed
+Rand_float: 0.526641
+Rand_float: 0.262125
+Rand_float: 0.527949
+Rand_float: 0.237145
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.586862
+
+*** new run
+Rand_float: 0.250975
+Rand_float: 0.386527
+Rand_float: 0.505772
+Rand_float: 0.517673
+Rand_float: 0.529728
+Rand_float: 0.131089
+Uh oh ... A worker failed
+Rand_float: 0.138842
+Uh oh ... A worker failed
+Rand_float: 0.416992
+Rand_float: 0.379614
+Rand_float: 0.352123
+Rand_float: 0.171432
+Rand_float: 0.131071
+Rand_float: 0.003854
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.667951
+Rand_float: 0.169870
+Uh oh ... A worker failed
+Rand_float: 0.255380
+
+*** new run
+Rand_float: 0.752894
+Rand_float: 0.890374
+Rand_float: 0.501935
+Rand_float: 0.174518
+Uh oh ... A worker failed
+Rand_float: 0.014608
+Uh oh ... A worker failed
+Rand_float: 0.520469
+Rand_float: 0.088781
+Rand_float: 0.524195
+Uh oh ... A worker failed
+Rand_float: 0.142983
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.502029
+Rand_float: 0.834015
+Rand_float: 0.593062
+Rand_float: 0.285379
+Rand_float: 0.365286
+Rand_float: 0.584647
+Rand_float: 0.159032
+Uh oh ... A worker failed
+Rand_float: 0.358777
+Rand_float: 0.969747
+Rand_float: 0.541013
+
+*** new run
+Rand_float: 0.417007
+Rand_float: 0.642690
+
+*** new run
+Rand_float: 0.004041
+Uh oh ... A worker failed
+Rand_float: 0.682643
+Rand_float: 0.179389
+
+*** new run
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.251022
+Rand_float: 0.089047
+Uh oh ... A worker failed
+Rand_float: 0.928069
+Rand_float: 0.672040
+Rand_float: 0.047929
+Rand_float: 0.967654
+
+*** new run
+Uh oh ... A worker failed
+Rand_float: 0.366233
+Rand_float: 0.283717
+
+*** new run
+Rand_float: 0.430305
+Rand_float: 0.255048
+Rand_float: 0.506054
+Rand_float: 0.253033
+Rand_float: 0.588040
+Rand_float: 0.731519
+
+*** new run
+Rand_float: 0.194801
+Rand_float: 0.642494
+Uh oh ... A worker failed
+Rand_float: 0.838040
+Rand_float: 0.400052
+Rand_float: 0.945351
+
+*** new run
+Rand_float: 0.512158
+Rand_float: 0.421033
+Rand_float: 0.842240
+
+*** new run
+Rand_float: 0.668014
+Rand_float: 0.526092
+Rand_float: 0.307682
+Rand_float: 0.219361
+Uh oh ... A worker failed
+Rand_float: 0.170027
+Rand_float: 0.302661
+
+*** new run
+Uh oh ... A worker failed
+Rand_float: 0.829515
+Rand_float: 0.662851
+Rand_float: 0.923046
+Rand_float: 0.541219
+Rand_float: 0.085021
+Rand_float: 0.336028
+Rand_float: 0.632647
+Uh oh ... A worker failed
+Rand_float: 0.902951
+Rand_float: 0.615365
+Rand_float: 0.587034
+Rand_float: 0.904583
+Rand_float: 0.438722
+Rand_float: 0.319391
+Rand_float: 0.600509
+Rand_float: 0.753035
+Rand_float: 0.280358
+Rand_float: 0.747920
+Rand_float: 0.975440
+Rand_float: 0.288213
+Rand_float: 0.919020
+Rand_float: 0.258054
+Rand_float: 0.221374
+Rand_float: 0.121365
+Rand_float: 0.972675
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.756079
+Rand_float: 0.421120
+Rand_float: 0.763046
+Rand_float: 0.517707
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.336028
+Rand_float: 0.004041
+Uh oh ... A worker failed
+Rand_float: 0.838040
+Rand_float: 0.945351
+Rand_float: 0.512158
+
+*** new run
+Rand_float: 0.255048
+Rand_float: 0.251022
+Rand_float: 0.928069
+
+*** new run
+Rand_float: 0.047929
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.923046
+Rand_float: 0.753035
+Rand_float: 0.632647
+
+*** new run
+Rand_float: 0.902951
+Rand_float: 0.258054
+Rand_float: 0.588040
+Rand_float: 0.506054
+Rand_float: 0.170027
+Rand_float: 0.085021
+Rand_float: 0.502029
+Rand_float: 0.121365
+Rand_float: 0.194801
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.253033
+Rand_float: 0.593062
+Rand_float: 0.584647
+Rand_float: 0.731519
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.421033
+Rand_float: 0.417007
+Rand_float: 0.672040
+Rand_float: 0.642690
+Rand_float: 0.682643
+Rand_float: 0.179389
+Uh oh ... A worker failed
+Rand_float: 0.967654
+Rand_float: 0.302661
+Rand_float: 0.668014
+Rand_float: 0.089047
+Rand_float: 0.587034
+Uh oh ... A worker failed
+Rand_float: 0.829515
+Rand_float: 0.307682
+Rand_float: 0.366233
+Rand_float: 0.219361
+Uh oh ... A worker failed
+Rand_float: 0.615365
+
+*** new run
+Rand_float: 0.919020
+Rand_float: 0.280358
+Rand_float: 0.975440
+Rand_float: 0.438722
+Rand_float: 0.972675
+Rand_float: 0.834015
+Rand_float: 0.285379
+Rand_float: 0.756079
+Rand_float: 0.365286
+Rand_float: 0.358777
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.668045
+
+*** new run
+Rand_float: 0.336090
+Rand_float: 0.833834
+Rand_float: 0.667667
+
+*** new run
+Rand_float: 0.834030
+Rand_float: 0.548455
+
+*** new run
+
+*** new run
+Rand_float: 0.089180
+Rand_float: 0.255165
+Uh oh ... A worker failed
+Rand_float: 0.421135
+Rand_float: 0.587120
+Rand_float: 0.727274
+Rand_float: 0.012653
+Rand_float: 0.561107
+Uh oh ... A worker failed
+Rand_float: 0.528881
+Rand_float: 0.287099
+Rand_float: 0.919075
+Rand_float: 0.893440
+Rand_float: 0.045316
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.417015
+
+*** new run
+Rand_float: 0.774227
+Rand_float: 0.838150
+Rand_float: 0.438248
+Rand_float: 0.638039
+Rand_float: 0.085060
+Rand_float: 0.786880
+Uh oh ... A worker failed
+Rand_float: 0.090633
+Rand_float: 0.506195
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.170105
+Rand_float: 0.753105
+Rand_float: 0.502075
+Rand_float: 0.251046
+Rand_float: 0.620714
+Rand_float: 0.332415
+Rand_float: 0.322682
+Rand_float: 0.314745
+Rand_float: 0.004135
+Uh oh ... A worker failed
+Rand_float: 0.382288
+Rand_float: 0.118279
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.672165
+Rand_float: 0.441895
+Rand_float: 0.876496
+Rand_float: 0.921813
+Rand_float: 0.276078
+Rand_float: 0.483565
+Rand_float: 0.241782
+Rand_float: 0.072259
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.251069
+Rand_float: 0.668076
+Rand_float: 0.170183
+Uh oh ... A worker failed
+Rand_float: 0.717295
+Rand_float: 0.581561
+Rand_float: 0.359985
+Rand_float: 0.264204
+
+*** new run
+
+*** new run
+Rand_float: 0.255283
+
+*** new run
+
+*** new run
+Rand_float: 0.838260
+Rand_float: 0.672290
+Rand_float: 0.421237
+Rand_float: 0.176864
+Rand_float: 0.722644
+Uh oh ... A worker failed
+Rand_float: 0.628409
+Rand_float: 0.534174
+
+*** new run
+Rand_float: 0.923343
+Rand_float: 0.587206
+Rand_float: 0.174189
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.834046
+Rand_float: 0.631083
+Rand_float: 0.753176
+Rand_float: 0.919130
+Rand_float: 0.811530
+Rand_float: 0.625735
+Rand_float: 0.417023
+Rand_float: 0.387707
+Rand_float: 0.814204
+
+*** new run
+Rand_float: 0.334554
+Rand_float: 0.905765
+Rand_float: 0.089313
+Rand_float: 0.506336
+Rand_float: 0.722261
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.193854
+Rand_float: 0.502122
+Rand_float: 0.336153
+Rand_float: 0.988394
+Uh oh ... A worker failed
+Rand_float: 0.171515
+Uh oh ... A worker failed
+Rand_float: 0.085099
+Rand_float: 0.004229
+Rand_float: 0.719970
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.528407
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.085139
+Rand_float: 0.170261
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.753246
+Rand_float: 0.809575
+Rand_float: 0.522709
+Rand_float: 0.421338
+Rand_float: 0.163451
+Uh oh ... A worker failed
+Rand_float: 0.432635
+Rand_float: 0.298123
+Rand_float: 0.550206
+Rand_float: 0.319141
+Rand_float: 0.804316
+Rand_float: 0.145273
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.668108
+Rand_float: 0.886136
+Rand_float: 0.286625
+Rand_float: 0.587292
+Rand_float: 0.304056
+Rand_float: 0.621105
+Rand_float: 0.267167
+Rand_float: 0.910416
+Rand_float: 0.271617
+Rand_float: 0.356829
+Rand_float: 0.066412
+Rand_float: 0.218325
+
+*** new run
+
+*** new run
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.919185
+Rand_float: 0.004323
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.734969
+Rand_float: 0.623791
+Rand_float: 0.052773
+Uh oh ... A worker failed
+Rand_float: 0.336215
+Rand_float: 0.255400
+Rand_float: 0.507241
+Rand_float: 0.772272
+Rand_float: 0.573250
+Rand_float: 0.608112
+Rand_float: 0.534334
+Rand_float: 0.543234
+Rand_float: 0.132825
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.251093
+Rand_float: 0.111909
+Uh oh ... A worker failed
+Rand_float: 0.834062
+Rand_float: 0.074606
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.502169
+Rand_float: 0.960742
+Rand_float: 0.417031
+Rand_float: 0.185543
+Uh oh ... A worker failed
+Rand_float: 0.037303
+Uh oh ... A worker failed
+Rand_float: 0.197041
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.838369
+Rand_float: 0.469938
+Rand_float: 0.923492
+Rand_float: 0.247582
+Uh oh ... A worker failed
+Rand_float: 0.130301
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.672415
+Rand_float: 0.506477
+Rand_float: 0.281468
+Rand_float: 0.356074
+Rand_float: 0.635289
+Rand_float: 0.534207
+
+*** new run
+Rand_float: 0.298923
+Rand_float: 0.409601
+Rand_float: 0.169483
+Uh oh ... A worker failed
+Rand_float: 0.089446
+Rand_float: 0.003133
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.753246
+Rand_float: 0.089446
+Uh oh ... A worker failed
+Rand_float: 0.417031
+Rand_float: 0.037303
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.668108
+Rand_float: 0.886136
+
+*** new run
+
+*** new run
+Rand_float: 0.286625
+Rand_float: 0.255400
+Rand_float: 0.421338
+Rand_float: 0.507241
+Rand_float: 0.197041
+Uh oh ... A worker failed
+Rand_float: 0.432635
+Rand_float: 0.298123
+Rand_float: 0.550206
+Rand_float: 0.319141
+Rand_float: 0.304056
+
+*** new run
+
+*** new run
+Rand_float: 0.502169
+Rand_float: 0.960742
+Rand_float: 0.185543
+Rand_float: 0.919185
+Uh oh ... A worker failed
+Rand_float: 0.734969
+Rand_float: 0.623791
+Rand_float: 0.052773
+Uh oh ... A worker failed
+Rand_float: 0.267167
+Rand_float: 0.804316
+Rand_float: 0.145273
+Rand_float: 0.271617
+Uh oh ... A worker failed
+Rand_float: 0.066412
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.838369
+Rand_float: 0.469938
+Rand_float: 0.247582
+Uh oh ... A worker failed
+Rand_float: 0.170261
+Rand_float: 0.085139
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.004323
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.923492
+Rand_float: 0.130301
+Rand_float: 0.672415
+
+*** new run
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.281468
+Rand_float: 0.809575
+Rand_float: 0.834062
+Rand_float: 0.635289
+Rand_float: 0.522709
+Rand_float: 0.298923
+Rand_float: 0.163451
+Rand_float: 0.074606
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.003133
+Uh oh ... A worker failed
+Rand_float: 0.587292
+Rand_float: 0.621105
+Rand_float: 0.910416
+Rand_float: 0.356829
+Rand_float: 0.336215
+Rand_float: 0.218325
+
+*** new run
+Rand_float: 0.772272
+
+*** new run
+Uh oh ... A worker failed
+Rand_float: 0.573250
+Rand_float: 0.251093
+Rand_float: 0.506477
+Rand_float: 0.111909
+Rand_float: 0.608112
+Rand_float: 0.356074
+Uh oh ... A worker failed
+Rand_float: 0.534207
+Rand_float: 0.409601
+Rand_float: 0.169483
+Rand_float: 0.534334
+Uh oh ... A worker failed
+Rand_float: 0.543234
+Rand_float: 0.132825
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.251116
+Rand_float: 0.502216
+Rand_float: 0.749968
+Rand_float: 0.719175
+Rand_float: 0.506522
+Rand_float: 0.115193
+Uh oh ... A worker failed
+Rand_float: 0.834077
+Rand_float: 0.337681
+Rand_float: 0.410128
+
+*** new run
+
+*** new run
+Rand_float: 0.506618
+Rand_float: 0.723754
+Rand_float: 0.421440
+Rand_float: 0.142626
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.919239
+
+*** new run
+
+*** new run
+Rand_float: 0.004417
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.170340
+Uh oh ... A worker failed
+Rand_float: 0.085178
+Rand_float: 0.655734
+Rand_float: 0.913028
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.753317
+Rand_float: 0.993415
+
+*** new run
+Rand_float: 0.323157
+Rand_float: 0.417039
+
+*** new run
+Rand_float: 0.336278
+Rand_float: 0.824574
+Rand_float: 0.168841
+Uh oh ... A worker failed
+Rand_float: 0.618092
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.089579
+Rand_float: 0.838479
+Rand_float: 0.668139
+Uh oh ... A worker failed
+Rand_float: 0.311467
+Rand_float: 0.412287
+Rand_float: 0.309046
+
+*** new run
+Rand_float: 0.587378
+Rand_float: 0.068021
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.923641
+Rand_float: 0.255517
+Rand_float: 0.480308
+Rand_float: 0.629519
+
+*** new run
+Rand_float: 0.672540
+Rand_float: 0.386073
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.417046
+Rand_float: 0.753387
+Rand_float: 0.170418
+Uh oh ... A worker failed
+Rand_float: 0.300378
+
+*** new run
+Rand_float: 0.672666
+Rand_float: 0.490677
+
+*** new run
+Rand_float: 0.460670
+Rand_float: 0.502263
+Rand_float: 0.539195
+
+*** new run
+
+*** new run
+Rand_float: 0.085217
+
+*** new run
+Uh oh ... A worker failed
+Rand_float: 0.089712
+Uh oh ... A worker failed
+Rand_float: 0.421542
+
+*** new run
+Rand_float: 0.852618
+Rand_float: 0.255635
+Rand_float: 0.453375
+
+*** new run
+Rand_float: 0.838588
+
+*** new run
+Rand_float: 0.152996
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.336341
+Rand_float: 0.876876
+
+*** new run
+Rand_float: 0.587464
+Rand_float: 0.514936
+Rand_float: 0.919294
+Rand_float: 0.576498
+
+*** new run
+Rand_float: 0.668170
+Rand_float: 0.834093
+Rand_float: 0.600757
+Rand_float: 0.938438
+Rand_float: 0.177255
+Rand_float: 0.004511
+Uh oh ... A worker failed
+
+*** new run
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.506759
+Rand_float: 0.251139
+Rand_float: 0.091434
+Rand_float: 0.901135
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.417046
+Rand_float: 0.085217
+Uh oh ... A worker failed
+Rand_float: 0.421542
+Rand_float: 0.852618
+Rand_float: 0.943861
+
+*** new run
+Rand_float: 0.502263
+Rand_float: 0.089712
+Rand_float: 0.672666
+Uh oh ... A worker failed
+Rand_float: 0.490677
+Rand_float: 0.336341
+Rand_float: 0.814659
+Rand_float: 0.876876
+Rand_float: 0.506759
+Rand_float: 0.539195
+Rand_float: 0.838588
+Rand_float: 0.662935
+Rand_float: 0.252806
+Rand_float: 0.091434
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.152996
+Rand_float: 0.170418
+Uh oh ... A worker failed
+Rand_float: 0.919294
+Uh oh ... A worker failed
+Rand_float: 0.255635
+Rand_float: 0.587464
+Rand_float: 0.668170
+Rand_float: 0.938438
+Rand_float: 0.331467
+Rand_float: 0.251139
+Rand_float: 0.453375
+Rand_float: 0.901135
+Rand_float: 0.865200
+Rand_float: 0.382009
+Rand_float: 0.514936
+Rand_float: 0.300378
+Rand_float: 0.576498
+Rand_float: 0.533733
+Rand_float: 0.202265
+Uh oh ... A worker failed
+Rand_float: 0.923789
+Rand_float: 0.128737
+Rand_float: 0.460670
+Uh oh ... A worker failed
+Rand_float: 0.753387
+Rand_float: 0.004511
+Rand_float: 0.177255
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.834093
+Rand_float: 0.600757
+Rand_float: 0.921339
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.834109
+Rand_float: 0.753458
+Rand_float: 0.170496
+Uh oh ... A worker failed
+Rand_float: 0.863832
+Rand_float: 0.361095
+Rand_float: 0.432550
+Rand_float: 0.924052
+Rand_float: 0.421644
+Rand_float: 0.547004
+Rand_float: 0.587551
+Rand_float: 0.562609
+Rand_float: 0.862579
+Rand_float: 0.766730
+Rand_float: 0.961852
+Rand_float: 0.845391
+Rand_float: 0.437562
+Rand_float: 0.492283
+
+*** new run
+
+*** new run
+Rand_float: 0.089845
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.502310
+Rand_float: 0.085256
+
+*** new run
+Rand_float: 0.672791
+Uh oh ... A worker failed
+Rand_float: 0.595282
+Rand_float: 0.328422
+Rand_float: 0.251163
+Rand_float: 0.786438
+Rand_float: 0.904344
+Rand_float: 0.295749
+Rand_float: 0.670436
+Rand_float: 0.314130
+Rand_float: 0.648825
+
+*** new run
+Rand_float: 0.793868
+
+*** new run
+Rand_float: 0.336403
+
+*** new run
+Rand_float: 0.255752
+Rand_float: 0.838698
+Rand_float: 0.506899
+Rand_float: 0.919349
+Rand_float: 0.497263
+Rand_float: 0.491503
+Rand_float: 0.684425
+Rand_float: 0.668202
+Rand_float: 0.464589
+Rand_float: 0.353889
+Rand_float: 0.807857
+Rand_float: 0.004605
+Uh oh ... A worker failed
+Rand_float: 0.426441
+Rand_float: 0.199280
+Uh oh ... A worker failed
+Rand_float: 0.929179
+Rand_float: 0.707777
+Rand_float: 0.615715
+Rand_float: 0.417054
+Rand_float: 0.459114
+Rand_float: 0.994525
+Rand_float: 0.983005
+Rand_float: 0.336894
+Rand_float: 0.431916
+Rand_float: 0.368851
+Rand_float: 0.216275
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.919404
+Rand_float: 0.336466
+Rand_float: 0.587637
+Rand_float: 0.418027
+Rand_float: 0.981481
+
+*** new run
+Rand_float: 0.170574
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.417062
+Rand_float: 0.563454
+
+*** new run
+
+*** new run
+Rand_float: 0.502357
+Rand_float: 0.971880
+Rand_float: 0.117649
+Rand_float: 0.672916
+Rand_float: 0.089978
+Uh oh ... A worker failed
+Rand_float: 0.421745
+Rand_float: 0.004699
+Rand_float: 0.668233
+Rand_float: 0.753528
+Uh oh ... A worker failed
+Rand_float: 0.699887
+Rand_float: 0.544935
+Uh oh ... A worker failed
+Rand_float: 0.990741
+Rand_float: 0.376310
+Rand_float: 0.272600
+Rand_float: 0.507040
+Rand_float: 0.826795
+
+*** new run
+Rand_float: 0.085295
+Rand_float: 0.251186
+Rand_float: 0.780740
+Rand_float: 0.834124
+Uh oh ... A worker failed
+Rand_float: 0.690362
+Rand_float: 0.915640
+Rand_float: 0.126908
+Rand_float: 0.838807
+Uh oh ... A worker failed
+Rand_float: 0.408768
+Rand_float: 0.836054
+Rand_float: 0.255870
+Rand_float: 0.399508
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.672916
+Rand_float: 0.699887
+Rand_float: 0.924087
+Rand_float: 0.127173
+Uh oh ... A worker failed
+Rand_float: 0.994029
+Rand_float: 0.652532
+Rand_float: 0.170574
+Rand_float: 0.587637
+Rand_float: 0.100236
+Uh oh ... A worker failed
+Rand_float: 0.408768
+Uh oh ... A worker failed
+Rand_float: 0.157050
+Uh oh ... A worker failed
+Rand_float: 0.089978
+Uh oh ... A worker failed
+Rand_float: 0.507040
+Rand_float: 0.826795
+Rand_float: 0.937790
+Rand_float: 0.432411
+Rand_float: 0.528724
+Rand_float: 0.268379
+Rand_float: 0.421745
+Rand_float: 0.639023
+Rand_float: 0.272600
+Rand_float: 0.058578
+Rand_float: 0.589600
+Rand_float: 0.085295
+Uh oh ... A worker failed
+Rand_float: 0.400013
+Rand_float: 0.502357
+Uh oh ... A worker failed
+Rand_float: 0.834124
+Rand_float: 0.023037
+Rand_float: 0.251186
+Uh oh ... A worker failed
+Rand_float: 0.126908
+Uh oh ... A worker failed
+Rand_float: 0.838807
+Rand_float: 0.836054
+Rand_float: 0.690362
+Rand_float: 0.004699
+Rand_float: 0.117649
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.915640
+Rand_float: 0.561480
+Rand_float: 0.169819
+Rand_float: 0.789953
+Rand_float: 0.919404
+Rand_float: 0.753528
+Rand_float: 0.255870
+Rand_float: 0.336466
+Rand_float: 0.737282
+Rand_float: 0.493415
+Uh oh ... A worker failed
+Rand_float: 0.819897
+Rand_float: 0.668233
+Rand_float: 0.005813
+Uh oh ... A worker failed
+Rand_float: 0.981481
+Rand_float: 0.752620
+Rand_float: 0.284916
+Rand_float: 0.990741
+Rand_float: 0.582885
+Rand_float: 0.399508
+Rand_float: 0.376310
+Rand_float: 0.549928
+Rand_float: 0.638252
+Rand_float: 0.533360
+Rand_float: 0.642458
+Rand_float: 0.544935
+Rand_float: 0.105530
+Uh oh ... A worker failed
+Rand_float: 0.791443
+Rand_float: 0.179892
+Uh oh ... A worker failed
+Rand_float: 0.774964
+Rand_float: 0.724500
+Rand_float: 0.819126
+Rand_float: 0.418027
+Rand_float: 0.674856
+Rand_float: 0.780740
+Rand_float: 0.297129
+Rand_float: 0.052765
+Rand_float: 0.417062
+Uh oh ... A worker failed
+Rand_float: 0.853148
+Rand_float: 0.563454
+Rand_float: 0.894976
+Rand_float: 0.868641
+Rand_float: 0.971880
+Rand_float: 0.866556
+Rand_float: 0.389940
+Rand_float: 0.246707
+Rand_float: 0.208154
+Uh oh ... A worker failed
+Rand_float: 0.714244
+Uh oh ... A worker failed
+Rand_float: 0.303221
+Rand_float: 0.228304
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.668264
+Rand_float: 0.336528
+Rand_float: 0.033783
+Rand_float: 0.507181
+Rand_float: 0.194475
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.255987
+Rand_float: 0.372575
+Rand_float: 0.867440
+Rand_float: 0.417070
+Rand_float: 0.694992
+Rand_float: 0.727485
+Rand_float: 0.059644
+Uh oh ... A worker failed
+Rand_float: 0.848590
+Rand_float: 0.247011
+Rand_float: 0.834140
+Rand_float: 0.919459
+Uh oh ... A worker failed
+Rand_float: 0.389984
+Rand_float: 0.454971
+Rand_float: 0.338792
+Rand_float: 0.697179
+
+*** new run
+Rand_float: 0.494023
+Rand_float: 0.044360
+Uh oh ... A worker failed
+Rand_float: 0.170653
+Rand_float: 0.069977
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.753598
+Rand_float: 0.728775
+Rand_float: 0.421847
+Rand_float: 0.673041
+Rand_float: 0.524948
+Rand_float: 0.804491
+Rand_float: 0.982591
+
+*** new run
+Rand_float: 0.502404
+Rand_float: 0.412469
+Rand_float: 0.083715
+Uh oh ... A worker failed
+Rand_float: 0.362465
+Rand_float: 0.949012
+Rand_float: 0.036663
+Rand_float: 0.906875
+Uh oh ... A worker failed
+Rand_float: 0.853702
+Rand_float: 0.004793
+
+*** new run
+Rand_float: 0.802707
+Uh oh ... A worker failed
+Rand_float: 0.092034
+Rand_float: 0.174238
+Rand_float: 0.251210
+Uh oh ... A worker failed
+Rand_float: 0.084975
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Rand_float: 0.516892
+Rand_float: 0.398731
+Rand_float: 0.477059
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.922512
+Rand_float: 0.587723
+Rand_float: 0.650801
+Rand_float: 0.855683
+Rand_float: 0.090111
+Rand_float: 0.838917
+Uh oh ... A worker failed
+Rand_float: 0.085334
+Rand_float: 0.468708
+Uh oh ... A worker failed
+Rand_float: 0.582586
+Rand_float: 0.007305
+Rand_float: 0.520523
+Uh oh ... A worker failed
+Rand_float: 0.677583
+Rand_float: 0.430222
+Rand_float: 0.139954
+Rand_float: 0.746565
+Uh oh ... A worker failed
+Rand_float: 0.523184
+Rand_float: 0.147114
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.668264
+Rand_float: 0.085334
+Uh oh ... A worker failed
+Rand_float: 0.004793
+Rand_float: 0.516892
+Uh oh ... A worker failed
+Rand_float: 0.398731
+Rand_float: 0.477059
+Rand_float: 0.922512
+
+*** new run
+Rand_float: 0.255987
+Rand_float: 0.372575
+
+*** new run
+
+*** new run
+
+*** new run
+
+*** new run
+Rand_float: 0.421847
+Rand_float: 0.753598
+Rand_float: 0.982591
+Rand_float: 0.728775
+Rand_float: 0.090111
+Uh oh ... A worker failed
+Rand_float: 0.412469
+Rand_float: 0.524948
+Rand_float: 0.362465
+Rand_float: 0.802707
+Rand_float: 0.919459
+Rand_float: 0.867440
+Rand_float: 0.059644
+Rand_float: 0.338792
+Rand_float: 0.069977
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+
+*** new run
+
+*** new run
+Rand_float: 0.924236
+
+*** new run
+Rand_float: 0.502404
+Rand_float: 0.626391
+Rand_float: 0.906875
+Rand_float: 0.754960
+Rand_float: 0.853702
+Rand_float: 0.619403
+Rand_float: 0.174238
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.838917
+Rand_float: 0.677583
+
+*** new run
+Rand_float: 0.417070
+Rand_float: 0.139954
+Rand_float: 0.507181
+Rand_float: 0.694992
+Uh oh ... A worker failed
+Rand_float: 0.727485
+Rand_float: 0.194475
+Uh oh ... A worker failed
+Rand_float: 0.848590
+
+*** new run
+Rand_float: 0.247011
+Uh oh ... A worker failed
+Rand_float: 0.834140
+
+*** new run
+Rand_float: 0.389984
+
+*** new run
+Rand_float: 0.336528
+Rand_float: 0.454971
+Rand_float: 0.170653
+Rand_float: 0.033783
+Uh oh ... A worker failed
+Rand_float: 0.697179
+Uh oh ... A worker failed
+Rand_float: 0.494023
+
+*** new run
+
+*** new run
+Rand_float: 0.673041
+Rand_float: 0.251210
+Rand_float: 0.084975
+Rand_float: 0.804491
+Uh oh ... A worker failed
+Rand_float: 0.083715
+Uh oh ... A worker failed
+
+*** new run
+Rand_float: 0.587723
+Rand_float: 0.855683
+Rand_float: 0.468708
+Rand_float: 0.582586
