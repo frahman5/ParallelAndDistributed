@@ -1,15 +1,15 @@
-MAJOR PRIORITY: We have a problem with receiving the last chunk of work. It seems like when
-you try to Irecv it, it doesn't work. If you try to both Irecv and Recv it, it doesn't work. 
-But if you ONLY Recv it, it seems to work. It could be something else. We need to figure that out. 
-    -> After you figure that out, make sure the results are right, and then ....
+## Make MW_Run_2 tolerate failing workers
+    -> If Faiyam has time, moduralize the master code
 
-0. Clean up declarations right before main master loop
-0.1: Modularize before MW_Run_2
-    -> Make a function for checking heap allocation
-0.2: Update the "tell workers to stop running" part to account for dead workers
-0.3: Think about what other data structures we now need to free
+## Make MW_Run_1 tolerate failing masters
+- Periodically, the master will write the work_chunk_completion array
+and the results array to disk
+- Upon failure, the live worker with the lowest id will become the master, 
+read the work_chunk_completion array and the results array from disk, 
+create the work pool again, and start sending out work chunks
+    -> It would be handy if the master code was mosturalized 
+- The workers need to listen for messages with MPI_ANY_SOURCE, not just the master
+so that when the original master fails, they still receive work chunks
 
-1. Find a way to see if a worker is dead
-2. Resend unfinished worker work if a worker is dead
-
-Get rid of bogus debugging function
+?? Do we need to write data structures about dead workers to disk
+    -> Just also write worker_status array to disk, and worker_last_time to disk
