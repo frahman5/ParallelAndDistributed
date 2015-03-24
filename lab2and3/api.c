@@ -421,44 +421,71 @@ int workLeftToDo(int *work_chunk_completion, int num_work_chunks)
 // }
 
 void initalizeMaster(int argc, char **argv, struct mw_fxns *f, int sz, 
-    one_work_t ***work_chunks, int *num_work_chunks) {
+    one_work_t ***work_chunks, int *num_work_chunks, int **work_chunk_completion, 
+    int **worker_status, double **worker_last_time, double *cur_time, 
+    one_result_t ***result_array) {
 
     // Obtain and count work chunks
     *work_chunks = f->create_work_pool(argc, argv);
     *num_work_chunks = len(*work_chunks);
 
-    // return work_chunks;
+    // Create a data structure to keep track of whether or not workers are alive
+    // and what work we might need to redo if one dies
+    *work_chunk_completion = (int *)malloc(sizeof(int) * *num_work_chunks);
+    *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
+    assert (checkPointer(*work_chunk_completion, "work_chunk_completion failed to allocate on heap"));
+    assert (checkPointer(worker_status, "worker_status failed to allocate on heap"));
+    initializeIntArray(*work_chunk_completion, *num_work_chunks, 0);   // all work chunks are incomplete at start
+    initializeIntArray(*worker_status, sz - 1, 1);   // all workers are alive at start
+
+    // For keeping track of dead workers
+    *cur_time = MPI_Wtime();
+    *worker_last_time = (double *)malloc((sz-1)*sizeof(double)); //array[i] = last time ith + 1 process sent result
+    assert(checkPointer(*worker_last_time, "worker_last_time failed to allocate on heap"));
+    initializeDoubleArray(*worker_last_time, sz - 1, *cur_time);
+
+    *result_array = (one_result_t **)malloc((f->result_sz) * *num_work_chunks);
+    assert(checkPointer(*result_array, "Failed to allocate result array while collecting results"));
 
 }
+
+// This is to be called from the master, to tell all the workers to stop working
+void restWorkers(int sz, struct mw_fxns *f, int *worker_status) {
+
+    int process_num;
+    for (process_num = 1; process_num < sz; ++process_num) {
+
+        // if the worker is alive, tell him to quit yo, else fuggedaboutit
+        if (worker_status[process_num - 1] == 1) {
+            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
+            assert(checkPointer(work_chunk, "Failed to allocate work_chunk while sending a done message"));
+            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
+            free(work_chunk);
+        }
+    }
+}
+
+
 
 void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     printf("Running MW Round-Robbin style\n");
 
-    // Obtain and count work chunks
-    // one_work_t **work_chunks = f->create_work_pool(argc, argv);
-    int num_work_chunks;
+    // Stuff to keep track of work chunks we've sent out, and whether or not workers are dead
     one_work_t **work_chunks;
-    // int num_work_chunks;
-    initalizeMaster(argc, argv, f, sz, &work_chunks, &num_work_chunks);
-    printf("Num work chunks: %d\n", num_work_chunks);
+    int num_work_chunks, *work_chunk_completion, *worker_status; 
+    double *worker_last_time, cur_time;
 
+    // Stuff to store results
+    one_result_t *result;
+    one_result_t **result_array;
 
-    // Create a data structure to keep track of whether or not workers are alive
-    // and what work we might need to redo if one dies 
-    int *work_chunk_completion = (int *)malloc(sizeof(int) * num_work_chunks);
-    int *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
-    assert (checkPointer(worker_status, "worker_status failed to allocate on heap"));
-    assert (checkPointer(work_chunk_completion, "work_chunk_completion failed to allocate on heap"));
-    initializeIntArray(work_chunk_completion, num_work_chunks, 0);   // all work chunks are incomplete at start
-    initializeIntArray(worker_status, sz - 1, 1);   // all workers are alive at start
+    // Initalize them all!!!
+    initalizeMaster(argc, argv, f, sz, &work_chunks, &num_work_chunks, 
+        &work_chunk_completion, &worker_status, &worker_last_time, &cur_time, 
+        &result_array);
+
 
     /* Initialize variables that are used throughout */
-        // For keeping track of dead workers
-    double last_check_time = MPI_Wtime();
-    double cur_time = MPI_Wtime();
-    double *worker_last_time = (double*)malloc((sz-1)*sizeof(double)); //array[i] = last time ith + 1 process sent result
-    assert(checkPointer(worker_last_time, "worker_last_time failed to allocate on heap"));
-    initializeDoubleArray(worker_last_time, sz - 1, cur_time);
         // For tracking sent work chunks and received completed work chunks
     int work_chunk_iterator = 0;
     int process_num = 1;
@@ -466,11 +493,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     int received = -10;
     MPI_Status probe_status;                               // contains metadata about probed messages
     MPI_Status recv_status;                                // contains metadata about received messages
-        // For storing results   
-    one_result_t *result;                                  // holds a result from workers
-    one_result_t **result_array;                           // points to all results from workers
-    result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
-    assert(checkPointer(result_array, "Failed to allocate result array while collecting results"));
+    
   
     while (result_index < num_work_chunks) 
     {
@@ -549,24 +572,14 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     }
 
     // Present results (while checking for errors)
-    if (f->report_results(num_work_chunks, result_array) == 0)
-    {
+    if (f->report_results(num_work_chunks, result_array) == 0) {
         printf("There was an error in the report_results function.\n");
     }
 
 
     // Tell workers to finish running
-    for (process_num = 1; process_num < sz; ++process_num)
-    {
-        // if the worker is alive, tell him to quit yo, else fuggedaboutit
-        if (worker_status[process_num - 1] == 1) {
-            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
-            assert(checkPointer(work_chunk, "Failed to allocate work_chunk while sending a done message"));
-            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num, DONE_TAG, MPI_COMM_WORLD);
-            free(work_chunk);
-        }
-        
-    }
+    restWorkers(sz, f, worker_status);
+    
 
     // What is the state of the world according to the master at the end of execution?
     printIntArray(worker_status, sz-1, "Worker status at end of master: ");
@@ -582,127 +595,107 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     return;
 }
+// void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
-// {
+//     printf("Running MW with dynamic work allocation\n");
 
-//     // Work chunk related variables
+//     // Stuff to keep track of work chunks we've sent out, and whether or not workers are dead
 //     one_work_t **work_chunks;
-//     int num_work_chunks;
-//     initalizeMaster(work_chunks, &num_work_chunks);
+//     int num_work_chunks, *work_chunk_completion, *worker_status; 
+//     double *worker_last_time, cur_time;
 
+//     // Stuff to store results
+//     one_result_t *result;
+//     one_result_t **result_array;
 
-//     // Create a data structure to keep track of whether or not workers are alive
-//     // and what work we might need to redo if one dies 
-//     int *work_chunk_completion = (int *)malloc(sizeof(int) * num_work_chunks);
-//     int *worker_status = (int *)malloc(sizeof(int) * (sz - 1));
-//     assert (checkPointer(worker_status, "worker_status failed to allocate on heap"));
-//     assert (checkPointer(work_chunk_completion, "work_chunk_completion failed to allocate on heap"));
-//     initializeIntArray(work_chunk_completion, num_work_chunks, 0);   // all work chunks are incomplete at start
-//     initializeIntArray(worker_status, sz - 1, 1);   // all workers are alive at start
+//     // Initalize them all!!!
+//     initalizeMaster(argc, argv, f, sz, &work_chunks, &num_work_chunks, 
+//         &work_chunk_completion, &worker_status, &worker_last_time, &cur_time, 
+//         &result_array);
 
-//     /* Initialize variables that are used throughout */
-//         // For keeping track of dead workers
-//     double last_check_time = MPI_Wtime();
-//     double cur_time = MPI_Wtime();
-//     double *worker_last_time = (double*)malloc((sz-1)*sizeof(double)); //array[i] = last time ith + 1 process sent result
-//     assert(checkPointer(worker_last_time, "worker_last_time failed to allocate on heap"));
-//     initializeDoubleArray(worker_last_time, sz - 1, cur_time);
-//         // For tracking sent work chunks and received completed work chunks
+//     // For tracking sent work chunks and received completed work chunks
 //     int work_chunk_iterator = 0;
 //     int process_num = 1;
 //     int result_index = 0;
 //     int received = -10;
 //     MPI_Status probe_status;                               // contains metadata about probed messages
 //     MPI_Status recv_status;                                // contains metadata about received messages
-//         // For storing results   
-//     one_result_t *result;                                  // holds a result from workers
-//     one_result_t **result_array;                           // points to all results from workers
-//     result_array = (one_result_t**)malloc((f->result_sz)*num_work_chunks);
-//     assert(checkPointer(result_array, "Failed to allocate result array while collecting results"));
 
-//     // master process sets up calculation
-//     if(myid == MASTER)
-//     {
-//         printf("Running MW with dynamic work allocation\n");
+//     /* Send out the first batch of work to workers round-robbin style */
+//     for (process_num = 1; process_num < sz; process_num++) {
 
-//         /* Create all the work to be done and find out how much work we have total */
-//         one_work_t **work_chunks = f->create_work_pool(argc, argv);
-//         int total_num_chunks = 0;
-//         while(work_chunks[total_num_chunks] != NULL) {
-//             total_num_chunks += 1;
+//         // Send the next work chunk
+//         one_work_t *work_chunk = work_chunks[work_chunk_iterator];
+//         int tag;
+//         if (work_chunk) {
+//             tag = work_chunk_iterator++ + 1;
+//             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
+//                 tag, MPI_COMM_WORLD);
+//         } else {
+//             printf("Exiting the initial round robbin for loop in master\n");
+//             process_num = sz;                           // exit the for loop
 //         }
-
-//         /* Send out the first batch of work to workers round-robbin style */
-//         int process_num;
-//         int current_work_chunk = 0;
-//         for (process_num = 1; process_num < sz; process_num++) {
-
-//             // Send the next work chunk
-//             one_work_t *work_chunk = work_chunks[current_work_chunk];
-//             if (work_chunk) {
-//                 printf("Sending process %d some work from the master\n", process_num);
-//                 MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
-//                     WORK_TAG, MPI_COMM_WORLD);
-//                 current_work_chunk++;
-//                 num_msgs++;
-//             } else {
-//                 printf("Exiting the initial round robbin for loop in master\n");
-//                 process_num = sz;                           // exit the for loop
-//             }
-//         }
-
-
-//         /* If necessary, send out remaining work-chunks dynamically
-//             When a worker says they are done, send them new work! */
-//         int num_results_received = 0;
-//         one_result_t **result_array = (one_result_t **)malloc(sizeof(one_result_t*) * total_num_chunks);
-//         assert(checkPointer(result_array, "MW library failed to allocate result_array on the heap"))
-//         while (num_results_received != total_num_chunks) {
-
-//             // Create a container for the result
-//             one_result_t *result = (one_result_t *)malloc((f->result_sz));
-//             assert(checkPointer(result, "MW Library failed to allocate a result struct on the heap"))
-
-//             // Receive the result and store it
-//             MPI_Status status;
-//             MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
-//                 MPI_COMM_WORLD, &status);
-//             result_array[num_results_received++] = result;        
-
-//             // If there's more work to be done, send the worker who just finished more work
-//             if (current_work_chunk < total_num_chunks) {
-
-//                 // Which process do we send it to?
-//                 int process = status.MPI_SOURCE;
-
-//                 // Extract the next work chunk
-//                 one_work_t *work_chunk = work_chunks[current_work_chunk++];
-//                 assert (work_chunk != NULL);
-
-//                 // Send it and increment relevant counters
-//                 MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process,
-//                     WORK_TAG, MPI_COMM_WORLD);
-//                 num_msgs++;
-//             }
-//         }
-//         assert (current_work_chunk == total_num_chunks);
-
-//         /* Tell workers to stop running */
-//         for (i = 1; i < sz; ++i)
-//         {
-//             int num = 1;
-//             MPI_Send(&num, 1, MPI_INT, i, DONE_TAG, MPI_COMM_WORLD);
-//         }
-
-//         /* Report result! */
-//         if (f->report_results(total_num_chunks, result_array) == 0) {
-//             printf("There was an error in the report_results function\n");
-//         }
-
-//         /* Free things that are on the heap */
-//         free_array((void **)work_chunks, total_num_chunks);
-//         free_array((void **)result_array, total_num_chunks);
 //     }
+
+//     /* Tell workers to stop running */
+//     for (i = 1; i < sz; ++i)
+//     {
+//         int num = 1;
+//         MPI_Send(&num, 1, MPI_INT, i, DONE_TAG, MPI_COMM_WORLD);
+//     }
+
+// }
+
+// // {
+
+
+
+
+//      If necessary, send out remaining work-chunks dynamically
+//         When a worker says they are done, send them new work! 
+//     int num_results_received = 0;
+//     one_result_t **result_array = (one_result_t **)malloc(sizeof(one_result_t*) * total_num_chunks);
+//     assert(checkPointer(result_array, "MW library failed to allocate result_array on the heap"))
+//     while (num_results_received != total_num_chunks) {
+
+//         // Create a container for the result
+//         one_result_t *result = (one_result_t *)malloc((f->result_sz));
+//         assert(checkPointer(result, "MW Library failed to allocate a result struct on the heap"))
+
+//         // Receive the result and store it
+//         MPI_Status status;
+//         MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
+//             MPI_COMM_WORLD, &status);
+//         result_array[num_results_received++] = result;        
+
+//         // If there's more work to be done, send the worker who just finished more work
+//         if (current_work_chunk < total_num_chunks) {
+
+//             // Which process do we send it to?
+//             int process = status.MPI_SOURCE;
+
+//             // Extract the next work chunk
+//             one_work_t *work_chunk = work_chunks[current_work_chunk++];
+//             assert (work_chunk != NULL);
+
+//             // Send it and increment relevant counters
+//             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process,
+//                 WORK_TAG, MPI_COMM_WORLD);
+//             num_msgs++;
+//         }
+//     }
+//     assert (current_work_chunk == total_num_chunks);
+
+
+
+//     /* Report result! */
+//     if (f->report_results(total_num_chunks, result_array) == 0) {
+//         printf("There was an error in the report_results function\n");
+//     }
+
+//     /* Free things that are on the heap */
+//     free_array((void **)work_chunks, total_num_chunks);
+//     free_array((void **)result_array, total_num_chunks);
 // }
 void runWorker(struct mw_fxns *f) {
     int j = 0;

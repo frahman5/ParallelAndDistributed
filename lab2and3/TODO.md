@@ -1,4 +1,7 @@
 ## Make MW_Run_2 tolerate failing workers
+    -> Get dynamic allocation working without the dynamic part, while
+    tracking death of workers
+    -> Add in dynamic allocation
     -> If Faiyam has time, moduralize the master code
 
 ## Make MW_Run_1 tolerate failing masters
