@@ -164,7 +164,6 @@ int report(int sz, one_result_t **result_array) {
     return 1;
 }
 
-
 int main (int argc, char **argv) {
 
     // initalize the multiple variable
@@ -184,7 +183,7 @@ int main (int argc, char **argv) {
     MPI_Init (&argc, &argv);
 
     // run the program
-    MW_Run (argc, argv, &mw, 2);
+    MW_Run (argc, argv, &mw, 1);
 
     MPI_Finalize();
 

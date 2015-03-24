@@ -13,7 +13,7 @@ our master worker API library */
 #else
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
-#define PROB_FAIL       0.1        // (Contrived...) Probability that a worker will fail
+#define PROB_FAIL       0        // (Contrived...) Probability that a worker will fail
 #define DEBUG_FILE      "debug.txt" 
 
 void free_array(void **array, int sz) {
