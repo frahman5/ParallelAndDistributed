@@ -1,69 +1,9 @@
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Uh oh ... A worker failed
+Total Number of Chunks: 4
+successfully sent out first few chunks round robbin style
+work_chunk_iterator is now at: 4
+Total Number of Chunks: 4
+successfully sent out first few chunks round robbin style
+work_chunk_iterator is now at: 4
 Uh oh ... A worker failed
 Uh oh ... A worker failed
 Uh oh ... A worker failed

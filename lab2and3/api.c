@@ -35,7 +35,6 @@ int updateResults(int work_chunk_index, one_result_t** result_array,
     
     //Mark the corresponding work chunk as completed
     work_chunk_completion[work_chunk_index] = 1;
-    // logToFileWithInt("Received result for work chunk: %d\n", work_chunk_index);
 
     return 1;
 }
@@ -361,7 +360,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     int result_index = 0;
     int received = -10;
     MPI_Status probe_status;                               // contains metadata about probed messages
-    MPI_Status recv_status;                                // contains metadata about received messages
     
   
     while (result_index < num_work_chunks) 
@@ -371,8 +369,8 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
          
         //Receive results if possible
         if (received == 1) {
-            receiveResult(f, probe_status, result_array, 
-                &result_index, work_chunk_completion, worker_last_time, &received);          
+            receiveResult(f, probe_status, result_array, &result_index, 
+                work_chunk_completion, worker_last_time, &received);          
         }
 
         //Check for dead workers
@@ -437,6 +435,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 // void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 //     return;
 // }
+
 void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
     printf("Running MW with dynamic work allocation\n");
@@ -460,8 +459,7 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     int process_num = 1;
     int result_index = 0;
     int received = -10;
-    MPI_Status probe_status;                               // contains metadata about probed messages
-    // MPI_Status recv_status;                                // contains metadata about received messages
+    MPI_Status recv_status;
 
     /* Send out the first batch of work to workers round-robbin style */
     logToFileWithInt("Total Number of Chunks: %d\n", num_work_chunks);
@@ -479,8 +477,54 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
             process_num = sz;                           // exit the for loop
         }
     }
+    process_num = 1;    // reset the process count to avoid errors
     logToFile("successfully sent out first few chunks round robbin style\n");
     logToFileWithInt("work_chunk_iterator is now at: %d\n", work_chunk_iterator);
+
+    while (result_index < num_work_chunks) 
+    {
+
+        // Create a container for the result
+        result = (one_result_t *)malloc((f->result_sz));
+        assert(checkPointer(result, "MW Library failed to allocate a result struct on the heap"));
+
+        // Receive the result and store it
+        MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, 
+            MPI_COMM_WORLD, &recv_status);
+        updateResults(recv_status.MPI_TAG - 1, result_array, &result_index, 
+           result, work_chunk_completion, worker_last_time, recv_status.MPI_SOURCE - 1);
+
+        // If there's unfinished work, send it out
+        int lowest_undone_work_index = workLeftToDo(work_chunk_completion, num_work_chunks);
+        if (work_chunks[work_chunk_iterator] != NULL || lowest_undone_work_index != -1) {
+
+            // Send a work chunk to the process that just sent us work
+            process_num = recv_status.MPI_SOURCE;
+            one_work_t *work_chunk;
+            int tag;
+            if(work_chunks[work_chunk_iterator] != NULL) {
+                tag = work_chunk_iterator + 1;
+                work_chunk = work_chunks[work_chunk_iterator++];
+            }
+            else {
+                work_chunk = work_chunks[lowest_undone_work_index];
+                tag = lowest_undone_work_index + 1;
+            }
+
+            // Make an ISend because if process is still working when sending for some reason it fails with Send
+            MPI_Request master_send_request;
+            MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
+        }
+
+        // Check for dead workers
+        checkForDeadWorkers(worker_last_time, &worker_status, sz);
+        printIntArray(worker_status, sz-1, "Worker status: ");
+
+        // check if we have live workers. If not, exit the program
+        assert (checkForLiveWorkers(worker_status, sz));
+
+
+    }
 
     // Present results (while checking for errors)
     if (f->report_results(num_work_chunks, result_array) == 0) {
@@ -506,15 +550,7 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
 //     while (num_results_received != total_num_chunks) {
 
-//         // Create a container for the result
-//         one_result_t *result = (one_result_t *)malloc((f->result_sz));
-//         assert(checkPointer(result, "MW Library failed to allocate a result struct on the heap"))
-
-//         // Receive the result and store it
-//         MPI_Status status;
-//         MPI_Recv(result, f->result_sz, MPI_CHAR, MPI_ANY_SOURCE, RESULT_TAG, 
-//             MPI_COMM_WORLD, &status);
-//         result_array[num_results_received++] = result;        
+      
 
 //         // If there's more work to be done, send the worker who just finished more work
 //         if (current_work_chunk < total_num_chunks) {

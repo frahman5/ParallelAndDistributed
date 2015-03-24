@@ -184,7 +184,7 @@ int main (int argc, char **argv) {
     MPI_Init (&argc, &argv);
 
     // run the program
-    MW_Run (argc, argv, &mw, 1);
+    MW_Run (argc, argv, &mw, 2);
 
     MPI_Finalize();
 
