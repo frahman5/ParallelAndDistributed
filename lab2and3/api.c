@@ -5,133 +5,16 @@
 #include <assert.h>
 #include <time.h>
 
-
-#ifndef DEBUG
-  #define debug_print(M, ...)
-#else
-  #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
-#endif
-
 #define MASTER          0           // Master process ID
 #define DONE_TAG        0           // This is the master telling the worker it can stop
-#define PROB_FAIL       0.25        // (Contrived...) Probability that a worker will fail
-#define DEATH_INTERVAL  5           // If a worker hasn't sent anything in these seconds he is dead
-#define DEBUG_FILE      "debug.txt"                                     
+#define DEATH_INTERVAL  5           // If a worker hasn't sent anything in these seconds he is dead                                    
 
-/* **** TODO **** 
-  - Change round robbin technique (optional)
-  - Check the create_work function to see if it suceeded or not 
-  */
 
-/****
-
-    This function does the following:
-        - Receives api object 
-        - Uses the create_work_pool function to get the array of workers
-        - Goes through the array and executes the necessary work for each
-        - Prints the results
-    
-****/
-
-void free_array(void **array, int sz) {
-    int i;
-    for(i = 0; i < sz; i++) {
-        free(array[i]);
-    }
-    free(array);
-}
-
-void logToFile(char* message)
-{
-    FILE* fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, message);
-    fclose(fp);
-
-}
-
-void logToFileWithInt(char* formatString, int var)
-{
-    FILE* fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, formatString, var);
-    fclose(fp);
-
-}
-
-void logToFileWithFloat(char *formatString, float var) {
-    FILE* fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, formatString, var);
-    fclose(fp);
-}
 void findNextLiveWorker(int *worker_status, int *process_num, int sz) {
     while (worker_status[*process_num] == 0) {
         (*process_num)++;
         assert(resetProcessNum(process_num, sz));
     }
-}
-
-/* Returns 1 if the worker should fail, 0 otherwise */
-int random_fail() {
-
-    // Generate a random float between 0 and 1.0
-    // logToFileWithInt("Rand Max: %d\n", RAND_MAX);
-    float rand_float = (float)rand()/(float)(RAND_MAX);
-    logToFileWithFloat("Rand_float: %f\n", rand_float);
-
-    // Compare to PROB_FAIL and return
-    if (rand_float <= PROB_FAIL) {
-        return 1; // the worker should fail
-    } else if ((rand_float > PROB_FAIL) && (rand_float <= 1.0)) {
-        return 0;
-    } else {
-        printf("random_fail generated a number not between 0.0 and 1.0!: %f\n", rand_float);
-        exit(0);
-        return 0;
-    }
-
-
-}
-
-int F_Send(void *buf, int count, MPI_Datatype datatype, int dest, 
-    int tag, MPI_Comm comm, MPI_Request *request) {
-    if (random_fail()) {
-        logToFile("Uh oh ... A worker failed\n");
-        MPI_Finalize();
-        exit(0);
-        return 0;
-    } else {
-        debug_print("A worker is sending out a message with tag: %d\n", tag);
-        return MPI_Send(buf, count, datatype, dest, tag, comm);
-    }
-}
-
-// This function checks for failed allocations on the heap
-// Suggested usage: assert(checkPointer(p, m)))
-int checkPointer(void *pointer, char *error_message) {
-    if (pointer == NULL) {
-        printf("%s\n", error_message);
-        MPI_Finalize();
-        exit(0);
-    }
-
-    return 1;
-}
-
-int initializeIntArray(int* array, int size, int value){
-    int j = 0;
-    for(j = 0; j < size; ++j)
-    {
-        array[j] = value;
-    }
-    return 1;
-}
-
-int initializeDoubleArray(double* array, int size, double value){
-    int j = 0;
-    for(j = 0; j < size; ++j)
-    {
-        array[j] = value;
-    }
-    return 1;
 }
 
 int updateResults(int work_chunk_index, one_result_t** result_array, 
@@ -157,13 +40,6 @@ int updateResults(int work_chunk_index, one_result_t** result_array,
     return 1;
 }
 
-void waitForUser()
-{
-    printf("Press any key then enter to continue...\n");
-    char m[20];
-    scanf("%s", m);
-}
-
 // exit the program if all our workers are dead, else return 1
 int checkForLiveWorkers(int *worker_status, int num_processes) {
     int we_have_live_workers = 0;
@@ -181,70 +57,24 @@ int checkForLiveWorkers(int *worker_status, int num_processes) {
     return 1;
 }
 
-// for round-robbin master worker, reset the process_num to 1
-// if it exceeds the total number of worker processes
+/* for round-robbin master worker, reset the process_num to 1
+ if it exceeds the total number of worker processes */
 int resetProcessNum(int *process_num, int total_num_processes) {
-
-    if (*process_num == total_num_processes)
-    {
+    if (*process_num == total_num_processes) {
         *process_num = 1;
     } 
 
     return 1;
 }
 
-// Prints an Array with an associated message
-void printIntArray(int *array, int sz, char *message) {
-    int j;
-    printf("%s\n", message);
-    printf("[ ");
-    for (j = 0; j < sz; j++) {
-        printf("%d ", array[j]);
-    }
-    printf("]\n");
-}
-
-void printPointerArray(void **array, int sz, char *message) {
-    int j;
-    printf("%s\n", message);
-    printf("[ ");
-    for (j = 0; j < sz; j++) {
-        printf("%p ", array[j]);
-    }
-    printf(" ]");
-}
-
-// THis may not print all public attributes, but it prints at least 3 of them!
-void printMPIStatus(MPI_Status status, char *message) {
-
-    FILE *fp;
-    fp = fopen("debug.txt", "a");
-
-    fprintf(fp, "\n *** PRINTING MPI STATUS ***\n");
-    fprintf(fp, "%s\n", message);
-    fprintf(fp, "MPI_SOURCE: %d\n", status.MPI_SOURCE);
-    fprintf(fp, "MPI_TAG: %d\n", status.MPI_TAG);
-    fprintf(fp, "MPI_ERROR: %d\n", status.MPI_ERROR);
-
-    fclose(fp);
-
-}
-
-void cleanMPIStatus(MPI_Status *status) {
-
-    status->MPI_SOURCE = 0;
-    status->MPI_TAG = 0;
-    status->MPI_ERROR = 0;
-}
-
 //Returns the len of a NULL terminted array of one_work_t
 int len(one_work_t **array)
 {
     int num = 0;
-    while(array[num])
-    {
+    while(array[num]) {
         num++;
     }
+    
     return num;
 }
 
@@ -578,7 +408,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
         printf("There was an error in the report_results function.\n");
     }
 
-
     // Tell workers to finish running
     restWorkers(sz, f, worker_status);
 
@@ -593,61 +422,70 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     free(worker_last_time);
 }
 
-void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
-    return;
-}
 // void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
-
-//     printf("Running MW with dynamic work allocation\n");
-
-//     // Stuff to keep track of work chunks we've sent out, and whether or not workers are dead
-//     one_work_t **work_chunks;
-//     int num_work_chunks, *work_chunk_completion, *worker_status; 
-//     double *worker_last_time, cur_time;
-
-//     // Stuff to store results
-//     one_result_t *result;
-//     one_result_t **result_array;
-
-//     // Initalize them all!!!
-//     initalizeMaster(argc, argv, f, sz, &work_chunks, &num_work_chunks, 
-//         &work_chunk_completion, &worker_status, &worker_last_time, &cur_time, 
-//         &result_array);
-
-//     // For tracking sent work chunks and received completed work chunks
-//     int work_chunk_iterator = 0;
-//     int process_num = 1;
-//     int result_index = 0;
-//     int received = -10;
-//     MPI_Status probe_status;                               // contains metadata about probed messages
-//     MPI_Status recv_status;                                // contains metadata about received messages
-
-//     /* Send out the first batch of work to workers round-robbin style */
-//     for (process_num = 1; process_num < sz; process_num++) {
-
-//         // Send the next work chunk
-//         one_work_t *work_chunk = work_chunks[work_chunk_iterator];
-//         int tag;
-//         if (work_chunk) {
-//             tag = work_chunk_iterator++ + 1;
-//             MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
-//                 tag, MPI_COMM_WORLD);
-//         } else {
-//             printf("Exiting the initial round robbin for loop in master\n");
-//             process_num = sz;                           // exit the for loop
-//         }
-//     }
-
-//     /* Tell workers to stop running */
-//     for (i = 1; i < sz; ++i)
-//     {
-//         int num = 1;
-//         MPI_Send(&num, 1, MPI_INT, i, DONE_TAG, MPI_COMM_WORLD);
-//     }
-
+//     return;
 // }
+void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
-// // {
+    printf("Running MW with dynamic work allocation\n");
+
+    // Stuff to keep track of work chunks we've sent out, and whether or not workers are dead
+    one_work_t **work_chunks;
+    int num_work_chunks, *work_chunk_completion, *worker_status; 
+    double *worker_last_time, cur_time;
+
+    // Stuff to store results
+    one_result_t *result;
+    one_result_t **result_array;
+
+    // Initalize them all!!!
+    initalizeMaster(argc, argv, f, sz, &work_chunks, &num_work_chunks, 
+        &work_chunk_completion, &worker_status, &worker_last_time, &cur_time, 
+        &result_array);
+
+    // For tracking sent work chunks and received completed work chunks
+    int work_chunk_iterator = 0;
+    int process_num = 1;
+    int result_index = 0;
+    int received = -10;
+    MPI_Status probe_status;                               // contains metadata about probed messages
+    MPI_Status recv_status;                                // contains metadata about received messages
+
+    /* Send out the first batch of work to workers round-robbin style */
+    logToFileWithInt("Total Number of Chunks: %d\n", num_work_chunks);
+    for (process_num = 1; process_num < sz; process_num++) {
+
+        // Send the next work chunk
+        one_work_t *work_chunk = work_chunks[work_chunk_iterator];
+        int tag;
+        if (work_chunk) {
+            tag = work_chunk_iterator++ + 1;
+            MPI_Send(work_chunk, f->work_sz, MPI_CHAR, process_num,
+                tag, MPI_COMM_WORLD);
+        } else {
+            printf("Exiting the initial round robbin for loop in master\n");
+            process_num = sz;                           // exit the for loop
+        }
+    }
+
+    // Present results (while checking for errors)
+    if (f->report_results(num_work_chunks, result_array) == 0) {
+        printf("There was an error in the report_results function.\n");
+    }
+
+    // Tell workers to finish running
+    restWorkers(sz, f, worker_status);
+
+    /* Free things that are on the heap */
+    free(work_chunk_completion);
+    free(worker_status);
+    free(worker_last_time);
+    free_array((void **)work_chunks, num_work_chunks);
+    free_array((void **)result_array, num_work_chunks);
+
+}
+
+// {
 
 
 
@@ -688,16 +526,6 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 //     assert (current_work_chunk == total_num_chunks);
 
 
-
-//     /* Report result! */
-//     if (f->report_results(total_num_chunks, result_array) == 0) {
-//         printf("There was an error in the report_results function\n");
-//     }
-
-//     /* Free things that are on the heap */
-//     free_array((void **)work_chunks, total_num_chunks);
-//     free_array((void **)result_array, total_num_chunks);
-// }
 void runWorker(struct mw_fxns *f) {
     int j = 0;
 

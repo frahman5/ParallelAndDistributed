@@ -1,57 +1,37 @@
-Rand_float: 0.340877
-Rand_float: 0.916501
-Rand_float: 0.113414
-Rand_float: 0.045181
-Rand_float: 0.626625
-Rand_float: 0.598223
-Uh oh ... A worker failed
-Uh oh ... A worker failed
-Rand_float: 0.327303
-Rand_float: 0.681738
-Rand_float: 0.963753
-Rand_float: 0.446959
-Rand_float: 0.794055
-Rand_float: 0.037805
-Uh oh ... A worker failed
-Rand_float: 0.363460
-Rand_float: 0.664430
-Rand_float: 0.492125
-Rand_float: 0.692689
-Rand_float: 0.683361
-Rand_float: 0.975533
-Rand_float: 0.076899
-Rand_float: 0.139837
-Rand_float: 0.810403
-Rand_float: 0.704320
-Uh oh ... A worker failed
-Rand_float: 0.514769
-Rand_float: 0.718322
-Uh oh ... A worker failed
-Rand_float: 0.151264
-Rand_float: 0.439159
-Rand_float: 0.949900
-Rand_float: 0.893918
-Rand_float: 0.787820
-Uh oh ... A worker failed
-Rand_float: 0.888143
-Rand_float: 0.022599
-Rand_float: 0.025633
-Rand_float: 0.075609
+Total Number of Chunks: 4
+Rand_float: 0.802346
+Rand_float: 0.351771
+Rand_float: 0.901181
+Rand_float: 0.450590
+Total Number of Chunks: 4
+Total Number of Chunks: 4
+Total Number of Chunks: 4
 Uh oh ... A worker failed
 Uh oh ... A worker failed
 Uh oh ... A worker failed
-Rand_float: 0.575640
-Rand_float: 0.776287
-Rand_float: 0.234779
-Rand_float: 0.469542
-Uh oh ... A worker failed
-Rand_float: 0.128681
-Rand_float: 0.051266
-Rand_float: 0.588821
 Uh oh ... A worker failed
 Uh oh ... A worker failed
-Rand_float: 0.257362
-Rand_float: 0.308478
-Rand_float: 0.582534
-Rand_float: 0.476964
-Rand_float: 0.334111
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
