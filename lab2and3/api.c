@@ -292,7 +292,6 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     int send_flag = 0;
     MPI_Status probe_status;
 
-
     /* Send out the first batch of work to workers round-robbin style */
     logToFileWithInt("Total Number of Chunks: %d\n", num_work_chunks);
     int process_num;
@@ -349,7 +348,6 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
             send_flag = 0;
         }
         
-
         // check if we have live workers. If not, exit the program
         checkForDeadWorkers(worker_last_time, &worker_status, sz);
         printIntArray(worker_status, sz-1, "Worker status: ");

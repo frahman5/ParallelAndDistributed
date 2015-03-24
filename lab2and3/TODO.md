@@ -1,9 +1,3 @@
-## Make MW_Run_2 tolerate failing workers
-    -> Get dynamic allocation working without the dynamic part, while
-    tracking death of workers
-    -> Add in dynamic allocation
-    -> If Faiyam has time, moduralize the master code
-
 ## Make MW_Run_1 tolerate failing masters
 - Periodically, the master will write the work_chunk_completion array
 and the results array to disk
@@ -16,3 +10,6 @@ so that when the original master fails, they still receive work chunks
 
 ?? Do we need to write data structures about dead workers to disk
     -> Just also write worker_status array to disk, and worker_last_time to disk
+
+## After making MW_Run_1 tolerate failing masters, it shouldn't be too hard to 
+make MW_Run_2 tolerate it, since the code is modularized
