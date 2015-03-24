@@ -13,7 +13,7 @@ our master worker API library */
 #else
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
-#define PROB_FAIL       0.25        // (Contrived...) Probability that a worker will fail
+#define PROB_FAIL       0.1        // (Contrived...) Probability that a worker will fail
 #define DEBUG_FILE      "debug.txt" 
 
 void free_array(void **array, int sz) {
@@ -126,6 +126,16 @@ void printIntArray(int *array, int sz, char *message) {
     printf("]\n");
 }
 
+void printDoubleArray(double *array, int sz, char *message) {
+    int j;
+    printf("%s\n", message);
+    printf("[ ");
+    for (j = 0; j < sz; j++) {
+        printf("%f ", array[j]);
+    }
+    printf("]\n");
+
+}
 void printPointerArray(void **array, int sz, char *message) {
     int j;
     printf("%s\n", message);
