@@ -465,8 +465,19 @@ void restWorkers(int sz, struct mw_fxns *f, int *worker_status) {
     }
 }
 
+// This is to update the data structure that keeps track of dead workers
+void checkForDeadWorkers(double *worker_last_time, int **worker_status, int sz) {
+    double cur_time = MPI_Wtime();
+    int t = 0;
+    for (t = 0; t < (sz-1); ++t)
+    {
+        if((cur_time - worker_last_time[t]) > DEATH_INTERVAL) { 
+            *worker_status[t] = 0;
+        }
+    }
 
-
+}
+        
 void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     printf("Running MW Round-Robbin style\n");
 
@@ -523,15 +534,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
         }
 
         //Check for dead workers
-        cur_time = MPI_Wtime();
-        int t = 0;
-        for (t = 0; t < (sz-1); ++t)
-        {
-            if((cur_time - worker_last_time[t]) > DEATH_INTERVAL)
-            {
-                worker_status[t] = 0;
-            }
-        }
+        checkForDeadWorkers(worker_last_time, &worker_status, sz);
         printIntArray(worker_status, sz-1, "Worker status: ");
 
         // check if we have live workers. If not, exit the program
@@ -539,7 +542,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
         // If we DO have live workers, send them some work!
         int lowest_undone_work_index = workLeftToDo(work_chunk_completion, num_work_chunks);
-
         if (work_chunks[work_chunk_iterator] != NULL || lowest_undone_work_index != -1) {
 
             // Send a work chunk to a process using round robin
@@ -579,7 +581,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
     // Tell workers to finish running
     restWorkers(sz, f, worker_status);
-    
 
     // What is the state of the world according to the master at the end of execution?
     printIntArray(worker_status, sz-1, "Worker status at end of master: ");
