@@ -222,8 +222,8 @@ void RetrieveMasterState(int* work_chunk_completion, one_result_t* result_array,
     //Using w ensures the file contents are cleared! Maybe need to manage this
     fp = fopen(MASTER_STATE_FILE, "rb"); 
 
-    printf("Reading master_id\n\n\n");
-    
+   
+
     //Write result_index  to file
     fread(master_id, sizeof(int), 1, fp);
 
@@ -292,12 +292,12 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     else
     {
         int designated_master_id;
-        
-        RetrieveMasterState(work_chunk_completion, result_array, num_work_chunks, result_index, designated_master_id, f);
+        RetrieveMasterState(work_chunk_completion, result_array, num_work_chunks, &result_index, &designated_master_id, f);
         assert(designated_master_id == myid);
+        printIntArray(work_chunk_completion, num_work_chunks, "work_chunk_completion from new master: ");
+        f->report_results(result_index, result_array);
     }
         
-
     while (result_index < num_work_chunks) 
     {
 
