@@ -74,7 +74,7 @@ int len(one_work_t **array)
     while(array[num]) {
         num++;
     }
-    
+
     return num;
 }
 
@@ -307,8 +307,36 @@ void checkForDeadWorkers(double *worker_last_time, int **worker_status, int sz) 
     }
 
 }
+
+/* Receive a result in the master */
+void receiveResult(struct mw_fxns *f, MPI_Status probe_status, 
+    one_result_t **result_array, int *result_index, 
+    int *work_chunk_completion, double *worker_last_time, 
+    int *received) {
+
+    MPI_Status recv_status;
+
+    // Go get the message waiting for us in our mailbox
+    one_result_t *result = (one_result_t *)malloc(f->result_sz);
+    assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
+    MPI_Recv(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, 
+        probe_status.MPI_TAG, MPI_COMM_WORLD, &recv_status);
+
+    // Make sure we got what we expected
+    assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
+    assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
+
+    // Update the result_array, result_index, and work_chumk_completion array
+    updateResults(recv_status.MPI_TAG - 1, result_array, result_index, 
+            result, work_chunk_completion, worker_last_time, recv_status.MPI_SOURCE - 1);
+
+    // Reset the received tag
+    *received = 0; 
+}
+
         
 void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
+
     printf("Running MW Round-Robbin style\n");
 
     // Stuff to keep track of work chunks we've sent out, and whether or not workers are dead
@@ -343,24 +371,8 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
          
         //Receive results if possible
         if (received == 1) {
-            
-            // Go get the message waiting for us in our mailbox
-            result = (one_result_t *)malloc(f->result_sz);
-            assert(checkPointer(result, "Failed to allocate a result while collecting worker results"));
-            MPI_Recv(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, 
-                probe_status.MPI_TAG, MPI_COMM_WORLD, &recv_status);
-
-            // Make sure we got what we expected
-            assert(probe_status.MPI_SOURCE == recv_status.MPI_SOURCE);
-            assert(probe_status.MPI_TAG == recv_status.MPI_TAG);
-
-            // Update the result_array, result_index, and work_chumk_completion array
-            updateResults(recv_status.MPI_TAG - 1, result_array, &result_index, 
-                    result, work_chunk_completion, worker_last_time, recv_status.MPI_SOURCE - 1);
-
-            // Reset the received tag
-            received = 0;           
-
+            receiveResult(f, probe_status, result_array, 
+                &result_index, work_chunk_completion, worker_last_time, &received);          
         }
 
         //Check for dead workers
@@ -449,7 +461,7 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
     int result_index = 0;
     int received = -10;
     MPI_Status probe_status;                               // contains metadata about probed messages
-    MPI_Status recv_status;                                // contains metadata about received messages
+    // MPI_Status recv_status;                                // contains metadata about received messages
 
     /* Send out the first batch of work to workers round-robbin style */
     logToFileWithInt("Total Number of Chunks: %d\n", num_work_chunks);
@@ -467,6 +479,8 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
             process_num = sz;                           // exit the for loop
         }
     }
+    logToFile("successfully sent out first few chunks round robbin style\n");
+    logToFileWithInt("work_chunk_iterator is now at: %d\n", work_chunk_iterator);
 
     // Present results (while checking for errors)
     if (f->report_results(num_work_chunks, result_array) == 0) {
@@ -490,11 +504,6 @@ void runDynamicMaster(int argc, char **argv, struct mw_fxns *f, int sz) {
 
 
 
-//      If necessary, send out remaining work-chunks dynamically
-//         When a worker says they are done, send them new work! 
-//     int num_results_received = 0;
-//     one_result_t **result_array = (one_result_t **)malloc(sizeof(one_result_t*) * total_num_chunks);
-//     assert(checkPointer(result_array, "MW library failed to allocate result_array on the heap"))
 //     while (num_results_received != total_num_chunks) {
 
 //         // Create a container for the result

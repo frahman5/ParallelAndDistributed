@@ -1,11 +1,43 @@
-Total Number of Chunks: 4
-Rand_float: 0.802346
-Rand_float: 0.351771
-Rand_float: 0.901181
-Rand_float: 0.450590
-Total Number of Chunks: 4
-Total Number of Chunks: 4
-Total Number of Chunks: 4
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
+Uh oh ... A worker failed
 Uh oh ... A worker failed
 Uh oh ... A worker failed
 Uh oh ... A worker failed
