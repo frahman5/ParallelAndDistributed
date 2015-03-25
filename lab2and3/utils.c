@@ -13,7 +13,7 @@ our master worker API library */
 #else
   #define debug_print(M, ...) fprintf(stderr, M , ##__VA_ARGS__)
 #endif
-#define PROB_FAIL       0        // (Contrived...) Probability that a worker will fail
+#define PROB_FAIL       0.2        // (Contrived...) Probability that a worker will fail
 #define DEBUG_FILE      "debug.txt" 
 
 void free_array(void **array, int sz) {
@@ -81,7 +81,9 @@ int checkPointer(void *pointer, char *error_message) {
 int F_Send(void *buf, int count, MPI_Datatype datatype, int dest, 
     int tag, MPI_Comm comm, MPI_Request *request) {
     if (random_fail()) {
-        logToFile("Uh oh ... A worker failed\n");
+        int myid;
+        MPI_Comm_rank (MPI_COMM_WORLD, &myid);
+        logToFileWithInt("Uh oh ... Worked %d failed\n", myid);
         MPI_Finalize();
         exit(0);
         return 0;

@@ -7,20 +7,16 @@
 
 #define MASTER              0                   // Master process ID
 #define DONE_TAG            0                   // This is the master telling the worker it can stop
-#define UPDATE_MASTER_TAG   999999999                // Tag to update master in every process
+#define UPDATE_MASTER_TAG   999999999           // Tag to update master in every process
 #define DEATH_INTERVAL      5                   // If a worker hasn't sent anything in these seconds he is dead                                    
 #define MASTER_STATE_FILE   "master_state.txt"  // Name of the file where the master's last state is stored
 #define MASTER_DEATH_INTERVAL  4                // If a master hasn't sent nything in these seconds he is dead
 #define WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i)    i + 1     
 
 void findNextLiveWorker(int *worker_status, int *process_num, int sz, int master_id) {
-    // make sure we're not sending a message from the master to the master
-    if (*process_num == master_id) {
-        (*process_num)++;
-    }
 
-    // make sure we're not sending a message to a dead worker
-    while (worker_status[*process_num] == 0) {
+    // make sure we're not sending a message to a dead worker, or to ourselves
+    while ( (worker_status[*process_num] == 0) || (*process_num == master_id) ) {
         (*process_num)++;
         assert(resetProcessNum(process_num, sz, master_id));
     }
@@ -258,10 +254,7 @@ void alertWorkersNewMaster(int *worker_status, int size, struct mw_fxns *f, int 
         {
             assert(WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i) >= new_master);
             MPI_Send(&new_master, 1, MPI_INT, WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i),
-                UPDATE_MASTER_TAG, MPI_COMM_WORLD);
-            //  MPI_Request master_send_request;
-            // MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
-            
+                UPDATE_MASTER_TAG, MPI_COMM_WORLD);   
         }
     }
 }
@@ -294,6 +287,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
         // Who takes over if i fail
     int previous_designated_master = 0;
     int designated_master = 1;
+
     //Update the master's state for the first time
     if(called_from_worker == 0)
     {
@@ -303,43 +297,32 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     else
     {
         RetrieveMasterState(work_chunk_completion, result_array, num_work_chunks, &result_index, f);
-        int x;
-        logToFile("Work chunk completion\n");
-        for(x = 0; x < num_work_chunks; ++x)
-        {
-            logToFileWithInt("%d ",work_chunk_completion[x]);
-        }
-        printf("New master just initialized state\n");
     }
         
     printf("When entering the main master loop ,result index, num_work_chunks: %d, %d\n", result_index, num_work_chunks);
     while (result_index < num_work_chunks) 
     {
         // Make master fail
-        if(t && called_from_worker == 0)
+        if(result_index == 2 && called_from_worker == 0)
         {
             printf("MASTER FAILED!!!!\n");
-            // waitForUser();
+            logToFileWithInt("When master failed, the incumbent master was: %d\n", designated_master);
             MPI_Finalize();
             exit(0);
         }
 
-        if(myid == 1)
-        {
-            printf("MASTER FAILED!!!!\n");
-            // waitForUser();
-            MPI_Finalize();
-            exit(0);
-        }
+        // if(myid == 1)
+        // {
+        //     printf("MASTER FAILED!!!!\n");
+        //     // waitForUser();
+        //     MPI_Finalize();
+        //     exit(0);
+        // }
         // Have we received anything?
         MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
          
         //Receive results if possible, and update the master state
         if (received == 1) {
-            if (called_from_worker == 1) {
-                printf("The source of the message that the new master is now reading is: %d\n", probe_status.MPI_SOURCE);
-            }
-
             receiveResult(f, probe_status, result_array, &result_index, 
                 work_chunk_completion, worker_last_time, &received);  
 
@@ -608,6 +591,9 @@ void MW_Run (int argc, char **argv, struct mw_fxns *f, int style) {
     int sz, myid;
     MPI_Comm_size (MPI_COMM_WORLD, &sz);
     MPI_Comm_rank (MPI_COMM_WORLD, &myid); 
+    if (myid == 0) {
+        logToFile("\n\n**New Run**\n\n");
+    }
 
     // Seed the pseudo-random number generator
     srand(myid * (unsigned int)time(NULL));
