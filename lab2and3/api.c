@@ -14,6 +14,12 @@
 #define WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i)    i + 1     
 
 void findNextLiveWorker(int *worker_status, int *process_num, int sz, int master_id) {
+    // make sure we're not sending a message from the master to the master
+    if (*process_num == master_id) {
+        (*process_num)++;
+    }
+
+    // make sure we're not sending a message to a dead worker
     while (worker_status[*process_num] == 0) {
         (*process_num)++;
         assert(resetProcessNum(process_num, sz, master_id));
@@ -69,11 +75,11 @@ int checkForLiveWorkers(int *worker_status, int num_processes, int master_id) {
 }
 
 /* for round-robbin master worker, reset the process_num to 1
- if it exceeds the total number of worker processes */
+ if it exceeds the total number of worker processes. */
 int resetProcessNum(int *process_num, int total_num_processes, int master_id) {
     if (*process_num == total_num_processes)
     { 
-        assert (master_id < total_num_processes -1);
+        assert (master_id < total_num_processes - 1);
         *process_num = master_id + 1;        
     } 
     return 1;
@@ -223,7 +229,6 @@ void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array
     fp = fopen(MASTER_STATE_FILE, "rb"); 
     assert(checkPointer(fp, "failed to open a file pointer in RetrieveMasterState\n"));
 
-
     //Read result_index  to file
     fread(result_index, sizeof(int), 1, fp);
 
@@ -289,7 +294,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
         // Who takes over if i fail
     int previous_designated_master = 0;
     int designated_master = 1;
-
     //Update the master's state for the first time
     if(called_from_worker == 0)
     {
@@ -306,13 +310,13 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
             logToFileWithInt("%d ",work_chunk_completion[x]);
         }
         printf("New master just initialized state\n");
-        f->report_results(result_index, result_array);
     }
         
+    printf("When entering the main master loop ,result index, num_work_chunks: %d, %d\n", result_index, num_work_chunks);
     while (result_index < num_work_chunks) 
     {
         // Make master fail
-        if(result_index == 1 && called_from_worker == 0)
+        if(t && called_from_worker == 0)
         {
             printf("MASTER FAILED!!!!\n");
             // waitForUser();
@@ -320,11 +324,21 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
             exit(0);
         }
 
+        if(myid == 1)
+        {
+            printf("MASTER FAILED!!!!\n");
+            // waitForUser();
+            MPI_Finalize();
+            exit(0);
+        }
         // Have we received anything?
         MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
          
         //Receive results if possible, and update the master state
         if (received == 1) {
+            if (called_from_worker == 1) {
+                printf("The source of the message that the new master is now reading is: %d\n", probe_status.MPI_SOURCE);
+            }
 
             receiveResult(f, probe_status, result_array, &result_index, 
                 work_chunk_completion, worker_last_time, &received);  
@@ -334,7 +348,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
 
         // Check for dead workers, and if need be update the workers on who the new master is
         checkForDeadWorkers(worker_last_time, &worker_status, sz, myid);
-
         designated_master = findNextMaster(worker_status, sz, myid);
         if (previous_designated_master != designated_master) 
         {
@@ -342,7 +355,6 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
             alertWorkersNewMaster(worker_status, sz-1, f, designated_master, myid);
         }
             
-        // printIntArray(worker_status, sz-1, "Worker status: ");
 
         // check if we have live workers. If not, exit the program
         assert (checkForLiveWorkers(worker_status, sz, myid));
@@ -367,7 +379,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
             }
 
             // find the the next live worker
-            findNextLiveWorker(worker_status, &process_num, sz, myid);    
+            findNextLiveWorker(worker_status, &process_num, sz, myid);  
 
             // Make an ISend because if process is still working when sending for some reason it fails with Send
             MPI_Request master_send_request;
@@ -501,10 +513,10 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
 
 // }
 
-int isMasterDead(double current_time, double last_recv_time)
-{
+int isMasterDead(double current_time, double last_recv_time) {
     return (last_recv_time != 0) && (current_time - last_recv_time > MASTER_DEATH_INTERVAL);
 }
+
 
 void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
     int j = 0;
