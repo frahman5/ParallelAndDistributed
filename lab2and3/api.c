@@ -7,10 +7,11 @@
 
 #define MASTER              0                   // Master process ID
 #define DONE_TAG            0                   // This is the master telling the worker it can stop
+#define UPDATE_MASTER_TAG   999999999                // Tag to update master in every process
 #define DEATH_INTERVAL      5                   // If a worker hasn't sent anything in these seconds he is dead                                    
 #define MASTER_STATE_FILE   "master_state.txt"  // Name of the file where the master's last state is stored
 #define MASTER_DEATH_INTERVAL  4                // If a master hasn't sent nything in these seconds he is dead
-
+#define WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i)    i + 1     
 
 void findNextLiveWorker(int *worker_status, int *process_num, int sz, int master_id) {
     while (worker_status[*process_num] == 0) {
@@ -23,7 +24,7 @@ int findNextMaster(int *worker_status, int sz, int master_id) {
     int process_num = master_id + 1;
     while (worker_status[process_num] == 0) {
         process_num++;
-        assert(resetProcessNum(process_num, sz, master_id));
+        assert(resetProcessNum(&process_num, sz, master_id));
     }
     return process_num;
 }
@@ -72,6 +73,7 @@ int checkForLiveWorkers(int *worker_status, int num_processes, int master_id) {
 int resetProcessNum(int *process_num, int total_num_processes, int master_id) {
     if (*process_num == total_num_processes)
     { 
+        assert (master_id < total_num_processes -1);
         *process_num = master_id + 1;        
     } 
     return 1;
@@ -186,7 +188,7 @@ int receiveResult(struct mw_fxns *f, MPI_Status probe_status,
 
 //Updates the master's current state in a file in disk
 void UpdateMasterState(int *work_chunk_completion, one_result_t **result_array, int num_work_chunks,
-    int result_index, int designated_master_id, struct mw_fxns *f)
+    int result_index, struct mw_fxns *f)
 {   
     //Open the master's last state file
     FILE *fp;
@@ -194,17 +196,6 @@ void UpdateMasterState(int *work_chunk_completion, one_result_t **result_array, 
     //Using w ensures the file contents are cleared! Maybe need to manage this
     fp = fopen(MASTER_STATE_FILE, "wb"); 
     assert(checkPointer(fp, "failed to open a file pointer in RetrieveMasterState\n"));
-
-    printf("Printing Update Master State stuff to stdout so we can check the file\n");
-    printf("designated_master_id: %d\n", designated_master_id);
-    printf("result_index: %d\n", result_index);
-    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array\n");
-    printf("First result: %lu\n", result_array);
-    f->report_results(result_index, result_array);
-
-
-    //Write result_index  to file
-    fwrite(&designated_master_id, sizeof(int), 1, fp);
 
     //Write result_index  to file
     fwrite(&result_index, sizeof(int), 1, fp);
@@ -223,7 +214,7 @@ void UpdateMasterState(int *work_chunk_completion, one_result_t **result_array, 
 
 //Retrieves the master's current state from a file in disk
 void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array, int num_work_chunks,
-  int *result_index, int *master_id, struct mw_fxns *f)
+  int *result_index, struct mw_fxns *f)
 {
     //Open the master's last state file
     FILE *fp;
@@ -232,8 +223,6 @@ void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array
     fp = fopen(MASTER_STATE_FILE, "rb"); 
     assert(checkPointer(fp, "failed to open a file pointer in RetrieveMasterState\n"));
 
-    //Read result_index  to file
-    fread(master_id, sizeof(int), 1, fp);
 
     //Read result_index  to file
     fread(result_index, sizeof(int), 1, fp);
@@ -251,31 +240,25 @@ void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array
         result_array[i] = result;
     }
 
-    printf("Printing Update Master State stuff from RetrieveMasterState\n");
-    printf("designated_master_id: %d\n", *master_id);
-    printf("result_index: %d\n", *result_index);
-    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array\n");
-    printf("First result: %lu\n", result_array);
-    f->report_results(*result_index, result_array);
     fclose(fp);
 }
 
-int getNewMasterID()
+
+void alertWorkersNewMaster(int *worker_status, int size, struct mw_fxns *f, int new_master, int current_master)
 {
-    int master_id;
-
-    //Open the master's last state file
-    FILE *fp;
-
-    //Using w ensures the file contents are cleared! Maybe need to manage this
-    fp = fopen(MASTER_STATE_FILE, "rb"); 
-
-    //Write result_index  to file
-    fread(&master_id, sizeof(int), 1, fp);
-
-    fclose(fp);
-
-    return master_id;
+    int i;
+    for(i = current_master; i < size; ++i)
+    {
+        if (worker_status[i] == 1)
+        {
+            assert(WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i) >= new_master);
+            MPI_Send(&new_master, 1, MPI_INT, WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i),
+                UPDATE_MASTER_TAG, MPI_COMM_WORLD);
+            //  MPI_Request master_send_request;
+            // MPI_Isend(work_chunk, f->work_sz, MPI_CHAR, process_num, tag, MPI_COMM_WORLD, &master_send_request);
+            
+        }
+    }
 }
 
 void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int myid, int called_from_worker) {
@@ -303,26 +286,32 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     int result_index = 0;
     int received = -10;
     MPI_Status probe_status;                               // contains metadata about probed messages
+        // Who takes over if i fail
+    int previous_designated_master = 0;
+    int designated_master = 1;
 
     //Update the master's state for the first time
     if(called_from_worker == 0)
     {
         // find the the available master
-        int next_master = findNextMaster(worker_status, sz, myid);
-        UpdateMasterState(work_chunk_completion, result_array, num_work_chunks, result_index, next_master, f);
+        UpdateMasterState(work_chunk_completion, result_array, num_work_chunks, result_index, f);
     }
     else
     {
-        int designated_master_id;
-        RetrieveMasterState(work_chunk_completion, result_array, num_work_chunks, &result_index, &designated_master_id, f);
-        assert(designated_master_id == myid);
-        printIntArray(work_chunk_completion, num_work_chunks, "work_chunk_completion from new master: ");
+        RetrieveMasterState(work_chunk_completion, result_array, num_work_chunks, &result_index, f);
+        int x;
+        logToFile("Work chunk completion\n");
+        for(x = 0; x < num_work_chunks; ++x)
+        {
+            logToFileWithInt("%d ",work_chunk_completion[x]);
+        }
+        printf("New master just initialized state\n");
         f->report_results(result_index, result_array);
     }
         
     while (result_index < num_work_chunks) 
     {
-
+        // Make master fail
         if(result_index == 1 && called_from_worker == 0)
         {
             printf("MASTER FAILED!!!!\n");
@@ -334,20 +323,25 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
         // Have we received anything?
         MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
          
-        //Receive results if possible
+        //Receive results if possible, and update the master state
         if (received == 1) {
 
             receiveResult(f, probe_status, result_array, &result_index, 
                 work_chunk_completion, worker_last_time, &received);  
 
-            //Every time we receive a result, we update the master's state (TO INCLUDE IN receiveResult????)
-            // find the the available master
-            int next_master = findNextMaster(worker_status, sz, myid);
-            UpdateMasterState(work_chunk_completion, result_array, num_work_chunks, result_index, next_master, f);     
+            UpdateMasterState(work_chunk_completion, result_array, num_work_chunks, result_index, f);     
         }
 
-        // Check for dead workers
+        // Check for dead workers, and if need be update the workers on who the new master is
         checkForDeadWorkers(worker_last_time, &worker_status, sz, myid);
+
+        designated_master = findNextMaster(worker_status, sz, myid);
+        if (previous_designated_master != designated_master) 
+        {
+            previous_designated_master = designated_master;
+            alertWorkersNewMaster(worker_status, sz-1, f, designated_master, myid);
+        }
+            
         // printIntArray(worker_status, sz-1, "Worker status: ");
 
         // check if we have live workers. If not, exit the program
@@ -507,80 +501,86 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
 
 // }
 
+int isMasterDead(double current_time, double last_recv_time)
+{
+    return (last_recv_time != 0) && (current_time - last_recv_time > MASTER_DEATH_INTERVAL);
+}
 
 void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
     int j = 0;
-    int current_master = MASTER;
+    int new_master = MASTER;
 
     double last_recv_time = 0;
     double current_time;
     int received = 0;
     MPI_Status probe_status;
 
-
     //Iterate until receive message to stop
     while(j == 0)
     {
-        /* Check to see if master has failed by checking the last time it received something
-            
-            if its been more than x time since last WORK_TAG or DONE_TAG:
-                ChangeMaster(); -> all workers call the function, but since it will always assign 
-        */
-
         current_time = MPI_Wtime();
-        if(last_recv_time != 0)
+
+        // Check if the master is dead
+        if(isMasterDead(current_time, last_recv_time))
         {
-            if(current_time - last_recv_time > MASTER_DEATH_INTERVAL)
+            last_recv_time = 0;
+
+            //If I am the new master, be the new master
+            if(myid == new_master)
             {
-                printf("MASTER IS DEAD FROM WORKER %d\n", myid);
-                last_recv_time = 0;
-                current_master = getNewMasterID();
-                printf("Current master %d from worker %d\n",current_master, myid );
-                if(myid == current_master)
-                {
-                    runRoundRobbinMaster(argc, argv, f, sz, myid, 1);
-                    j = 1;
-                }
+                runRoundRobbinMaster(argc, argv, f, sz, myid, 1);
+                j = 1;
             }
         }
-        if(myid != current_master)
+
+        // Have we received anything?
+        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
+
+        // If necessary update the new master
+        if((received == 1) && (probe_status.MPI_TAG == UPDATE_MASTER_TAG))
         {
-            // Have we received anything?
-            MPI_Iprobe(current_master, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
-            if(received == 1)
+
+            MPI_Status status;
+            MPI_Recv(&new_master, 1, MPI_INT, probe_status.MPI_SOURCE, probe_status.MPI_TAG, 
+                MPI_COMM_WORLD, &status);                
+            last_recv_time = MPI_Wtime();
+            received = 0;
+        }
+        else if(received == 1)
+        {
+            // Make sure we are either doing work or being told to stop
+            assert(probe_status.MPI_TAG == DONE_TAG || probe_status.MPI_TAG > 0);
+            
+            //Receive a work chunk
+            one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
+            assert(checkPointer(work_chunk, "Failed to allocate a work_chunk on a worker"));
+
+            MPI_Status status;
+            MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, probe_status.MPI_SOURCE, probe_status.MPI_TAG, 
+                MPI_COMM_WORLD, &status);                
+            
+            //Update last_recv time
+            last_recv_time = MPI_Wtime();
+
+            //If work_tag then work and send result
+            if (status.MPI_TAG > 0)
             {
-                //Receive a work chunk
-                one_work_t *work_chunk = (one_work_t*)malloc(f->work_sz);
-
-                assert(checkPointer(work_chunk, "Failed to allocate a work_chunk on a worker"));
-
-                MPI_Status status;
-                MPI_Recv(work_chunk, f->work_sz, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-                
-                //Update last_recv time
-                last_recv_time = MPI_Wtime();
-
-                //If work_tag then work and send result
-                if (status.MPI_TAG > 0)
-                {
-                    
-                    int masters_work_tag = status.MPI_TAG;
-                    one_result_t *result = f->do_one_work(work_chunk);
-                    MPI_Request send_request;
-                    F_Send(result, f->result_sz, MPI_CHAR, current_master, masters_work_tag, MPI_COMM_WORLD, &send_request);
-                    free(result); free(work_chunk);
-                    received = 0;
-                }
-
-                //If end tag then simply finish loop and exit
-                else
-                {
-                    assert(status.MPI_TAG == DONE_TAG);
-                    j = 1;
-                }
-
+                int masters_work_tag = status.MPI_TAG;
+                one_result_t *result = f->do_one_work(work_chunk);
+                MPI_Request send_request;
+                F_Send(result, f->result_sz, MPI_CHAR, probe_status.MPI_SOURCE, masters_work_tag, MPI_COMM_WORLD, &send_request);
+                free(result); free(work_chunk);
+                received = 0;
             }
-        }   
+            //If end tag then simply finish loop and exit
+            else
+            {
+                assert(status.MPI_TAG == DONE_TAG);
+                j = 1;
+            }
+
+        }
+        
     } 
 }
 
@@ -589,7 +589,6 @@ void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
 /*==============================================================*/
 void MW_Run (int argc, char **argv, struct mw_fxns *f, int style) {
 
-    printf("Size of one_result_t: %d\n", f->result_sz);
     // Make sure the user asked for a valid style of master worker
     assert(style == 1 || style == 2);
 
