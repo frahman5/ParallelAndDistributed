@@ -2,30 +2,28 @@
 
 **New Run**
 
-Uh oh ... Worked 4 failed
-Uh oh ... Worked 6 failed
 When master failed, the incumbent master was: 1
-Uh oh ... Worked 2 failed
-Uh oh ... Worked 5 failed
+I am the new master. My id is 1
 
 
 **New Run**
 
-Uh oh ... Worked 2 failed
 Uh oh ... Worked 4 failed
-Uh oh ... Worked 3 failed
 When master failed, the incumbent master was: 1
-Uh oh ... Worked 6 failed
-
-
-**New Run**
-
-Uh oh ... Worked 2 failed
-Uh oh ... Worked 6 failed
-Uh oh ... Worked 4 failed
-Uh oh ... Worked 7 failed
 Uh oh ... Worked 5 failed
-Uh oh ... Worked 1 failed
+I am the new master. My id is 1
 Uh oh ... Worked 8 failed
 Uh oh ... Worked 3 failed
+Uh oh ... Worked 6 failed
+Uh oh ... Worked 2 failed
+Uh oh ... Worked 7 failed
+I am the new master. My id is 9
+
+
+**New Run**
+
 When master failed, the incumbent master was: 1
+I am the new master. My id is 1
+Uh oh ... Worked 7 failed
+Uh oh ... Worked 2 failed
+Uh oh ... Worked 5 failed

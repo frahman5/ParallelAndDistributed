@@ -4,15 +4,48 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+#include <assert.h>
 
-#define MASTER              0                   // Master process ID
-#define DONE_TAG            0                   // This is the master telling the worker it can stop
-#define UPDATE_MASTER_TAG   999999999           // Tag to update master in every process
-#define DEATH_INTERVAL      5                   // If a worker hasn't sent anything in these seconds he is dead                                    
-#define MASTER_STATE_FILE   "master_state.txt"  // Name of the file where the master's last state is stored
-#define MASTER_DEATH_INTERVAL  4                // If a master hasn't sent nything in these seconds he is dead
-#define WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i)    i + 1     
+#define MASTER                                          0                   // Master process ID
+#define DONE_TAG                                        0                   // This is the master telling the worker it can stop
+#define UPDATE_MASTER_TAG                               999999999           // Tag to update master in every process
+#define MASTER_ELECTION_INTERVAL                        2                   // how long a worker should wait to see if a new master takes leadership
+#define DEATH_INTERVAL                                  5                   // If a worker hasn't sent anything in these seconds he is dead                                    
+#define MASTER_STATE_FILE                               "master_state.txt"  // Name of the file where the master's last state is stored
+#define MASTER_DEATH_INTERVAL                           4                   // If a master hasn't sent nything in these seconds he is dead
+#define WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i)    i + 1       
 
+int electNewMaster(int *new_masters, int myid) {
+    int x = 0;
+    int new_master = new_masters[x];
+    double start_time, cur_time;
+    start_time = MPI_Wtime(); cur_time = MPI_Wtime();
+    int received = 0;
+    MPI_Status probe_status;
+    while (new_master != 0) {
+
+        // See if the new master has sent you a message. If so exit
+        MPI_Iprobe(new_master, MPI_ANY_TAG, MPI_COMM_WORLD, &received, &probe_status);
+        if (received == 1) {
+            return 0;
+        }
+
+        // Otherwise if it's been too long, declare that master dead
+        cur_time = MPI_Wtime();
+        if ((cur_time - start_time) > MASTER_ELECTION_INTERVAL) {
+            new_master = new_masters[++x];
+            start_time = cur_time;
+        }
+
+        // If I'm the new master, return and start being the master!
+        if (myid == new_master) {
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
 void findNextLiveWorker(int *worker_status, int *process_num, int sz, int master_id) {
 
     // make sure we're not sending a message to a dead worker, or to ourselves
@@ -22,13 +55,21 @@ void findNextLiveWorker(int *worker_status, int *process_num, int sz, int master
     }
 }
 
-int findNextMaster(int *worker_status, int sz, int master_id) {
-    int process_num = master_id + 1;
-    while (worker_status[process_num] == 0) {
-        process_num++;
-        assert(resetProcessNum(&process_num, sz, master_id));
+/* next_masters is a list of all remaining live workers, from the masters perspective */ 
+int *findNextMasters(int *worker_status, int sz, int master_id) {
+    int *next_masters = (int *)malloc( (sz - 1) * sizeof(int));
+    assert(checkPointer(next_masters, "failed to allocate next_masters in findNextMasters"));
+
+    int process_num;
+    int designated_masters_index = 0;
+    for (process_num = master_id + 1; process_num < sz; process_num++) {
+        if (worker_status[process_num - 1] != 0) {
+            next_masters[designated_masters_index++] = process_num;
+        }
     }
-    return process_num;
+    next_masters[designated_masters_index] = 0; // Null-terminate the list
+
+    return next_masters;
 }
 
 int updateResults(int work_chunk_index, one_result_t** result_array, 
@@ -245,15 +286,14 @@ void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array
 }
 
 
-void alertWorkersNewMaster(int *worker_status, int size, struct mw_fxns *f, int new_master, int current_master)
-{
+void alertWorkersNewMasters(int *worker_status, int size_of_worker_status_array, struct mw_fxns *f, int *new_masters, int current_master) {
     int i;
-    for(i = current_master; i < size; ++i)
+    for(i = current_master; i < size_of_worker_status_array; ++i)
     {
         if (worker_status[i] == 1)
         {
-            assert(WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i) >= new_master);
-            MPI_Send(&new_master, 1, MPI_INT, WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i),
+            assert(WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i) >= new_masters[0]);
+            MPI_Send(new_masters, size_of_worker_status_array, MPI_INT, WORKER_STATUS_INDEX_TO_TRUE_WORKER_SOURCE(i),
                 UPDATE_MASTER_TAG, MPI_COMM_WORLD);   
         }
     }
@@ -286,7 +326,10 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     MPI_Status probe_status;                               // contains metadata about probed messages
         // Who takes over if i fail
     int previous_designated_master = 0;
-    int designated_master = 1;
+    int *designated_masters = (int *)malloc( (sz - 1) * sizeof(int));
+    assert(checkPointer(designated_masters, "failed to allocate designated_masters in roundRobbin master\n"));
+    designated_masters = findNextMasters(worker_status, sz, myid);
+    printIntArray(designated_masters, sz - 1, "Initial value of designated masters array \n");
 
     //Update the master's state for the first time
     if(called_from_worker == 0)
@@ -303,10 +346,9 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     while (result_index < num_work_chunks) 
     {
         // Make master fail
-        if(result_index == 2 && called_from_worker == 0)
-        {
+        if(result_index == 2 && called_from_worker == 0) {
             printf("MASTER FAILED!!!!\n");
-            logToFileWithInt("When master failed, the incumbent master was: %d\n", designated_master);
+            logToFileWithInt("When master failed, the incumbent master was: %d\n", designated_masters[0]);
             MPI_Finalize();
             exit(0);
         }
@@ -331,11 +373,11 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
 
         // Check for dead workers, and if need be update the workers on who the new master is
         checkForDeadWorkers(worker_last_time, &worker_status, sz, myid);
-        designated_master = findNextMaster(worker_status, sz, myid);
-        if (previous_designated_master != designated_master) 
+        designated_masters = findNextMasters(worker_status, sz, myid);
+        if (previous_designated_master != designated_masters[0]) 
         {
-            previous_designated_master = designated_master;
-            alertWorkersNewMaster(worker_status, sz-1, f, designated_master, myid);
+            previous_designated_master = designated_masters[0];
+            alertWorkersNewMasters(worker_status, sz-1, f, designated_masters, myid);
         }
             
 
@@ -503,7 +545,9 @@ int isMasterDead(double current_time, double last_recv_time) {
 
 void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
     int j = 0;
-    int new_master = MASTER;
+    int *new_masters = (int *)malloc( (sz - 1) * sizeof(int));
+    assert(checkPointer(new_masters, "failed to allocate new_masters in worker\n"));
+    initializeIntArray(new_masters, sz-1, -1); // bogus initialization
 
     double last_recv_time = 0;
     double current_time;
@@ -516,13 +560,13 @@ void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
         current_time = MPI_Wtime();
 
         // Check if the master is dead
-        if(isMasterDead(current_time, last_recv_time))
-        {
+        if(isMasterDead(current_time, last_recv_time)) {
             last_recv_time = 0;
 
             //If I am the new master, be the new master
-            if(myid == new_master)
+            if(electNewMaster(new_masters, myid))
             {
+                logToFileWithInt("I am the new master. My id is %d\n", myid);
                 runRoundRobbinMaster(argc, argv, f, sz, myid, 1);
                 j = 1;
             }
@@ -536,8 +580,10 @@ void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
         {
 
             MPI_Status status;
-            MPI_Recv(&new_master, 1, MPI_INT, probe_status.MPI_SOURCE, probe_status.MPI_TAG, 
-                MPI_COMM_WORLD, &status);                
+            // printf("Worker %d: Before we receive new_masters, myid is: %d\n", myid, myid);
+            MPI_Recv(new_masters, sz - 1, MPI_INT, probe_status.MPI_SOURCE, probe_status.MPI_TAG, 
+                MPI_COMM_WORLD, &status);       
+            // printf("Worker %d: After we receive new_masters, myid is: %d\n", myid, myid);         
             last_recv_time = MPI_Wtime();
             received = 0;
         }
