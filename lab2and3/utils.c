@@ -48,13 +48,15 @@ void logToFileWithFloat(char *formatString, float var) {
 
 /* Returns 1 if the worker should fail, 0 otherwise */
 int random_fail() {
+    int myid;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 
     // Generate a random float between 0 and 1.0
     // logToFileWithInt("Rand Max: %d\n", RAND_MAX);
     float rand_float = (float)rand()/(float)(RAND_MAX);
 
     // Compare to PROB_FAIL and return
-    if (rand_float <= PROB_FAIL) {
+    if ((rand_float <= PROB_FAIL)) {
         return 1; // the worker should fail
     } else if ((rand_float > PROB_FAIL) && (rand_float <= 1.0)) {
         return 0;

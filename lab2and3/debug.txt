@@ -2,28 +2,90 @@
 
 **New Run**
 
-When master failed, the incumbent master was: 1
-I am the new master. My id is 1
-
-
-**New Run**
-
-Uh oh ... Worked 4 failed
-When master failed, the incumbent master was: 1
-Uh oh ... Worked 5 failed
-I am the new master. My id is 1
 Uh oh ... Worked 8 failed
-Uh oh ... Worked 3 failed
-Uh oh ... Worked 6 failed
-Uh oh ... Worked 2 failed
+When master failed, the incumbent master was: 1
+Uh oh ... Worked 5 failed
+I am the new master. My id is 1
+I am the new master. My id is 2
+I am the new master. My id is 3
+Uh oh ... Worked 31 failed
+Uh oh ... Worked 16 failed
 Uh oh ... Worked 7 failed
-I am the new master. My id is 9
+Uh oh ... Worked 12 failed
+Uh oh ... Worked 24 failed
+Uh oh ... Worked 14 failed
+Uh oh ... Worked 32 failed
+Uh oh ... Worked 27 failed
+Uh oh ... Worked 21 failed
+
+
+**New Run**
+
+When master failed, the incumbent master was: 1
+Uh oh ... Worked 8 failed
+I am the new master. My id is 1
+I am the new master. My id is 2
+I am the new master. My id is 3
+Uh oh ... Worked 26 failed
+Uh oh ... Worked 11 failed
+Uh oh ... Worked 4 failed
+Uh oh ... Worked 13 failed
+Uh oh ... Worked 7 failed
+Uh oh ... Worked 33 failed
+
+
+**New Run**
+
+Uh oh ... Worked 8 failed
+When master failed, the incumbent master was: 1
+I am the new master. My id is 1
+I am the new master. My id is 2
+I am the new master. My id is 3
+Uh oh ... Worked 10 failed
+
+
+**New Run**
+
+Uh oh ... Worked 8 failed
+When master failed, the incumbent master was: 1
+I am the new master. My id is 1
+I am the new master. My id is 2
+I am the new master. My id is 3
+Uh oh ... Worked 7 failed
 
 
 **New Run**
 
 When master failed, the incumbent master was: 1
 I am the new master. My id is 1
-Uh oh ... Worked 7 failed
-Uh oh ... Worked 2 failed
-Uh oh ... Worked 5 failed
+Uh oh ... Worked 3 failed
+Uh oh ... Worked 9 failed
+
+
+**New Run**
+
+When master failed, the incumbent master was: 1
+Uh oh ... Worked 12 failed
+Uh oh ... Worked 1 failed
+I am the new master. My id is 2
+Uh oh ... Worked 9 failed
+
+
+**New Run**
+
+When master failed, the incumbent master was: 1
+Uh oh ... Worked 9 failed
+
+
+**New Run**
+
+When master failed, the incumbent master was: 1
+I am the new master. My id is 1
+I am the new master. My id is 2
+
+
+**New Run**
+
+When master failed, the incumbent master was: 1
+I am the new master. My id is 1
+Uh oh ... Worked 6 failed
