@@ -185,7 +185,7 @@ int receiveResult(struct mw_fxns *f, MPI_Status probe_status,
 }
 
 //Updates the master's current state in a file in disk
-void UpdateMasterState(int* work_chunk_completion, one_result_t** result_array, int num_work_chunks,
+void UpdateMasterState(int *work_chunk_completion, one_result_t **result_array, int num_work_chunks,
     int result_index, int designated_master_id, struct mw_fxns *f)
 {   
     //Open the master's last state file
@@ -193,6 +193,15 @@ void UpdateMasterState(int* work_chunk_completion, one_result_t** result_array, 
 
     //Using w ensures the file contents are cleared! Maybe need to manage this
     fp = fopen(MASTER_STATE_FILE, "wb"); 
+    assert(checkPointer(fp, "failed to open a file pointer in RetrieveMasterState\n"));
+
+    printf("Printing Update Master State stuff to stdout so we can check the file\n");
+    printf("designated_master_id: %d\n", designated_master_id);
+    printf("result_index: %d\n", result_index);
+    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array\n");
+    printf("First result: %lu\n", result_array);
+    f->report_results(result_index, result_array);
+
 
     //Write result_index  to file
     fwrite(&designated_master_id, sizeof(int), 1, fp);
@@ -204,37 +213,50 @@ void UpdateMasterState(int* work_chunk_completion, one_result_t** result_array, 
     fwrite(work_chunk_completion, sizeof(int), num_work_chunks, fp);
 
     //Write results array to file
-    fwrite(result_array, f->result_sz, num_work_chunks, fp);
+    int i = 0;
+    for (i = 0; i < result_index; i++) {
+        fwrite(result_array[i], f->result_sz, 1, fp);
+    }
+    
     fclose(fp);
 }
 
 //Retrieves the master's current state from a file in disk
-void RetrieveMasterState(int* work_chunk_completion, one_result_t* result_array, int num_work_chunks,
+void RetrieveMasterState(int *work_chunk_completion, one_result_t **result_array, int num_work_chunks,
   int *result_index, int *master_id, struct mw_fxns *f)
 {
-
-
     //Open the master's last state file
     FILE *fp;
 
-
-
     //Using w ensures the file contents are cleared! Maybe need to manage this
     fp = fopen(MASTER_STATE_FILE, "rb"); 
+    assert(checkPointer(fp, "failed to open a file pointer in RetrieveMasterState\n"));
 
-   
-
-    //Write result_index  to file
+    //Read result_index  to file
     fread(master_id, sizeof(int), 1, fp);
 
-    //Write result_index  to file
+    //Read result_index  to file
     fread(result_index, sizeof(int), 1, fp);
 
-    //Write work_chunk_completion array to file
+    //Read work_chunk_completion array to file
     fread(work_chunk_completion, sizeof(int), num_work_chunks, fp);
 
-    //Write results array to file
-    fread(result_array, f->result_sz, num_work_chunks, fp);
+    //Read results array to file
+    int i;
+    one_result_t *result;
+    for (i = 0; i < *result_index; i++) {
+        result = (one_result_t *)malloc(f->result_sz);
+        assert(checkPointer(result, "Failed to allocate a result while retrieving master state"));
+        fread(result, f->result_sz, 1, fp);
+        result_array[i] = result;
+    }
+
+    printf("Printing Update Master State stuff from RetrieveMasterState\n");
+    printf("designated_master_id: %d\n", *master_id);
+    printf("result_index: %d\n", *result_index);
+    printIntArray(work_chunk_completion, num_work_chunks, "Work Chunk Completion Array\n");
+    printf("First result: %lu\n", result_array);
+    f->report_results(*result_index, result_array);
     fclose(fp);
 }
 
@@ -301,7 +323,7 @@ void runRoundRobbinMaster(int argc, char **argv, struct mw_fxns *f, int sz, int 
     while (result_index < num_work_chunks) 
     {
 
-        if(result_index == 4 && called_from_worker == 0)
+        if(result_index == 1 && called_from_worker == 0)
         {
             printf("MASTER FAILED!!!!\n");
             // waitForUser();
@@ -567,6 +589,7 @@ void runWorker(int argc, char **argv, int sz, struct mw_fxns *f, int myid) {
 /*==============================================================*/
 void MW_Run (int argc, char **argv, struct mw_fxns *f, int style) {
 
+    printf("Size of one_result_t: %d\n", f->result_sz);
     // Make sure the user asked for a valid style of master worker
     assert(style == 1 || style == 2);
 

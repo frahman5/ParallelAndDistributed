@@ -169,7 +169,6 @@ int main (int argc, char **argv) {
     // initalize the multiple variable
     assert(argc == 2);
     mpz_init_set_str(multiple, argv[1], 10);
-    // gmp_printf("Multiple: %Zd\n", multiple);
 
     // Create the api object and give it all its fields
     struct mw_fxns mw;
