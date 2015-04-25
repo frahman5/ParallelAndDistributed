@@ -1,0 +1,149 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage[vmargin = 1in,hmargin=1in]{geometry}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\begin{document}
+\begin{flushleft}
+Oliver Hoffman and Faiyam Rahman
+\\CS 5460: Parallel and Distributed
+\\Lab 4, part 1a
+\\April 28, 2015
+\end{flushleft}
+Assume a computation domain of size $NxN$, a stencil of size $(2K-1)x(2K-1)$ as well as a ghost boundary parallelization method. Assume we break the computation domain into subdomains of size $XY$, where $X|N$ and $Y|N$. We want to find the pair $(X,Y)$ such that the ratio of computation to communication per 1 iteration is optimal. We assert that the ratio of computation to communication is:
+\begin{flushleft}
+\begin{IEEEeqnarray*}{rCl}
+\frac{\text{Computation}}{\text{Communication}} & = & \frac{N^2 * (2K-1)^2 * t_c}{\sum_\mathbb{A}{(\alpha_x + \alpha_y + \alpha_x\alpha_y)t_s + (\alpha_y(K-1)Y + \alpha_x(K-1)X + \alpha_x\alpha_y(K-1)^2)t_u}}
+\end{IEEEeqnarray*}
+\begin{flushleft}
+Let's look at the numerator first. The computation for one iteration is as follows\
+\begin{IEEEeqnarray*}{rCl}
+\text{Computation} & = & \text{Number of Computational Units} * \text{Computation per unit} * \text{Time/Computation Unit}
+\\
+& = & N^2 * (2K-1)^2 * t_c 
+\end{IEEEeqnarray*}
+Let's look at the denominator. Let's first establish what all the notation means.  
+\begin{IEEEeqnarray*}{rCl}
+\mathbb{A} & := & \{\alpha | \alpha \text{ is a computational subdomain of size } XY\}
+\\
+\alpha_x & := & \text{the number of adjacent subdomains on the x axis for subdomain }\alpha
+\\
+\alpha_y & := & \text{the number of adjacent subdomains on the y axis for subdomain }\alpha  
+\\
+t_s & := & \text{the latency time to send one message}
+\\
+t_u & := & \text{the amount of time to send one computatational unit}
+\end{IEEEeqnarray*}
+Now let's breakdown the specifics of the denominator. 
+\begin{IEEEeqnarray*}{rCl}
+\text{Communication} & = & {\sum_\text{All Subdomains}} M_s*t_s + U_s*t_u
+\end{IEEEeqnarray*}
+where $M_s$ is the number of messages sent for the given subdomain and $U_s$ is the number of computational units sent over all messages for the given subdmain. We have: 
+\begin{IEEEeqnarray*}{rCl}
+M_s & = & \text{Messages sent to adjacent subdomains purely on the x axis} + 
+\\
+&  & \text{Messages sent to adjacent subdomains purely on the y axis} + 
+\\
+& & \text{Messages sent to adjacent diagonal subdomains}
+\\ 
+& = & \alpha_x + \alpha_y + \alpha_x\alpha_y
+\end{IEEEeqnarray*}
+Note that the number of messages sent to diagonally adjacent subdomains is $\alpha_x\alpha_y$ because its the product of the number of x axis and y axis adjacent subdomains.
+\begin{IEEEeqnarray*}{rCl}
+U_s & = & \text{Number of units sent to adjacent subdomains purely on the x axis} + 
+\\
+&  & \text{Number of units sent to adjacent subdomains purely on the y axis} + 
+\\
+& & \text{Number of units sent to adjacent diagonal subdomains}
+\\ 
+\end{IEEEeqnarray*}
+We have
+\begin{IEEEeqnarray*}{rCl}
+\text{Number of units sent to adjacent subdomains purely on the x axis} & = \alpha_x*(K-1)*Y
+\end{IEEEeqnarray*}
+because each such subdomain needs $K-1$ columns from $\alpha$ and $\alpha$'s columns are of size  $Y$. Similarly, we have 
+\begin{IEEEeqnarray*}{rCl}
+\text{Number of units sent to adjacent subdomains purely on the y axis} & = \alpha_y*(K-1)*X
+\end{IEEEeqnarray*}
+because each such subdomain needs $K-1$ rows from $\alpha$ and $\alpha$'s rows are of size  $X$. Lastly, we have
+\begin{IEEEeqnarray*}{rCl}
+\text{Number of units sent to adjacent diagonal subdomains} & = \alpha_y\alpha_x*(K-1)^2
+\end{IEEEeqnarray*}
+because the number of computational units $\alpha$ needs to send is determined by how much of $\alpha$'s computational domain is required for its adjacent subdomains corner computation. For that corner computation, the adjacent subdomain needs $(K-1)$ columns of height $(K-1)$, or equivalently, $(K-1)$ rows of width $(K-1)$ from $\alpha$. 
+\end{flushleft}
+\begin{flushleft}
+Now, let's consider how to compute this sum for a given $N, X, Y$. We have
+\begin{IEEEeqnarray*}{rCl}
+\mathbb{A} & = & \bigcup_{x, y \in \{0, 1, 2\}}{\mathbb{A}_{xy}} \text{ where}
+\\
+\mathbb{A}_{xy} & = & \{\alpha | \alpha_x = x \text{ and } \alpha_y = y\}
+\end{IEEEeqnarray*}
+We now present without further justification formulas for each of the $\mathbb{A}_{xy}$ as they are pretty obvious once you look at an example or two. 
+\[
+    |\mathbb{A}_{00}|= 
+\begin{cases}
+    1,& \text{if } N=X, N=Y\\
+    0,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{01}|= 
+\begin{cases}
+    1,& \text{if } \frac{N}{Y}=2, N=X\\
+    0,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{02}|= 
+\begin{cases}
+   0,& \text{if } N>X, \frac{N}{Y}<3\\
+   \frac{N^2}{XY} - \frac{2N}{X},              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{10}|= 
+\begin{cases}
+    1,& \text{if } \frac{N}{X}=2, N=Y\\
+    0,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{20}|= 
+\begin{cases}
+   0,& \text{if } N>Y, \frac{N}{X}<3\\
+   \frac{N^2}{XY} - \frac{2N}{Y},              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{11}|= 
+\begin{cases}
+    0,& \text{if } \frac{N^2}{XY} < 4\\
+    4,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{12}|= 
+\begin{cases}
+    0,& \text{if } \frac{N}{X} < 2, \text{ or } \frac{N}{Y} < 3\\
+    \frac{2N}{Y} - 4,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{21}|= 
+\begin{cases}
+    0,& \text{if } \frac{N}{Y} < 2, \text{ or } \frac{N}{X} < 3\\
+    \frac{2N}{X} - 4,              & \text{otherwise}
+\end{cases}
+\]
+\[
+    |\mathbb{A}_{22}|= 
+\begin{cases}
+    0,& \text{if } \frac{N}{X}<3 \text{ or } \frac{N}{Y} < 3\\
+    \frac{N^2}{XY} - \frac{2N}{X} - \frac{2N}{Y} + 4,              & \text{otherwise}
+\end{cases}
+\]
+\end{flushleft}
+\end{flushleft}
+\end{document}

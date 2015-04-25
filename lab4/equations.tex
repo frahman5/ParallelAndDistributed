@@ -1,0 +1,348 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathabx}
+\usepackage{esvect}
+\usepackage{MnSymbol}
+\usepackage[vmargin = 1in,hmargin=1in]{geometry}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\setlength{\parindent}{25pt}
+\theoremstyle{definition}
+\newtheorem{semip}{Definition}[section]
+\theoremstyle{theorem}
+\newtheorem{GC}[semip]{Conjecture}
+\newtheorem{TP}[semip]{Conjecture}
+\newtheorem{CT1}[semip]{Theorem}
+\newtheorem{CT2}[semip]{Theorem}
+\theoremstyle{definition}
+\newtheorem{SP}{Definition}[section]
+\newtheorem{SE}[SP]{Example}
+\theoremstyle{theorem}
+\newtheorem{TS}{Theorem}[subsection]
+\newtheorem{W}[TS]{Lemma}
+\newtheorem{SF}[TS]{Proposition}
+\newtheorem{HR1}{Lemma}[subsection]
+\newtheorem{HR2}[HR1]{Proposition}
+\newtheorem{HR3}[HR1]{Corollary}
+\begin{document}
+\begin{titlepage}
+\begin{center}
+\vspace*{2in}
+{\Huge A Brief Introduction to Sieve Theory via the Tur\'an Sieve and some Applications Thereof}
+\vspace*{2in}
+   {\large {} Faiyam Rahman}
+\end{center}
+\end{titlepage}
+\section{Motivations}
+\qquad The Twin Prime conjecture and Goldbach's conjecture remain unsolved as of this writing. But one might say they have been ``semi-proven" by Chinese mathematician Chen Jingrun in the 1970s--that is to say, Chen proved near-miss results that involve the notion of a  semiprime. The definition of a semiprime, the conjectures, and Chen's related near-misses, are as follows:
+\begin{semip}
+A natural number n is called \underline{semiprime} if it is the product of two (not necessarily distinct) prime numbers.
+\end{semip}
+\begin{GC}
+(Goldbach's Conjecture) Every even integer greater than 2 can be expressed as the sum of two primes.
+\end{GC}
+\begin{TP}
+(Twin Prime Conjecture) There are infinitely many primes p such that p+2 is also prime.
+\end{TP}
+\begin{CT1}
+(Chen's Theorem (1)) Every sufficiently large even number can be written as either the sum of two primes or the sum of a prime and a semiprime.
+\end{CT1}
+\begin{CT2}
+(Chen's Theorem (2)) If h is a positive even integer, there are infinitely many primes p such that p+h is either prime or a semiprime.
+\end{CT2}
+It is truly remarkable how close (and yet so far!) Chen's Theorems are to solving these classic problems in number theory. Proofs of Chen's results are by no means trivial, and are certainly beyond the scope of an introductory paper such as this. However, Chen's proofs of his results take advantage of some very advanced sieve methods. As we can not cover Chen's work in its totality, we will instead focus on introducing the reader to the wonderful world of sieve theory. 
+\section{The Sieve Problem}
+\begin{SP} Let $A$ be a finite set of objects and let $P$ be an index set of primes such that for all primes $p$ in $P$, there is an associated subset $A_P$ of $A$. The \underline{sieve problem} is to estimate the size of the set
+\begin{IEEEeqnarray*}{rCl}
+S(A,P) & = & A - \bigcup_{p\in P}A_p \
+\\
+&& \text{where ``-" is ``setminus"}
+\end{IEEEeqnarray*}
+\end{SP}
+This is, in many senses, the most general statement of the problem. In practice, number theoretic applications of the sieve problem put $A$ as some subset of the natural numbers, and $A_p$ as all $n\in A$ such that $p|n$, or such that $n$ satifisfies some congruence relation modulo $p$. 
+\newline
+\indent The idea behind the sieve problem is that if we want to know how many numbers in a finite subset of $\mathbb{N}$ have a certain property, we can look at the set of all natural numbers up to some $n$ and ``sieve out" or ``strain out" the numbers that do not have our desired property, like a home water filter ``sieves out" unwanted particles in the water we drink. Let's consider an example:
+\begin{SE}
+(A trivial application of the Sieve of Erastosthenes) Suppose we wanted to find the set of all primes less than or equal to 100. We'll consider the set of all natural numbers up to 100, and then ``sieve out" compositive numbers. 
+\\\indent Let $A = \{n\,|\,n\in\mathbb{N},n\leq 100\}$. For all primes $p\in\{2,3,5,7\}$, let $A_p = \{n\in A\,|\,n>p,p|n\}$. Then we have:
+\begin{IEEEeqnarray*}{rCl}
+S(A,P) & = & \{2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97\}
+\end{IEEEeqnarray*}
+\indent If the example doesn't sink in right away, write out the set $A$ and cross out the elements of $A_2,A_3,A_5,$ and $A_7$.
+\end{SE}
+\section{The Tur\'an Sieve}
+\qquad This sieve was first used (in disguise) in a 1934 paper by Paul Tur\'an, in which he gave a much simpler proof of a result by Hardy and Ramanujan that had previously required a long and tedious inductive argument.  Here, we present the sieve, apply it to finding square values of polynomials, and then use it to prove Hardy and Ramanujan's result. 
+\subsection{The Sieve}
+\qquad Let $A$ be an arbitrary finite set and $P$ a set of prime numbers such that for each $p\in P$, there is an associated set $A_P \in A$. Let $A_1 = A$ and for any squarefree integer $d$ composed of primes in $P$, let 
+\begin{IEEEeqnarray*}{rCl}
+A_d := \bigcap_{p|d}A_p
+\end{IEEEeqnarray*}
+Let z be a positive real number. To avoid constantly summing over ``$p\in P, p < z$", we write 
+\begin{IEEEeqnarray*}{rCl}
+P(z) & = & \prod_{p\in P\atop p < z}p
+\end{IEEEeqnarray*}
+We can now sum over $p\in P, p < z$ by summing over $p|P(z)$. 
+We want to estimate 
+\begin{IEEEeqnarray*}{rCl}
+S(A,P,z) & := & \bigg | A - \bigcup_{p|P(z)}A_p\bigg |
+\end{IEEEeqnarray*}
+To do so, we write for each prime $p$ in $P$, 
+\begin{IEEEeqnarray*}{rCl}
+|A_p| & = & \delta_p |A| + R_p \qquad 0\leq \delta_p < 1
+\end{IEEEeqnarray*}
+and for distinct primes $p,q$ in $P$
+\begin{IEEEeqnarray*}{rCl}
+|A_{pq}| & = & \delta_p\delta_q |A| + R_{pq} \qquad 0\leq \delta_p,\delta_q < 1
+\end{IEEEeqnarray*}
+We consider notationally equivalent $R_{pp}$ and $R_p$. Heuristically, $\delta_p \approx \frac{|A_p|}{|A|}$. $R_p$ is the error in this approximation. Then we have: 
+\begin{TS}
+(The Tur\'an Sieve) Let
+\begin{IEEEeqnarray*}{rCl}
+U(z) & := & \sum_{p|P(z)}\delta_p
+\end{IEEEeqnarray*}
+Then
+\begin{IEEEeqnarray*}{rCl}
+S(A,P,z) & \leq & \frac{|A|}{U(z)} + \frac{2}{U(z)}\sum_{p|P(z)}|R_p| + \frac{1}{U(z)^2}\sum_{p,q|P(z)}|R_{pq}|
+\end{IEEEeqnarray*}
+\end{TS}
+\begin{proof}
+\indent The proof will require reexpressing $S(A,P,z)$ in a clever manner and then executing a litany of mindless sum manipulation. Don't say I didn't warn you. 
+\\ For each $a\in A$, let $N(a)$ be the number of primes $p|P(z)$ such that $a\in A_p$. Then
+\begin{IEEEeqnarray*}{rCl}
+S(A,P,z) & = & \#\{a\in A\,|\,N(a) = 0\}
+\end{IEEEeqnarray*}
+The clever point here is to note that 
+\begin{IEEEeqnarray*}{rCl}
+\#\{a\in A\,|\,N(a) = 0\} & \leq & \frac{1}{U(z)^2}\sum_{a\in A}(N(a)-U(z))^2
+\end{IEEEeqnarray*}
+because when $N(a) = 0$, the right hand side evaluates to 1, and when $N(a) \neq 0 $, the right hand side is positive. 
+We now set our sights on estimating
+\begin{IEEEeqnarray*}{rCl}
+\sum_{a\in A}(N(a) - U(z))^2 & = & \sum_{a\in A}(N(a)^2 - 2N(a)U(z) + U(z)^2)
+\\
+& = & \sum_{a\in A}N(a)^2 -2U(z)\sum_{a\in A}N(a) + \sum_{a\in A}U(z)^2
+\\
+& = & \sum_{a\in A}N(a)^2 -2U(z)\sum_{a\in A}N(a) + |A|U(z)^2
+\end{IEEEeqnarray*}
+Let's evaluate the first sum:
+\begin{IEEEeqnarray*}{rCl}
+\sum_{a\in A}N(a)^2 & = & \sum_{a\in A}\big(\sum_{p|P(z) \atop a\in A_p}1\big)^2 \text{ by the definition of } N(a)
+\\
+& = & \sum_{a\in A}\sum_{p|P(z)\atop a\in A_p}1\sum_{q|P(z)\atop a\in A_q}1
+\\
+& = & \sum_{p,q|P(z)\atop a \in A_p,A_q}\sum_{a\in A}1 \text{ after interchanging the order of summation}
+\\
+& = & \sum_{p,q|P(z)}|A_p\cap A_q|
+\\
+& = & \sum_{p,q|P(z)\atop p \neq q}|A_{pq}| + \sum_{p|P(z)}|A_p|
+\\
+& = & |A|\sum_{p,q|P(z)\atop p \neq q}\delta_p\delta_q + |A|\sum_{p|P(z)}\delta_p + \sum_{p,q|P(z)}R_{pq}
+\\
+& = & |A|\big(\sum_{p|P(z)}\delta_p\big)^2 - |A|\sum_{p|P(z)}\delta_p^2 + |A|\sum_{p|P(z)}\delta_p + \sum_{p,q|P(z)}R_{pq}
+\end{IEEEeqnarray*}
+We evaluate the second sum:
+\begin{IEEEeqnarray*}{rCl}
+\sum_{a\in A}N(a) & = & \sum_{a\in A}\sum_{p|P(z)\atop a\in A_p}1
+\\
+& = & \sum_{p|P(z)\atop a\in A_p}\sum_{a\in A} 1
+\\
+& = & \sum_{p|P(z)}|A_p|
+\\
+& = & |A|\sum_{p|P(z)}\delta_p + \sum_{p|P(z)}R_p
+\end{IEEEeqnarray*}
+Thus we have:
+\begin{IEEEeqnarray*}{rCl}
+S(A,P,z) & \leq & \frac{1}{U(z)^2}\sum_{a\in A}(N(a) - U(z))^2 
+\\
+& \leq & \frac{1}{U(z)^2}\bigg (|A|\big (\sum_{p|P(z)}\delta_p\big )^2 - |A|\sum_{p|P(z)}\delta_p^2 + |A|\sum_{p|P(z)}\delta_p + \sum_{p,q|P(z)}R_{pq} - 2|A|\big (\sum_{p|P(z)}\delta_p\big )^2  
+\\
+& & \qquad -2\sum_{p|P(z)}\delta_p\sum_{p|P(z)}R_p + |A|\big (\sum_{p|P(z)}\delta_p\big )^2\bigg)
+\\
+& \leq & \frac{1}{U(z)^2}\bigg (|A|\big (\sum_{p|P(z)}\delta_p - \delta_p^2\big ) - 2U(z)\sum_{p|P(z)}R_p + \sum_{p,q|P(z)}R_{pq}\bigg ) 
+\\ 
+& \leq & \frac{1}{U(z)^2}\bigg (|A|\sum_{p|P(z)}\delta_p (1-\delta_p) - 2U(z)\sum_{p|P(z)}R_p + \sum_{p,q|P(z)}R_{pq}\bigg ) 
+\\
+& \leq & \frac{|A|}{U(z)} + \frac{2}{U(z)}\sum_{p|P(z)}|R_p| + \frac{1}{U(z)^2}\sum_{p,q|P(z)}|R_{pq}| \text{ since } 1-\delta_p < 1
+\end{IEEEeqnarray*}
+\end{proof}
+\subsection{Using the Tur\'an Sieve to count square values of polynomials}
+\qquad While the statement of the inequality required some notational complexity, and the proof itself was likewise notationally involved, the actual work required in applying the Tur\'an Sieve is really only two fold: find a lower bound for $U(z)$ and an upper bound for $R_p$ and $R_{pq}$. Let's see this in context. We will need one result:
+\begin{W} Let $g(x) \in \mathbb{Z}[x]$ be a polynomial with non-zero discriminant $d(g)$ and which is not the square of another polynomial in $\mathbb{Z}[x]$. Then for any prime $p\nmid d(g)$, 
+\begin{IEEEeqnarray*}{rCl}
+\bigg |\sum_{a\in\mathbb{Z}/p}\bigg (\frac{g(a)}{p}\bigg )\bigg | & \leq & (deg(g)-1)\sqrt{p}
+\end{IEEEeqnarray*}
+where $(\frac{\cdot}{p})$ is the legendre symbol.
+\end{W}
+\indent Let $f(x)\in \mathbb{Z}[x]$ be a polynomial with non-zero discriminant $d(f)$ and which is not the square of another polynomial in $\mathbb{Z}[x]$. Let $H > 0$. We apply the Tur\'an sieve to estimate
+\begin{IEEEeqnarray*}{rCl}
+\#\{n\,|\,|n|\leq H,f(n) \text{ is a square}\}
+\end{IEEEeqnarray*}
+\begin{SF}
+\begin{IEEEeqnarray*}{rCl}
+\#\{n\,|\,|n|\leq H,f(n) \text{\emph{ is a square}}\} & = & \mathcal{O} (H^{4/5}(\text{\emph{log}}H)^{2/5})
+\end{IEEEeqnarray*}
+\end{SF}
+\begin{proof}
+Let
+\begin{IEEEeqnarray*}{rCl}
+A & := & \{n\,|\,|n|\leq H\}
+\end{IEEEeqnarray*}
+For each prime $p$ such that $p\nmid d(f)$, let
+\begin{IEEEeqnarray*}{rCl}
+A_p & := & \{n\,|\,|n| \leq H,f(n) \text{(mod p)} \text{ is not a square}\}
+\end{IEEEeqnarray*}
+We'll use Lemma 3.2.1 to find $\delta_p$ and $R_p$. Note that
+\begin{IEEEeqnarray*}{rCl}
+|A_p| & = & H_p\cdot Q_p
+\end{IEEEeqnarray*}
+where $H_p$ is the number of full residue classes mod $p$ in $A$ and $Q_p$ is the number of $n$(mod$p$) such that $f(n)$ is not a square modulo $p$. Trivially,
+\begin{IEEEeqnarray*}{rCl}
+H_p & = & \bigg ( \frac{2H}{p} + \mathcal{O}(1)\bigg ) 
+\end{IEEEeqnarray*}
+To find $Q_p$, we note that the number of $n$(mod$p$) such that $f(n)$ \emph{is not} a square modulo $p$ and the number of $n$(mod$p$) such that $f(n)$ is a square modulo $p$ is roughly the same, and count the latter. The expression
+\begin{IEEEeqnarray*}{rCl}
+\sum_{a\in\mathbb{Z}/p}\bigg (\bigg (\frac{f(a)}{p}\bigg ) + 1\bigg )\frac{1}{2}
+\end{IEEEeqnarray*}
+counts it for us, since it returns $1$ whenever $(\frac{f(a)}{p}) = 1$, and returns $0$ otherwise. By lemma 3.2.1, the above is equal to $p/2 + \mathcal{O}(\sqrt{p})$. Thus:
+\begin{IEEEeqnarray*}{rCl}
+|A_p| & = & H_p\cdot Q_p
+\\ 
+& = & \big ( \frac{2H}{p} + \mathcal{O}(1)\big ) \big (\frac{p}{2} + \mathcal{O}(\sqrt{p})\big )
+\\ 
+& = & H + \mathcal{O}(\frac{H}{\sqrt{p}} + p)
+\end{IEEEeqnarray*}
+Similarly, for distinct primes $p,q\nmid d(f)$, we have
+\begin{IEEEeqnarray*}{rCl}
+|A_{pq}| & = & \big ( \frac{2H}{pq} + \mathcal{O}(1)\big ) \big (\frac{pq}{2} + \mathcal{O}(q\sqrt{p} + p\sqrt{q})\big )
+\\
+& = & \frac{H}{2} + \mathcal{O}(pq + \frac{H}{\sqrt{p}} + \frac{H}{\sqrt{q}})
+\end{IEEEeqnarray*}
+Finally, we note $|A| = 2H + \mathcal{O}(1)$. Evaluating our expressions for $|A_p|$ and $|A_{pq}|$ gives us $\delta_p = \frac{1}{2}$ and
+\begin{IEEEeqnarray*}{rCl}
+R_p & = & \mathcal{O}\big ( \frac{H}{\sqrt{p}} + p\big ) 
+\\
+R_{pq} & = & \mathcal{O}\big (pq + \frac{H}{\sqrt{p}} + \frac{H}{\sqrt{q}}\big )
+\end{IEEEeqnarray*}
+We now apply the Tur\'an Sieve. We have:
+\begin{IEEEeqnarray*}{rCl}
+U(z) & = & \sum_{p|P(z)}\delta_p
+\\
+& = & \sum_{p\leq z}\frac{1}{2}
+\\
+& = & \frac{z}{2logz} \text{ by the prime number theorem}
+\end{IEEEeqnarray*}
+Evaluating each of the three terms in the right hand side of the Tur\'an Sieve, we get:
+\begin{IEEEeqnarray*}{rCl}
+\frac{|A|}{U(z)} & = & \frac{Hlogz}{z}
+\end{IEEEeqnarray*}
+and
+\begin{IEEEeqnarray*}{rCl}
+\frac{2}{U(z)}\sum_{p|P(z)}|R_p| & = & \frac{4logz}{z}\sum_{p<z}\mathcal{O}\big (\frac{H}{\sqrt{p}} + p\big ) 
+\\ 
+& = & \mathcal{O}\big (\frac{4logz}{z}\sum_{p<z}\big(\frac{H}{\sqrt{z}} + z\big ) \big )
+\\
+& = & \mathcal{O}\big (\frac{4logz}{z}\frac{z}{logz}\big (\frac{H}{\sqrt{z}} + z\big )\big ) 
+\\
+& = & \mathcal{O}\big (\frac{H}{\sqrt{z}} + z\big )
+\end{IEEEeqnarray*}
+and similarly, 
+\begin{IEEEeqnarray*}{rCl}
+\frac{1}{U(z)^2}\sum_{p,q|P(z)}|R_{pq}| & = & \mathcal{O}\big (\frac{1}{z^2}\big (Hz^{3/2} +z^4(logz)^2\big )\big )
+\end{IEEEeqnarray*}
+Thus we have:
+\begin{IEEEeqnarray*}{rCl}
+\#\{n\,|\,|n|\leq H,f(n) \text{ is a square}\} & = & \mathcal{O}\big (\frac{Hlogz}{z} + \frac{H}{\sqrt{z}} + z + \frac{1}{z^2}\big (Hz^{3/2} + z^4log^2z\big )\big )
+\end{IEEEeqnarray*}
+Choosing $z:= \frac{H^{2/5}}
+{(logH)^{4/5}}$ gives
+\begin{IEEEeqnarray*}{rCl}
+\#\{n\,|\,|n|\leq H,f(n) \text{ is a square}\} & = & \mathcal{O}\big (H^{4/5}(logH)^{2/5}\big )
+\end{IEEEeqnarray*}
+as desired. 
+\end{proof}
+\subsection{Using the Tur\'an Sieve to prove the Hardy-Ramanujan Theorem}
+\qquad We conclude this paper by using the Tur\'an sieve in its original context-a simple proof of the Hardy-Ramanujan Theorem. First, we will need a well known result
+\begin{HR1} Let p denote a prime. Then
+\begin{IEEEeqnarray*}{rCl}
+\sum_{p\leq n}\frac{1}{p} = \text{\emph{loglog}}n + \mathcal{O}(1)
+\end{IEEEeqnarray*}
+\end{HR1}
+Now, onwards and forwards to the Hardy-Ramanujan Theorem. 
+\begin{HR2} Let $v(n)$ be the number of distinct prime divisors of n. Then 
+\begin{IEEEeqnarray*}{rCl}
+\sum_{n\leq x}(v(n)-\text{\emph{loglog}}x)^2 & = & \mathcal{O}(x\text{\emph{loglog}}x)
+\end{IEEEeqnarray*}
+\end{HR2}
+\begin{proof}
+Let $A=\{n\leq x\}, z=x, P$ the set of all primes and for all $p$ in $P$, let $A_p = \{n\in A\,|\,n\equiv 0(modp)\}$. Then, as per the usual:
+\begin{IEEEeqnarray*}{rcC}
+P(z) & = & \prod_{p\in P \atop p<z}p
+\\
+& = & \prod_{p<z}p
+\end{IEEEeqnarray*}
+We have that
+\begin{IEEEeqnarray*}{rCl}
+|A_p| = \bigg\lfloor\frac{x}{p}\bigg\rfloor
+& = & \frac{1}{p}x + \mathcal{O}(1)
+\\
+& = & \frac{1}{p}|A| + \mathcal{O}(1)
+\end{IEEEeqnarray*}
+And similarly
+\begin{IEEEeqnarray*}{rCl}
+|A_{pq}| = \frac{1}{pq}|A| + \mathcal{O}(1)
+\end{IEEEeqnarray*}
+Thus $\delta_p = \frac{1}{p}$. We have:
+\begin{IEEEeqnarray*}{rCl}
+U(z) = \sum_{p\leq x}\frac{1}{p} & = & \text{loglog}x + \mathcal{O}(1)
+\end{IEEEeqnarray*}
+by Lemma 3.3.1. With $U(z),R_p,$ and $R_{pq}$ calculated, we can now apply the sieve. The reader can sieve out (pun intended) from the proof of theorem 3.1.1, that if for all $a$ in $A$, we let $N(a) = $ the number of primes $p$ such that $a\in A_p$, then
+\begin{IEEEeqnarray*}{rCl}
+\sum_{a\in A}(N(a)-U(z))^2 & = & |A|\sum_{p<z}\delta_p(1-\delta_p) + \sum_{p,q<z}R_{pq} -2U(z)\sum_{p<z}R_p
+\end{IEEEeqnarray*}
+Note that by the nature of our setup, $N(n) = v(n)$. Thus, we have:
+\begin{IEEEeqnarray*}{rCl}
+\sum_{n\leq x}(v(n)-\text{loglog}x)^2 & = & x\sum_{p<x}\frac{1}{p}(1-\frac{1}{p}) + \sum_{p,q<x}\mathcal{O}(1) - 2\text{loglog}x\sum_{p<x}\frac{1}{p}
+\\
+& = & \ll x\text{log}\text{log}x \text{ by Lemma 3.2.1, since } 1-\frac{1}{p} < 1
+\end{IEEEeqnarray*}
+\end{proof}
+\begin{HR3} (Hardy-Ramanujan Theorem). Let $\epsilon > 0$. Then the number of natural numbers $n\leq x$ such that 
+\begin{IEEEeqnarray*}{rCl}
+|v(n)-\text{loglog}x| \geq (\text{loglog}x)^{\frac{1}{2} + \epsilon}
+\end{IEEEeqnarray*}
+is o(x). (Little o). 
+\end{HR3}
+\begin{proof}
+Let $A_{\epsilon} = \{n\in\mathbb{N}\,|\,n\leq x,|v(n)-\text{loglog}x| \geq (\text{loglog}x)^{\frac{1}{2}+\epsilon}\}.$ Then
+\begin{IEEEeqnarray*}{rCl}
+\sum_{n\in A_{\epsilon}}(v(n)-\text{loglog}x)^2 & \geq & \sum_{n\in A_{\epsilon}}\big ((\text{loglog}x)^{\frac{1}{2}+\epsilon}\big )^2
+\\
+& \geq & |A_{\epsilon}|(\text{loglog}x)^{1+2\epsilon}
+\end{IEEEeqnarray*}
+By proposition 3.2.2, we have 
+\begin{IEEEeqnarray*}{rCl}
+\sum_{n\in A_{\epsilon}}(v(n)-\text{loglog}x)^2 \leq & \sum_{n\leq x}(v(n)-\text{loglog}x)^2 & = \mathcal{O}(x\text{loglog}x)
+\end{IEEEeqnarray*}
+Thus
+\begin{IEEEeqnarray*}{rCl}
+|A_{\epsilon}| & = & \mathcal{O}\bigg (\frac{x}{(\text{loglog}x)^{2\epsilon}}\bigg )
+\\
+& = & o(x) \text{ as the reader may verify by evaluating the appropriate limit}
+\end{IEEEeqnarray*}
+\end{proof}
+\newpage
+\begin{center}
+\begin{thebibliography}{99}
+\bibitem{C1}
+Chen, J.R (1978) "On the representation of a large even integer as the sum of a prime and the product of at most two primes." \emph{Sci. Sinica }$\mathbf{16}$.157-176
+\bibitem{IST}
+Cocojaru, Alina Carmen and M. Ram Murty. \emph{ An Introduction to Sieve Methods and their Applications. } Cambridge: Cambridge University Press, 2005. Print.
+\bibitem{C2}
+Ross, P.M. (1975). "On Chen's theorem that each large even number has the form (p$_1$+p$_2$) or (p$_1$ + p$_2$p$_3$)". \emph{J. London Math. Soc.} (2)$\mathbf{10.4}$(4).500-506
+\bibitem{TSA}
+Yu-Ru Liu and M. Ram Murty, The Tur\'an sieve and some of its applications, \emph{J. Ramanujan Math. Soc., }$\mathbf{12}$:2 (1999), pp. 35-49
+\end{thebibliography}
+\end{center}
+\end{document}
