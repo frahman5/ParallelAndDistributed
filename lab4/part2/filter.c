@@ -31,9 +31,9 @@ void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_c
             // update the values of red blue and green
             if ((image_row >= 0) && (image_col >= 0) && (image_row <= max_height) && (image_col <= max_width)) {
 
-                val_red += stencil->data[stencil_row][stencil_col] * data[image_row][image_col].red;
-                val_green += stencil->data[stencil_row][stencil_col]; //* data[image_row][image_col]->green;
-                val_blue += stencil->data[stencil_row][stencil_col]; //* data[image_row][image_col]->blue;
+                val_red += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).red;
+                val_green += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).green;
+                val_blue += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).blue;
             } 
 
         }
@@ -134,7 +134,6 @@ int main(int argc, char **argv) {
     stencil->data = (char **)malloc(stencil->y * sizeof(char *));
     checkPointer(stencil->data, "Failed to allocate stencil->data in main function");
     
-
     int row, col;
     for (row = 0; row < stencil->y; row++) {
         stencil->data[row] = (char *)malloc(stencil->x * sizeof(char));
