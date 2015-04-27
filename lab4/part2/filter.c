@@ -1,12 +1,15 @@
 #include "filter.h"
 
 void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_center, StencilMatrix *stencil, 
-    PPMPixel *new_pixel) {
+    PPMPixel *new_pixel, int max_height, int max_width) {
     printf("Applying stencil to image pixel (%d, %d)\n", imag_row_center, imag_col_center);
     // Make sure we have an odd by odd stencil
+   
+    
     assert(stencil->x % 2 == 1);
     assert(stencil->y % 2 == 1);
 
+    
     // Find the center of the stencil
     int stencil_centerrow = ((stencil->y + 1) / 2) - 1;
     int stencil_centercol = ((stencil->x + 1) / 2) - 1;
@@ -18,7 +21,7 @@ void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_c
     int val_blue = 0;
     for(stencil_row = 0; stencil_row < stencil->y; stencil_row++) {
         for(stencil_col = 0; stencil_col < stencil->x; stencil_col++) {
-
+            
             // Find the pixel in the original image that needs to be multipled
             // by the current pixel of the stencil
             image_row = imag_row_center - stencil_centerrow + stencil_row;
@@ -26,16 +29,19 @@ void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_c
 
             // If that pixel exists (i.e is nonnegative) in the original image, 
             // update the values of red blue and green
-            if ((image_row >= 0) && (image_col >= 0)) {
-                val_red += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).red;
-                val_green += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).green;
-                val_blue += stencil->data[stencil_row][stencil_col] * (data[image_row][image_col]).blue;
+            if ((image_row >= 0) && (image_col >= 0) && (image_row <= max_height) && (image_col <= max_width)) {
+
+                val_red += stencil->data[stencil_row][stencil_col] * data[image_row][image_col].red;
+                val_green += stencil->data[stencil_row][stencil_col]; //* data[image_row][image_col]->green;
+                val_blue += stencil->data[stencil_row][stencil_col]; //* data[image_row][image_col]->blue;
             } 
+
         }
     }
     new_pixel->red = val_red;
     new_pixel->green = val_green;
     new_pixel->blue = val_blue;
+
 
 }
 
@@ -53,9 +59,6 @@ PPMImageMatrix *copyImageMatrix(PPMImageMatrix *og_pmag) {
         copy_pmag->data[row] = (PPMPixel *)malloc(copy_pmag->x * sizeof(PPMPixel));
         checkPointer(copy_pmag->data[row], "failled to allocate a row in copyImageMatrix\n");
         for(col = 0; col < copy_pmag->x; col++) {
-            if (row == 103) {
-                // logToFileWithInt("Putting red val %d in row 103\n", og_pmag->data[row][col].red);
-            }
             copy_pmag->data[row][col] = og_pmag->data[row][col];
         }
     }
@@ -80,7 +83,9 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil) {
     checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
     for (row = 0; row < pmag->y; row++) {
         for (col = 0; col < pmag->x; col++) {
-            applyStencilToOnePixel(updated_pmag->data, row, col, stencil, new_pixel);
+            printf("Row: %d, Col: %d\n",row, col);
+
+            applyStencilToOnePixel(updated_pmag->data, row, col, stencil, new_pixel, (pmag->y)-1, (pmag->x)-1);
             // updated_pmag->data[row][col].red = new_pixel->red;
             // updated_pmag->data[row][col].green = new_pixel->green;
             // updated_pmag->data[row][col].blue = new_pixel->blue;
