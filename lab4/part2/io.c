@@ -1,21 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "io.h"
 
 #define CREATOR "Faiyam Rahman"
 #define RGB_COMPONENT_COLOR 255
 
-typedef struct {
-     unsigned char red,green,blue;
-} PPMPixel;
 
-typedef struct {
-     int x, y;
-     PPMPixel *data;
-} PPMImage;
-
-// Given the filepath of a jpeg file, converts it to a ppm format
-// and returns the corresponding filepath
 char *jpegToPPM(char *filepath) {
 
     // Fully determine the names of the input and output files
@@ -48,7 +36,43 @@ char *jpegToPPM(char *filepath) {
 
 
 
-static PPMImage *readPPM(const char *filename)
+PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
+
+    // Allocate the image matrix 
+    PPMImageMatrix *pimagmatrix = (PPMImageMatrix *)malloc(sizeof(PPMImageMatrix));
+    checkPointer(pimagmatrix, "Failed to allocate PPImageMatrix on the heap");
+
+    // Tell the image matrix its size
+    pimagmatrix->x = pimage->x;
+    pimagmatrix->y = pimage->y;
+    // logToFileWithInt("PImageMatrix Width: %d\n", pimagmatrix->x);
+    // logToFileWithInt("PImageMatrix Height: %d\n", pimagmatrix->y);
+
+    // Allocate space for the data in the image matrix
+    pimagmatrix->data = (PPMPixel **)malloc(pimagmatrix->y * sizeof(PPMPixel *));
+    checkPointer(pimagmatrix->data, "Failed to allocate PPMPixel **data on the heap");
+    int i;
+    for(i = 0; i < pimagmatrix->y; i++){
+        pimagmatrix->data[i] = (PPMPixel *)malloc(pimagmatrix->x * sizeof(PPMPixel));
+        checkPointer(pimagmatrix->data[i], "Failed to allocate data[i] on the heap");
+    }
+
+    // Iterate through the PPMImage and fill in the image matrix data
+    int row, column;
+    for(i = 0; i < pimagmatrix->x * pimagmatrix->y; i++) {
+        row = i / pimagmatrix->x; // relies on the fact that i and row are ints, so this truncates to floor(i/x)
+        column = i % pimagmatrix->x;
+        // logToFileWithInt("Current row: %d\n", row);
+        // logToFileWithInt("Current column: %d\n", column);
+        pimagmatrix->data[row][column] = pimage->data[i];
+    }
+
+    // Return the Image Matrix
+    return pimagmatrix;
+}
+
+
+PPMImage *readPPM(const char *filename)
 {
      char buff[16];
      PPMImage *img;
@@ -69,6 +93,7 @@ static PPMImage *readPPM(const char *filename)
      }
 
     //check the image format
+    logToFile(buff);
     if (buff[0] != 'P' || buff[1] != '6') {
          fprintf(stderr, "Invalid image format (must be 'P6')\n");
          exit(1);
@@ -94,12 +119,15 @@ static PPMImage *readPPM(const char *filename)
          fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
          exit(1);
     }
+    logToFileWithInt("Width: %d\n", img->x);
+    logToFileWithInt("Height: %d\n", img->y);
 
     //read rgb component
     if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
          fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
          exit(1);
     }
+    // logToFileWithInt("RGB Comp Color: %d\n", rgb_comp_color);
 
     //check rgb component depth
     if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
@@ -121,6 +149,7 @@ static PPMImage *readPPM(const char *filename)
          fprintf(stderr, "Error loading image '%s'\n", filename);
          exit(1);
     }
+    // logCharArrayToFile((char *)img->data, 3 * img->x * img->y, "Pixel values for image\n");
 
     fclose(fp);
     return img;
@@ -166,16 +195,16 @@ static PPMImage *readPPM(const char *filename)
 //     }
 // }
 
-int main(int argc, char **argv){
-    char *ppm_file = jpegToPPM(argv[1]);
-    PPMImage *pimag = readPPM(ppm_file);
+// int main(int argc, char **argv){
+//     char *ppm_file = jpegToPPM(argv[1]);
+//     PPMImage *pimag = readPPM(ppm_file);
 
-    // Convert the
-    // Initalize the libnetpbm program
-    // PPMImage *image;
-    // image = readPPM("feep.ppm");
-    // changeColorPPM(image);
-    // writePPM("new_feep.ppm",image);
-    // printf("Press any key...");
-    // getchar();
-}
+//     // Convert the
+//     // Initalize the libnetpbm program
+//     // PPMImage *image;
+//     // image = readPPM("feep.ppm");
+//     // changeColorPPM(image);
+//     // writePPM("new_feep.ppm",image);
+//     // printf("Press any key...");
+//     // getchar();
+// }
