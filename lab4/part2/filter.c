@@ -1,15 +1,19 @@
 #include "filter.h"
 
-void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_center, StencilMatrix *stencil, 
-    PPMPixel *new_pixel, int max_height, int max_width) {
-    printf("Applying stencil to image pixel (%d, %d)\n", imag_row_center, imag_col_center);
-    // Make sure we have an odd by odd stencil
-   
+void applyStencilToOnePixel(
+        PPMPixel **updateddata, 
+        PPMPixel **data, 
+        int imag_row_center, 
+        int imag_col_center, 
+        StencilMatrix *stencil, 
+        int max_height, 
+        int max_width
+    ) {
     
+    // Make sure we have an odd by odd stencil
     assert(stencil->x % 2 == 1);
     assert(stencil->y % 2 == 1);
 
-    
     // Find the center of the stencil
     int stencil_centerrow = ((stencil->y + 1) / 2) - 1;
     int stencil_centercol = ((stencil->x + 1) / 2) - 1;
@@ -38,10 +42,10 @@ void applyStencilToOnePixel(PPMPixel **data, int imag_row_center, int imag_col_c
 
         }
     }
-    new_pixel->red = val_red;
-    new_pixel->green = val_green;
-    new_pixel->blue = val_blue;
 
+    updateddata[image_row][image_col].green = val_green;
+    updateddata[image_row][image_col].blue = val_blue;
+    updateddata[image_row][image_col].red = val_red;
 
 }
 
@@ -83,12 +87,16 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil) {
     checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
     for (row = 0; row < pmag->y; row++) {
         for (col = 0; col < pmag->x; col++) {
-            printf("Row: %d, Col: %d\n",row, col);
 
-            applyStencilToOnePixel(updated_pmag->data, row, col, stencil, new_pixel, (pmag->y)-1, (pmag->x)-1);
-            // updated_pmag->data[row][col].red = new_pixel->red;
-            // updated_pmag->data[row][col].green = new_pixel->green;
-            // updated_pmag->data[row][col].blue = new_pixel->blue;
+            //TODOOOOOOO
+            //OOOOOOO
+            //Check if changes in updated image are correct
+             applyStencilToOnePixel(updated_pmag->data, pmag->data, row, col, stencil, (pmag->y)-1, (pmag->x)-1);
+        
+        //    updated_pmag->data = &new_pixel;
+          //  updated_pmag->data[0][1].green = new_pixel->green;
+           // updated_pmag->data[row][col].blue = new_pixel->blue;
+            
         }
     }
     freePPMImageMatrix(pmag);
