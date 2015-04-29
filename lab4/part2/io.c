@@ -4,37 +4,72 @@
 #define RGB_COMPONENT_COLOR 255
 
 
+char *getOutputImageName(char *filepath, char *desired_ending) {
+
+    printf("When we enter getOutputImageName, filepath, desired_ending is %s, %s\n", filepath, desired_ending);
+
+
+    // Find the index of the . in filepath
+    char *dot = strchr(filepath, '.');
+    int index = (int)(dot - filepath);
+
+    printf("%d index", index);
+
+    // Copy the basename into a stirng
+    char *output_file = (char *)malloc( (index + 2 + strlen(desired_ending)) * sizeof(char));
+    checkPointer(output_file, "Failed to allocate memory on the heap for output_file");
+
+    // Concatenate on the desired ending and return the string
+    printf("gonna do memcpy");
+    memcpy(output_file, &filepath, index + 1); // output_file = small_colorful_image
+    printf("gonna put a null ending");
+    *(output_file + index + 1) = '\0';
+    printf("gonna do a strcat\n");
+    strcat(output_file, desired_ending);
+
+    return output_file;
+}
 char *jpegToPPM(char *filepath) {
 
-    // Fully determine the names of the input and output files
-    char *basename = strtok(filepath, ".");
-    char *input_file = (char *)malloc((strlen(basename) + 5) * sizeof(char));
-    if (!input_file) {
-        printf("Failed to allocate space on heap for input_file");
-        exit(1);
-    }
-    char *output_file = (char *)malloc((strlen(basename) + 5) * sizeof(char));
-    if (!output_file) {
-        printf("Failed to allocate memory on the heap for output_file");
-        exit(1);
-    }
-    sprintf(input_file, "%s.jpg", basename);
-    sprintf(output_file, "%s.ppm", basename);
+    char *output_file = getOutputImageName(filepath, "ppm");
 
     // Write the call to jpegtopnm as a string
     char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
-    if (!system_call) {
-        printf("Failed to allocate space on heap for system_call");
-        exit(1);
-    }
+    checkPointer(system_call, "Failed to allocate space on heap for system_call");
 
     // Make the call to jpegtopnm, converting the file, and return to user    
-    sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
+    // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
+    sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
     int status = system(system_call);
     return output_file;
 }
 
+PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix) {
 
+    // Allocate the PPMImage
+    PPMImage *pimage = (PPMImage *)malloc(sizeof(PPMImage));
+    checkPointer(pimage, "Failed to allocate PPMImage on the heap\n");
+
+    // Tell the PPMImage its size
+    pimage->x = pimagmatrix->x;
+    pimage->y = pimagmatrix->y;
+
+    // Allocate space for the data in the PPMImage
+    pimage->data = (PPMPixel *)malloc(pimage->x * pimage->y * sizeof(PPMPixel));
+    checkPointer(pimage->data, "Failed to allocate PPMPixel *data on the heap\n");
+
+    // Iterate through the PPMImageMatrix and fill in the data
+    int row, col;
+    int i = 0;
+    for (row = 0; row < pimage->y; row++) {
+        for (col = 0; col < pimage->x; col++) {
+            pimage->data[i++] = pimagmatrix->data[row][col];
+        }
+    }
+
+    // Return the ImageMatrix
+    return pimage;
+}
 
 PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
 
@@ -45,8 +80,6 @@ PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
     // Tell the image matrix its size
     pimagmatrix->x = pimage->x;
     pimagmatrix->y = pimage->y;
-    // logToFileWithInt("PImageMatrix Width: %d\n", pimagmatrix->x);
-    // logToFileWithInt("PImageMatrix Height: %d\n", pimagmatrix->y);
 
     // Allocate space for the data in the image matrix
     pimagmatrix->data = (PPMPixel **)malloc(pimagmatrix->y * sizeof(PPMPixel *));
@@ -62,8 +95,6 @@ PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
     for(i = 0; i < pimagmatrix->x * pimagmatrix->y; i++) {
         row = i / pimagmatrix->x; // relies on the fact that i and row are ints, so this truncates to floor(i/x)
         column = i % pimagmatrix->x;
-        // logToFileWithInt("Current row: %d\n", row);
-        // logToFileWithInt("Current column: %d\n", column);
         pimagmatrix->data[row][column] = pimage->data[i];
     }
 
@@ -154,33 +185,33 @@ PPMImage *readPPM(const char *filename)
     fclose(fp);
     return img;
 }
-// void writePPM(const char *filename, PPMImage *img)
-// {
-//     FILE *fp;
-//     //open file for output
-//     fp = fopen(filename, "wb");
-//     if (!fp) {
-//          fprintf(stderr, "Unable to open file '%s'\n", filename);
-//          exit(1);
-//     }
+void writePPM(char *filename, PPMImage *img)
+{
+    FILE *fp;
+    //open file for output
+    fp = fopen(filename, "wb");
+    if (!fp) {
+         fprintf(stderr, "Unable to open file '%s'\n", filename);
+         exit(1);
+    }
 
-//     //write the header file
-//     //image format
-//     fprintf(fp, "P6\n");
+    //write the header file
+    //image format
+    fprintf(fp, "P6\n");
 
-//     //comments
-//     fprintf(fp, "# Created by %s\n",CREATOR);
+    //comments
+    fprintf(fp, "# Created by %s\n",CREATOR);
 
-//     //image size
-//     fprintf(fp, "%d %d\n",img->x,img->y);
+    //image size
+    fprintf(fp, "%d %d\n",img->x,img->y);
 
-//     // rgb component depth
-//     fprintf(fp, "%d\n",RGB_COMPONENT_COLOR);
+    // rgb component depth
+    fprintf(fp, "%d\n",RGB_COMPONENT_COLOR);
 
-//     // pixel data
-//     fwrite(img->data, 3 * img->x, img->y, fp);
-//     fclose(fp);
-// }
+    // pixel data
+    fwrite(img->data, 3 * img->x, img->y, fp);
+    fclose(fp);
+}
 
 // void changeColorPPM(PPMImage *img)
 // {

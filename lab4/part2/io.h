@@ -30,6 +30,11 @@ char *jpegToPPM(char *filepath);
 // Read a ppm file into the PPMImage struct
 PPMImage *readPPM(const char *filename);
 
+// Write the PPMImage Struct to file as a PPM file
+void writePPM(char *filename, PPMImage *img);
+
 // Read a PPMImage struct into a PPMImageMatrix;
 PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage);
+
+PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix);
 

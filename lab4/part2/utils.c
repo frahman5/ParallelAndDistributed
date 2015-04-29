@@ -30,6 +30,12 @@ void logToFileWithInt(char *formatString, int var)
 
 }
 
+void logToFileWithTwoInts(char *formatString, int var, int var2) {
+    FILE *fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, formatString, var, var2);
+    fclose(fp);
+}
+
 
 // Prints an Array with an associated message
 void logCharArrayToFile(char *array, int sz, char *message) {

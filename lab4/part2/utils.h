@@ -14,4 +14,6 @@ void printStencilMatrix(StencilMatrix *stencil);
 
 void logImageToFile(PPMImageMatrix *imag);
 
+void logToFileWithTwoInts(char *formatString, int var, int var2);
+
 // int checkConversion(PPMImage *pimag, PPMImageMatrix *pimagmatrix);
