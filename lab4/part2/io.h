@@ -23,12 +23,20 @@ typedef struct {
      char **data;
 } StencilMatrix;
 
-// Given the filepath of a jpeg file, converts it to a ppm format
-// and returns the corresponding filepath
+// Transforms a JPEG image into ppm P6 format and returns the file name
 char *jpegToPPM(char *filepath);
 
+// Transforms a ppm P6 image into JPEG format and returns the file name
+char *ppmToJPEG(char *filepath);
+
+// Makes the system call to open an image
+void openImage(char *filepath);
+
+// Auxiliary function to replace filenames
+char *str_replace(char *orig, char *rep, char *with);
+
 // Read a ppm file into the PPMImage struct
-PPMImage *readPPM(const char *filename);
+PPMImage *readPPM_P6(const char *filename);
 
 // Write the PPMImage Struct to file as a PPM file
 void writePPM(char *filename, PPMImage *img);
@@ -36,5 +44,9 @@ void writePPM(char *filename, PPMImage *img);
 // Read a PPMImage struct into a PPMImageMatrix;
 PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage);
 
+// Read a PPMMatrix struct into a PPIMage
 PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix);
+
+// Reads the stencil from a pgm file and returns the correspondign struct
+StencilMatrix *readStencil(const char *filename);
 

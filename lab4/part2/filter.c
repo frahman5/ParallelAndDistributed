@@ -1,7 +1,84 @@
 #include "filter.h"
 
-void applyStencilToOnePixel(
-        PPMImageMatrix *new_pmag, 
+
+/*
+    Frees a PPMImageMatrix from memory
+*/
+void freePPMImageMatrix(PPMImageMatrix *pmag) {
+    int row, col;
+    for (row = 0; row < pmag->y; row++) {
+        free(pmag->data[row]);
+    }
+    free(pmag->data);
+    free(pmag);
+}
+
+/*
+    Verifies that 2 PPMImageMatrices are equal
+*/
+void checkCopy(PPMImageMatrix *pmag1, PPMImageMatrix *pmag2) {
+    int row, col;
+    assert (pmag1->x == pmag2->x);
+    assert (pmag1->y == pmag2->y);
+    for (row = 0; row < pmag1->y; row++) {
+        for (col = 0; col < pmag2->x; col++) {
+            assert (checkEqualPixel2(pmag1->data[row][col], pmag2->data[row][col]));
+        }
+    }
+    logToFile("\n\n\n\n ****** The original and copy Image Matrices are both the same, yo! ***** \n\n\n\n\n");
+}
+
+
+
+int checkEqualPixel2(PPMPixel pixel1, PPMPixel pixel2) {
+
+    return (pixel1.red == pixel2.red) && 
+           (pixel1.blue == pixel2.blue) &&
+           (pixel1.green == pixel2.green);
+}
+
+int checkConversion2(PPMImage *pimag, PPMImageMatrix *pimagmatrix) {
+    int i;
+    
+    for (i = 0; i < (pimag->x * pimag->y); i++) {
+        assert(checkEqualPixel2(pimag->data[i], pimagmatrix->data[i / pimag->x][i % pimag->x]) );
+    }
+
+    return 1;
+}
+
+/*
+    Copies an imageMatrix into a new one and returns the new one
+*/
+PPMImageMatrix *copyImageMatrix(PPMImageMatrix *og_pmag) 
+{
+    PPMImageMatrix *copy_pmag = (PPMImageMatrix *)malloc(sizeof(PPMImageMatrix));
+    checkPointer(copy_pmag, "Failed to allocate copy_pmag in copyImageMatri");
+    logToFileWithInt("\n\n***While creating copy_pmag, we allocate %d number of rows in the data**\n\n", og_pmag->y);
+    copy_pmag->data = (PPMPixel **)malloc(og_pmag->y * sizeof(PPMPixel *));
+    checkPointer(copy_pmag->data, "Failed to allocate to allocate copy_pmag->data in copyImageMatrix");
+
+    copy_pmag->x = og_pmag->x;
+    copy_pmag->y = og_pmag->y;
+    int row, col;
+    for (row = 0; row < copy_pmag->y; row++) {
+        copy_pmag->data[row] = (PPMPixel *)malloc(copy_pmag->x * sizeof(PPMPixel));
+        checkPointer(copy_pmag->data[row], "failled to allocate a row in copyImageMatrix\n");
+        for(col = 0; col < copy_pmag->x; col++) {
+            copy_pmag->data[row][col] = og_pmag->data[row][col];
+        }
+    }
+    logToFileWithTwoInts("Copy Pmag (x, y): (%d, %d)\n", copy_pmag->x, copy_pmag->y);
+    return copy_pmag;
+}
+
+/*
+    Applies the stencil provided to the pixel in row and col center.
+    Receives the original version of the
+    image and returns the updated pixel value. 
+    Does not modify the original image.
+*/  
+PPMPixel *applyStencilToOnePixel(
         PPMImageMatrix *pmag, 
         int imag_row_center, 
         int imag_col_center, 
@@ -40,54 +117,19 @@ void applyStencilToOnePixel(
 
         }
     }
-    new_pmag->data[imag_row_center][imag_col_center].green = val_green;
-    new_pmag->data[imag_row_center][imag_col_center].blue = val_blue;
-    new_pmag->data[imag_row_center][imag_col_center].red = val_red;
+
+    PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
+    checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
+    new_pixel->green = val_green;
+    new_pixel->blue = val_blue;
+    new_pixel->red = val_red;
+
+    return new_pixel;
 }
 
-PPMImageMatrix *copyImageMatrix(PPMImageMatrix *og_pmag) {
-    PPMImageMatrix *copy_pmag = (PPMImageMatrix *)malloc(sizeof(PPMImageMatrix));
-    checkPointer(copy_pmag, "Failed to allocate copy_pmag in copyImageMatri");
-    logToFileWithInt("\n\n***While creating copy_pmag, we allocate %d number of rows in the data**\n\n", og_pmag->y);
-    copy_pmag->data = (PPMPixel **)malloc(og_pmag->y * sizeof(PPMPixel *));
-    checkPointer(copy_pmag->data, "Failed to allocate to allocate copy_pmag->data in copyImageMatrix");
-
-    copy_pmag->x = og_pmag->x;
-    copy_pmag->y = og_pmag->y;
-    int row, col;
-    for (row = 0; row < copy_pmag->y; row++) {
-        copy_pmag->data[row] = (PPMPixel *)malloc(copy_pmag->x * sizeof(PPMPixel));
-        checkPointer(copy_pmag->data[row], "failled to allocate a row in copyImageMatrix\n");
-        for(col = 0; col < copy_pmag->x; col++) {
-            copy_pmag->data[row][col] = og_pmag->data[row][col];
-        }
-    }
-    logToFileWithTwoInts("Copy Pmag (x, y): (%d, %d)\n", copy_pmag->x, copy_pmag->y);
-    return copy_pmag;
-}
-
-void freePPMImageMatrix(PPMImageMatrix *pmag) {
-    int row, col;
-    for (row = 0; row < pmag->y; row++) {
-        free(pmag->data[row]);
-    }
-    free(pmag->data);
-    free(pmag);
-}
-
-
-void checkCopy(PPMImageMatrix *pmag1, PPMImageMatrix *pmag2) {
-    int row, col;
-    assert (pmag1->x == pmag2->x);
-    assert (pmag1->y == pmag2->y);
-    for (row = 0; row < pmag1->y; row++) {
-        for (col = 0; col < pmag2->x; col++) {
-            assert (checkEqualPixel2(pmag1->data[row][col], pmag2->data[row][col]));
-        }
-    }
-    logToFile("\n\n\n\n ****** The original and copy Image Matrices are both the same, yo! ***** \n\n\n\n\n");
-}
-
+/*
+    Applies aa stencil to the entire image by iterating through each pixel
+*/
 PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil) {
     int row, col;
     PPMImageMatrix *updated_pmag = copyImageMatrix(pmag);
@@ -95,92 +137,106 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil) {
 
     // logImageToFile(updated_pmag);
 
-    // PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
-    // checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
+    PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
+    checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
     for (row = 0; row < pmag->y; row++) {
         for (col = 0; col < pmag->x; col++) {
             logToFileWithTwoInts("From applyStencil: Applying stencil to pixel (%d, %d)\n",  row, col);
 
             //Check if changes in updated image are correct
-            applyStencilToOnePixel(updated_pmag, pmag, row, col, stencil);
+            new_pixel = applyStencilToOnePixel(pmag, row, col, stencil);
         
-            // updated_pmag->data[row][col].red = new_pixel->red;
-            // updated_pmag->data[row][col].blue = new_pixel->blue;
-            // updated_pmag->data[row][col].green = new_pixel->green;
+            updated_pmag->data[row][col].red = new_pixel->red;
+            updated_pmag->data[row][col].blue = new_pixel->blue;
+            updated_pmag->data[row][col].green = new_pixel->green;
         }
     }
-    // printf("About to print 0,0 red pixel data\n");
-    // printf("0,0 red of pmag data: %d\n", pmag->data[0][0].red);
-    // printf("0,0 red of updated_pmag data: %d\n", updated_pmag->data[0][0].red);
     freePPMImageMatrix(pmag);
     return updated_pmag;
-}
-
-int checkEqualPixel2(PPMPixel pixel1, PPMPixel pixel2) {
-
-    return (pixel1.red == pixel2.red) && 
-           (pixel1.blue == pixel2.blue) &&
-           (pixel1.green == pixel2.green);
-}
-
-int checkConversion2(PPMImage *pimag, PPMImageMatrix *pimagmatrix) {
-    int i;
-    
-    for (i = 0; i < (pimag->x * pimag->y); i++) {
-        assert(checkEqualPixel2(pimag->data[i], pimagmatrix->data[i / pimag->x][i % pimag->x]) );
-    }
-
-    return 1;
 }
 
 // Expected use: ./filter image.jpg stencil.pgm num_threads num_repetitions_of_stencil
 int main(int argc, char **argv) {
 
-    // Clean the debug log1
-    FILE *fp = fopen("debug.txt", "w+");
-    fclose(fp);
 
-    // Take in jpg image, convert it to a ppmimagematrix struct
-    char *ppm_file = jpegToPPM(argv[1]);
-    PPMImage *pimag = readPPM(ppm_file);
-    PPMImageMatrix *pimagmatrix = convertPPMImageToPPMImageMatrix(pimag);
-    checkConversion2(pimag, pimagmatrix);
+    if (argc == 5)
+    {
+        char *original_image = argv[1];
+        char *stencil_file = argv[2];
+        int num_threads = (int)strtol(argv[3],NULL, 0);
+        int stencil_reps = (int)strtol(argv[4],NULL, 0);
 
-    // Apply the fixed, stupid ass stencil
-    char data[5][3] = { {4,   -2,  3}, 
-                        {1,   0,   4}, 
-                        {-2,  3,   1},
-                        {0,   4,   3},
-                        {-4,  -3,  -2}  };
-        // Allocate and set the stencil
-    StencilMatrix *stencil = (StencilMatrix *)malloc(sizeof(StencilMatrix));
-    checkPointer(stencil, "stencil couldn't allocate in main function!");
-    stencil->x = 3; stencil->y = 5;
-    stencil->data = (char **)malloc(stencil->y * sizeof(char *));
-    checkPointer(stencil->data, "Failed to allocate stencil->data in main function");
+        printf("****** Parameters received *****\n");
+        printf("Image to filter: %s\n", original_image);
+        printf("Filter stencil: %s\n", stencil_file);
+        printf("Number of threads: %d\n", num_threads);
+        printf("Stencil Repetitions: %d\n", stencil_reps);
+
+
+        // Read the stencil
+        StencilMatrix *stencil = readStencil(argv[2]);
+        printStencilMatrix(stencil);
+        
+        // Clean the debug log1
+        FILE *fp = fopen("debug.txt", "w+");
+        fclose(fp);
     
-    int row, col;
-    for (row = 0; row < stencil->y; row++) {
-        stencil->data[row] = (char *)malloc(stencil->x * sizeof(char));
-        checkPointer(stencil->data[row], "Failed to allocate stencil->data[row] in main function\n");
-        for (col = 0; col < stencil->x; col++) {
-            printf("Creating stencil. (Row, Col): (%d, %d)\n", row, col);
-            stencil->data[row][col] = data[row][col];
+        // Take in jpg image, convert it to a ppmimagematrix struct
+        char *ppm_file = jpegToPPM(argv[1]);
+        PPMImage *pimag = readPPM_P6(ppm_file);
+
+        PPMImageMatrix *pimagmatrix = convertPPMImageToPPMImageMatrix(pimag);
+        checkConversion2(pimag, pimagmatrix);
+
+        // Apply the stencil
+        int i = 0;
+        for (i = 0; i < stencil_reps; ++i)
+        {
+            pimagmatrix = applyStencil(pimagmatrix, stencil);
         }
+            
+
+        // Take the resultant image matrix structure and save it to file as a PPM
+        PPMImage *filtered_image = convertPPMImageMatrixToPPMImage(pimagmatrix);
+        checkConversion2(filtered_image, pimagmatrix);
+        writePPM(ppm_file, filtered_image);
+
+        // Take the resultant image, convert it to jpg
+        char *jpg_file = ppmToJPEG(ppm_file);
+    
+        // Open the FILE
+        openImage(jpg_file);
+        openImage(original_image);
+
     }
-    printStencilMatrix(stencil);
-    pimagmatrix = applyStencil(pimagmatrix, stencil);
-
-    // Take the resultant image matrix structure and save it to file as a PPM
-    PPMImage *filtered_image = convertPPMImageMatrixToPPMImage(pimagmatrix);
-    checkConversion2(filtered_image, pimagmatrix);
-    printf("Argv1: %s\n", argv[1]);
-    printf("Output image name: %s\n", getOutputImageName(argv[1], "ppm") );
-    // writePPM(getOutputImageName(argv[1], ".ppm"), filtered_image);
-
-    // Take the resultant image, convert it to jpg
-    // ppmToJPEG
-
-    // Open the file
+    else
+    {
+        printf("Invalid number of arguments\n");
+    }
 
 }
+    
+    /*
+        // Stencil Data
+        char data[5][3] = { {4,   -2,  3}, 
+                            {1,   0,   4}, 
+                            {-2,  3,   1},
+                            {0,   4,   3},
+                            {-4,  -3,  -2}  };
+        
+        // Allocate and set the stencil
+        StencilMatrix *stencil = (StencilMatrix *)malloc(sizeof(StencilMatrix));
+        checkPointer(stencil, "stencil couldn't allocate in main function!");
+        stencil->x = 3; stencil->y = 5;
+        stencil->data = (char **)malloc(stencil->y * sizeof(char *));
+        checkPointer(stencil->data, "Failed to allocate stencil->data in main function");
+        
+        int row, col;
+        for (row = 0; row < stencil->y; row++) {
+            stencil->data[row] = (char *)malloc(stencil->x * sizeof(char));
+            checkPointer(stencil->data[row], "Failed to allocate stencil->data[row] in main function\n");
+            for (col = 0; col < stencil->x; col++) {
+                stencil->data[row][col] = data[row][col];
+            }
+        }
+        */

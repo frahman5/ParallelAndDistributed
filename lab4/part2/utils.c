@@ -49,7 +49,7 @@ void logCharArrayToFile(char *array, int sz, char *message) {
 }
 
 void printStencilMatrix(StencilMatrix *stencil) {
-    printf("About to print your stencil, sir\n");
+    printf("\nStencil: \n");
     int row, col;
     for (row = 0; row < stencil->y; row++){
         for (col = 0; col < stencil->x; col++) {

@@ -4,34 +4,65 @@
 #define RGB_COMPONENT_COLOR 255
 
 
+/*
+  Receives the filename of the JGP image and returns the name 
+  of the expected output.
+*/
 char *getOutputImageName(char *filepath, char *desired_ending) {
 
-    printf("When we enter getOutputImageName, filepath, desired_ending is %s, %s\n", filepath, desired_ending);
-
-
-    // Find the index of the . in filepath
-    char *dot = strchr(filepath, '.');
-    int index = (int)(dot - filepath);
-
-    printf("%d index", index);
-
-    // Copy the basename into a stirng
-    char *output_file = (char *)malloc( (index + 2 + strlen(desired_ending)) * sizeof(char));
-    checkPointer(output_file, "Failed to allocate memory on the heap for output_file");
-
-    // Concatenate on the desired ending and return the string
-    printf("gonna do memcpy");
-    memcpy(output_file, &filepath, index + 1); // output_file = small_colorful_image
-    printf("gonna put a null ending");
-    *(output_file + index + 1) = '\0';
-    printf("gonna do a strcat\n");
-    strcat(output_file, desired_ending);
-
-    return output_file;
+    return str_replace(filepath, "jpg", desired_ending);
 }
+
+/*
+  Replaces "rep" in the original string with "with"
+*/
+char *str_replace(char *orig, char *rep, char *with) {
+    char *result; // the return string
+    char *ins;    // the next insert point
+    char *tmp;    // varies
+    int len_rep;  // length of rep
+    int len_with; // length of with
+    int len_front; // distance between rep and end of last rep
+    int count;    // number of replacements
+
+    if (!orig)
+        return NULL;
+    if (!rep)
+        rep = "";
+    len_rep = strlen(rep);
+    if (!with)
+        with = "";
+    len_with = strlen(with);
+
+    ins = orig;
+    for (count = 0; tmp = strstr(ins, rep); ++count) {
+        ins = tmp + len_rep;
+    }
+
+    // first time through the loop, all the variable are set correctly
+    // from here on,
+    //    tmp points to the end of the result string
+    //    ins points to the next occurrence of rep in orig
+    //    orig points to the remainder of orig after "end of rep"
+    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+        return NULL;
+
+    while (count--) {
+        ins = strstr(orig, rep);
+        len_front = ins - orig;
+        tmp = strncpy(tmp, orig, len_front) + len_front;
+        tmp = strcpy(tmp, with) + len_with;
+        orig += len_front + len_rep; // move to next "end of rep"
+    }
+    strcpy(tmp, orig);
+    return result;
+}
+
 char *jpegToPPM(char *filepath) {
 
-    char *output_file = getOutputImageName(filepath, "ppm");
+    char *output_file = str_replace(filepath, "jpg", "ppm");
 
     // Write the call to jpegtopnm as a string
     char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
@@ -39,9 +70,36 @@ char *jpegToPPM(char *filepath) {
 
     // Make the call to jpegtopnm, converting the file, and return to user    
     // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
-    sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
+    sprintf(system_call, "jpegtopnm %s > %s", filepath, output_file);
     int status = system(system_call);
     return output_file;
+}
+
+char *ppmToJPEG(char *filepath) {
+
+    char *output_file = str_replace(filepath, ".ppm", "_filtered.jpg");
+
+    // Write the call to jpegtopnm as a string
+    char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
+    checkPointer(system_call, "Failed to allocate space on heap for system_call");
+
+    // Make the call to jpegtopnm, converting the file, and return to user    
+    // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
+    sprintf(system_call, "pnmtojpeg %s > %s", filepath, output_file);
+    int status = system(system_call);
+    return output_file;
+}
+
+void openImage(char *filepath)
+{
+    // Write the call to jpegtopnm as a string
+    char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
+    checkPointer(system_call, "Failed to allocate space on heap for system_call");
+
+    // Make the call to jpegtopnm, converting the file, and return to user    
+    // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
+    sprintf(system_call, "open %s", filepath);
+    int status = system(system_call);
 }
 
 PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix) {
@@ -103,7 +161,7 @@ PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
 }
 
 
-PPMImage *readPPM(const char *filename)
+PPMImage *readPPM_P6(const char *filename)
 {
      char buff[16];
      PPMImage *img;
@@ -185,6 +243,7 @@ PPMImage *readPPM(const char *filename)
     fclose(fp);
     return img;
 }
+
 void writePPM(char *filename, PPMImage *img)
 {
     FILE *fp;
@@ -211,6 +270,101 @@ void writePPM(char *filename, PPMImage *img)
     // pixel data
     fwrite(img->data, 3 * img->x, img->y, fp);
     fclose(fp);
+}
+
+
+StencilMatrix *readStencil(const char *filename)
+{
+     char buff[16];
+     StencilMatrix *stencil;
+     FILE *fp;
+     int c, p, M;
+
+     //open PPM file for reading
+     fp = fopen(filename, "rb");
+     if (!fp) {
+          fprintf(stderr, "Unable to open file '%s'\n", filename);
+          exit(1);
+     }
+
+     //read image format
+     if (!fgets(buff, sizeof(buff), fp)) {
+          perror(filename);
+          exit(1);
+     }
+
+    //check the image format
+    logToFile(buff);
+    if (buff[0] != 'P' || buff[1] != '2') {
+         fprintf(stderr, "Invalid stencil image format (must be 'P2')\n");
+         exit(1);
+    }
+
+    //alloc memory form image
+    stencil = (StencilMatrix *)malloc(sizeof(StencilMatrix));
+    if (!stencil) {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
+    //check for comments
+    c = getc(fp);
+    while (c == '#') {
+    while (getc(fp) != '\n') ;
+         c = getc(fp);
+    }
+    ungetc(c, fp);
+
+    //read image size information
+    if (fscanf(fp, "%d %d", &stencil->x, &stencil->y) != 2) {
+         fprintf(stderr, "Invalid stencil size (error loading '%s')\n", filename);
+         exit(1);
+    }
+    logToFileWithInt("Width: %d\n", stencil->x);
+    logToFileWithInt("Height: %d\n", stencil->y);
+
+    //read M max
+    if (fscanf(fp, "%d", &M) != 1) {
+         fprintf(stderr, "Invalid M value (error loading '%s')\n", filename);
+         exit(1);
+    }
+    while (fgetc(fp) != '\n');
+
+    // Allocate space for the data in the stencil data
+    stencil->data = (char **)malloc(stencil->y * sizeof(char *));
+    checkPointer(stencil->data, "Failed to allocate stencil **data on the heap");
+    int i;
+    for(i = 0; i < stencil->y; i++){
+        stencil->data[i] = (char *)malloc(stencil->x * sizeof(char));
+        checkPointer(stencil->data[i], "Failed to allocate data[i] on the heap");
+    }
+
+    // Read from file and assign to stencil data
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int y = 0;
+    int x = 0;
+
+    while ((read = getline(&line, &len, fp)) != -1) 
+    {
+      x = 0;
+      while(x < stencil->x)
+      {
+        sscanf(line, "%d %[^\t\n]", &p, line);
+        // needs fixing 
+        //stencil->data[y][x] = -4+(8*p)/(M-1); 
+        stencil->data[y][x] = p; 
+       // printf("%d ", p);
+        ++x;        
+      }
+      //printf("\n");
+      ++y;  
+    }
+
+    return stencil;
+
+
 }
 
 // void changeColorPPM(PPMImage *img)
