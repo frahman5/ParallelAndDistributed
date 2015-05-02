@@ -58,7 +58,8 @@ char *jpegToPPM(char *filepath) {
     // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
     
     printf("HH\n");
-    sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
+    //sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
+    sprintf(system_call, "jpegtopnm sample_image.jpg > sample_image.ppm");
     printf("About to convert %s\n", system_call);
     int status = system(system_call);
     return output_file;
