@@ -47,7 +47,7 @@ char *str_replace ( const char *string, const char *substr, const char *replacem
 */
 char *jpegToPPM(char *filepath) {
 
-    char *output_file = str_replace(filepath, "jpg", "ppm");
+    char *output_file = str_replace(filepath, ".jpg", "");
     printf("Original: %s and New one: %s\n", filepath, output_file);
 
     // Write the call to jpegtopnm as a string
@@ -58,7 +58,7 @@ char *jpegToPPM(char *filepath) {
     // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
     
     printf("HH\n");
-    sprintf(system_call, "jpegtopnm %s > %s", filepath, output_file);
+    sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
     printf("About to convert %s\n", system_call);
     int status = system(system_call);
     return output_file;
