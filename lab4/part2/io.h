@@ -45,7 +45,7 @@ void openImage(char *filepath);
 ********************************/
 
 // Auxiliary function to replace filenames
-char *str_replace ( const char *string, const char *substr, const char *replacement );
+char *str_replace(char *orig, char *rep, char *with);
 
 /**********************
 * Read files functions

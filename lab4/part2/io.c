@@ -10,33 +10,48 @@
   Replaces the content of a string with the indicated 
   substring. 
 */
-char *str_replace ( const char *string, const char *substr, const char *replacement ){
-  char *tok = NULL;
-  char *newstr = NULL;
-  char *oldstr = NULL;
-  char *head = NULL;
- 
-  /* if either substr or replacement is NULL, duplicate string a let caller handle it */
-  if ( substr == NULL || replacement == NULL ) return strdup (string);
-  newstr = strdup (string);
-  head = newstr;
-  while ( (tok = strstr ( head, substr ))){
-    oldstr = newstr;
-    newstr = malloc ( strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) + 1 );
-    /*failed to alloc mem, free old string and return NULL */
-    if ( newstr == NULL ){
-      free (oldstr);
-      return NULL;
+char *str_replace(char *orig, char *rep, char *with) {
+    char *result; // the return string
+    char *ins;    // the next insert point
+    char *tmp;    // varies
+    int len_rep;  // length of rep
+    int len_with; // length of with
+    int len_front; // distance between rep and end of last rep
+    int count;    // number of replacements
+
+    if (!orig)
+        return NULL;
+    if (!rep)
+        rep = "";
+    len_rep = strlen(rep);
+    if (!with)
+        with = "";
+    len_with = strlen(with);
+
+    ins = orig;
+    for (count = 0; tmp = strstr(ins, rep); ++count) {
+        ins = tmp + len_rep;
     }
-    memcpy ( newstr, oldstr, tok - oldstr );
-    memcpy ( newstr + (tok - oldstr), replacement, strlen ( replacement ) );
-    memcpy ( newstr + (tok - oldstr) + strlen( replacement ), tok + strlen ( substr ), strlen ( oldstr ) - strlen ( substr ) - ( tok - oldstr ) );
-    memset ( newstr + strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) , 0, 1 );
-    /* move back head right after the last replacement */
-    head = newstr + (tok - oldstr) + strlen( replacement );
-    free (oldstr);
-  }
-  return newstr;
+
+    // first time through the loop, all the variable are set correctly
+    // from here on,
+    //    tmp points to the end of the result string
+    //    ins points to the next occurrence of rep in orig
+    //    orig points to the remainder of orig after "end of rep"
+    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+        return NULL;
+
+    while (count--) {
+        ins = strstr(orig, rep);
+        len_front = ins - orig;
+        tmp = strncpy(tmp, orig, len_front) + len_front;
+        tmp = strcpy(tmp, with) + len_with;
+        orig += len_front + len_rep; // move to next "end of rep"
+    }
+    strcpy(tmp, orig);
+    return result;
 }
 
 /***************************************
@@ -47,8 +62,7 @@ char *str_replace ( const char *string, const char *substr, const char *replacem
 */
 char *jpegToPPM(char *filepath) {
 
-    char *output_file = str_replace(filepath, ".jpg", "");
-    printf("Original: %s and New one: %s\n", filepath, output_file);
+    char *output_file = str_replace(filepath, "jpg", "ppm");
 
     // Write the call to jpegtopnm as a string
     char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
@@ -56,11 +70,7 @@ char *jpegToPPM(char *filepath) {
 
     // Make the call to jpegtopnm, converting the file, and return to user    
     // sprintf(system_call, "jpegtopnm %s.jpg > %s.ppm", basename, basename);
-    
-    printf("HH\n");
-    //sprintf(system_call, "jpegtopnm %s > %s.ppm", filepath, output_file);
-    sprintf(system_call, "jpegtopnm sample_image.jpg > sample_image.ppm");
-    printf("About to convert %s\n", system_call);
+    sprintf(system_call, "jpegtopnm %s > %s", filepath, output_file);
     int status = system(system_call);
     return output_file;
 }
