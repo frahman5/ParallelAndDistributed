@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.5.2)  2 MAY 2015 13:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.5.2)  2 MAY 2015 17:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,26 +6,102 @@ entering extended mode
 (./ReportPart1a.tex
 LaTeX2e <2014/05/01>
 Babel <3.9k> and hyphenation patterns for 21 languages loaded.
-(/usr/local/texlive/2014basic/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2014basic/texmf-dist/tex/latex/base/size12.clo
-File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2013/12/19 v3.12 KOMA-Script document class (article)
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/scrkbase.sty
+Package: scrkbase 2013/12/19 v3.12 KOMA-Script package (KOMA-Script-dependent b
+asics and keyval usage)
+
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/scrbase.sty
+Package: scrbase 2013/12/19 v3.12 KOMA-Script package (KOMA-Script-independent 
+basics and keyval usage)
+
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/05/08 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
 )
-\c@part=\count79
-\c@section=\count80
-\c@subsection=\count81
-\c@subsubsection=\count82
-\c@paragraph=\count83
-\c@subparagraph=\count84
-\c@figure=\count85
-\c@table=\count86
-\abovecaptionskip=\skip41
-\belowcaptionskip=\skip42
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2013/12/19 v3.12 KOMA-Script package (loading files)
+
+Package scrlfile, 2013/12/19 v3.12 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+))) (/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/tocbasic.sty
+Package: tocbasic 2013/12/19 v3.12 KOMA-Script package (handling toc-files)
+)
+Package tocbasic Info: omitting babel extension for `toc'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `toc' on input line 115.
+Package tocbasic Info: omitting babel extension for `lof'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lof' on input line 116.
+Package tocbasic Info: omitting babel extension for `lot'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lot' on input line 117.
+Package scrartcl Info: You've used standard option `12pt'.
+(scrartcl)             This is correct!
+(scrartcl)             Internally I'm using `fontsize=12pt'.
+(scrartcl)             If you'd like to set the option with \KOMAoptions,
+(scrartcl)             you'd have to use `fontsize=12pt' there
+(scrartcl)             instead of `12pt', too.
+Package scrbase Info: Unknown processing state.
+(scrbase)             Processing option `twoside'
+(scrbase)             of member `.scrartcl.cls' of family
+(scrbase)             `KOMA' doesn't set
+(scrbase)             a valid state. This will be interpreted
+(scrbase)             as \FamilyKeyStateProcessed on input line 1150.
+Class scrartcl Info: File `scrsize12pt.clo' used to setup font sizes on input l
+ine 1531.
+
+(/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/scrsize12pt.clo
+File: scrsize12pt.clo 2013/12/19 v3.12 KOMA-Script font size class option (12pt
+)
+) (/usr/local/texlive/2014basic/texmf-dist/tex/latex/koma-script/typearea.sty
+Package: typearea 2013/12/19 v3.12 KOMA-Script package (type area)
+
+Package typearea, 2013/12/19 v3.12 KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+\ta@bcor=\skip41
+\ta@div=\count79
+\ta@hblk=\skip42
+\ta@vblk=\skip43
+\ta@temp=\skip44
+\footheight=\skip45
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 12
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50793pt
+(typearea)              \textwidth      = 448.13095pt
+(typearea)              DIV departure   = -6%
+(typearea)              \evensidemargin = 27.31467pt
+(typearea)              \oddsidemargin  = -22.47766pt
+(typearea)             \paperheight     = 845.04694pt
+(typearea)              \textheight     = 635.5pt
+(typearea)              \topmargin      = -41.72441pt
+(typearea)              \headheight     = 18.125pt
+(typearea)              \headsep        = 21.75pt
+(typearea)              \topskip        = 12.0pt
+(typearea)              \footskip       = 50.75pt
+(typearea)              \baselineskip   = 14.5pt
+(typearea)              on input line 1330.
+)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\abovecaptionskip=\skip46
+\belowcaptionskip=\skip47
+\c@pti@nb@sid@b@x=\box26
+\c@figure=\count86
+\c@table=\count87
 \bibindent=\dimen102
-)
-(/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amsmath.sty
+) (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2013/01/14 v2.14 AMS math features
-\@mathmargin=\skip43
+\@mathmargin=\skip48
 
 For additional information on amsmath, use the `?' option.
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amstext.sty
@@ -33,7 +109,7 @@ Package: amstext 2000/06/29 v2.01
 
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0
-\@emptytoks=\toks14
+\@emptytoks=\toks15
 \ex@=\dimen103
 ))
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amsbsy.sty
@@ -43,41 +119,41 @@ Package: amsbsy 1999/11/29 v1.2d
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 1999/12/14 v2.01 operator names
 )
-\inf@bad=\count87
+\inf@bad=\count88
 LaTeX Info: Redefining \frac on input line 210.
-\uproot@=\count88
-\leftroot@=\count89
+\uproot@=\count89
+\leftroot@=\count90
 LaTeX Info: Redefining \overline on input line 306.
-\classnum@=\count90
-\DOTSCASE@=\count91
+\classnum@=\count91
+\DOTSCASE@=\count92
 LaTeX Info: Redefining \ldots on input line 378.
 LaTeX Info: Redefining \dots on input line 381.
 LaTeX Info: Redefining \cdots on input line 466.
-\Mathstrutbox@=\box26
-\strutbox@=\box27
+\Mathstrutbox@=\box27
+\strutbox@=\box28
 \big@size=\dimen105
 LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
-\macc@depth=\count92
-\c@MaxMatrixCols=\count93
+\macc@depth=\count93
+\c@MaxMatrixCols=\count94
 \dotsspace@=\muskip10
-\c@parentequation=\count94
-\dspbrk@lvl=\count95
-\tag@help=\toks15
-\row@=\count96
-\column@=\count97
-\maxfields@=\count98
-\andhelp@=\toks16
+\c@parentequation=\count95
+\dspbrk@lvl=\count96
+\tag@help=\toks16
+\row@=\count97
+\column@=\count98
+\maxfields@=\count99
+\andhelp@=\toks17
 \eqnshift@=\dimen106
 \alignsep@=\dimen107
 \tagshift@=\dimen108
 \tagwidth@=\dimen109
 \totwidth@=\dimen110
 \lineht@=\dimen111
-\@envbody=\toks17
-\multlinegap=\skip44
-\multlinetaggap=\skip45
-\mathdisplay@stack=\toks18
+\@envbody=\toks18
+\multlinegap=\skip49
+\multlinetaggap=\skip50
+\mathdisplay@stack=\toks19
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
@@ -93,27 +169,23 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 ))
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2004/08/06 v2.20
-\thm@style=\toks19
-\thm@bodyfont=\toks20
-\thm@headfont=\toks21
-\thm@notefont=\toks22
-\thm@headpunct=\toks23
-\thm@preskip=\skip46
-\thm@postskip=\skip47
-\thm@headsep=\skip48
-\dth@everypar=\toks24
+\thm@style=\toks20
+\thm@bodyfont=\toks21
+\thm@headfont=\toks22
+\thm@notefont=\toks23
+\thm@headpunct=\toks24
+\thm@preskip=\skip51
+\thm@postskip=\skip52
+\thm@headsep=\skip53
+\dth@everypar=\toks25
 )
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/preprint/fullpage.sty
 Package: fullpage 1999/02/23 1.1 (PWD)
-\FP@margin=\skip49
+\FP@margin=\skip54
 )
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2010/09/12 v5.6 Page Geometry
 
-(/usr/local/texlive/2014basic/texmf-dist/tex/latex/graphics/keyval.sty
-Package: keyval 2014/05/08 v1.15 key=value parser (DPC)
-\KV@toks@=\toks25
-)
 (/usr/local/texlive/2014basic/texmf-dist/tex/generic/oberdiek/ifpdf.sty
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
 Package ifpdf Info: pdfTeX in PDF mode is detected.
@@ -125,9 +197,9 @@ Package ifvtex Info: VTeX not detected.
 (/usr/local/texlive/2014basic/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count99
-\Gm@cntv=\count100
-\c@Gm@tempcnt=\count101
+\Gm@cnth=\count100
+\Gm@cntv=\count101
+\c@Gm@tempcnt=\count102
 \Gm@bindingoffset=\dimen112
 \Gm@wd@mp=\dimen113
 \Gm@odd@mp=\dimen114
@@ -146,9 +218,9 @@ Package: IEEEtrantools 2014/09/17 V1.4 by Michael Shell
 \@IEEEtrantmpdimenA=\dimen120
 \@IEEEtrantmpdimenB=\dimen121
 \@IEEEtrantmpdimenC=\dimen122
-\@IEEEtrantmpcountA=\count102
-\@IEEEtrantmpcountB=\count103
-\@IEEEtrantmpcountC=\count104
+\@IEEEtrantmpcountA=\count103
+\@IEEEtrantmpcountB=\count104
+\@IEEEtrantmpcountC=\count105
 \@IEEEtrantmptoksA=\toks27
 \IEEEnormaljot=\dimen123
 \IEEEquantizedlength=\dimen124
@@ -162,27 +234,27 @@ Package: IEEEtrantools 2014/09/17 V1.4 by Michael Shell
 \IEEElabelindent=\dimen132
 \IEEEiednormlabelsep=\dimen133
 \IEEEiedmathlabelsep=\dimen134
-\IEEEiedtopsep=\skip50
-\c@IEEEsubequation=\count105
-\@IEEEeqnnumcols=\count106
-\@IEEEeqncolcnt=\count107
-\@IEEEsubeqnnumrollback=\count108
+\IEEEiedtopsep=\skip55
+\c@IEEEsubequation=\count106
+\@IEEEeqnnumcols=\count107
+\@IEEEeqncolcnt=\count108
+\@IEEEsubeqnnumrollback=\count109
 \IEEEPARstartletwidth=\dimen135
 ) (./ReportPart1a.aux)
 \openout1 = `ReportPart1a.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
-LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -192,21 +264,21 @@ LaTeX Font Info:    ... okay on input line 9.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: twoside 
-* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
-* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
-* \paperwidth=614.295pt
-* \paperheight=794.96999pt
-* \textwidth=469.75502pt
-* \textheight=650.43001pt
+* h-part:(L,W,R)=(72.26999pt, 452.96796pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 700.50696pt, 72.26999pt)
+* \paperwidth=597.50793pt
+* \paperheight=845.04694pt
+* \textwidth=452.96796pt
+* \textheight=700.50696pt
 * \oddsidemargin=0.0pt
 * \evensidemargin=0.0pt
 * \topmargin=0.0pt
 * \headheight=0.0pt
 * \headsep=0.0pt
 * \topskip=12.0pt
-* \footskip=30.0pt
-* \marginparwidth=95.0pt
-* \marginparsep=10.0pt
+* \footskip=50.75pt
+* \marginparwidth=74.68849pt
+* \marginparsep=12.8401pt
 * \columnsep=10.0pt
 * \skip\footins=10.8pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
@@ -218,37 +290,49 @@ LaTeX Font Info:    ... okay on input line 9.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 17.
+LaTeX Font Info:    Try loading font information for U+msa on input line 22.
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 17.
+LaTeX Font Info:    Try loading font information for U+msb on input line 22.
 
 (/usr/local/texlive/2014basic/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (9.41106pt too wide) in alignment at lines 19--21
+Overfull \hbox (26.19812pt too wide) in alignment at lines 24--26
  [] [] [] [][]
  []
 
 
-Overfull \hbox (44.9661pt too wide) in alignment at lines 24--28
+Overfull \hbox (61.75316pt too wide) in alignment at lines 29--33
  [] [] [] [][]
  []
 
 [1
 
 {/usr/local/texlive/2014basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-[2] [3] (./ReportPart1a.aux) ) 
+[2]
+Missing character: There is no Â in font cmr12!
+Missing character: There is no   in font cmr12!
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 169.
+
+ (/usr/local/texlive/2014basic/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 169.
+ [3]
+[4] (./ReportPart1a.aux) ) 
 Here is how much of TeX's memory you used:
- 2136 strings out of 494522
- 30177 string characters out of 6167206
- 96882 words of memory out of 5000000
- 5407 multiletter control sequences out of 15000+600000
- 8285 words of font info for 32 fonts, out of 8000000 for 9000
+ 3363 strings out of 494522
+ 51555 string characters out of 6167206
+ 162676 words of memory out of 5000000
+ 6613 multiletter control sequences out of 15000+600000
+ 8939 words of font info for 34 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 27i,9n,31p,484b,300s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2014basic/texmf-dist/fonts/ty
+ 35i,9n,50p,652b,313s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2014basic/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2014basic/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2014basic/texmf-dist/font
 s/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2014basic/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2014basic/texmf-di
@@ -257,11 +341,12 @@ st/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2014basic/texmf
 mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2014basic/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2014bas
 ic/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2014
-basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on ReportPart1a.pdf (3 pages, 88143 bytes).
+basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/
+2014basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on ReportPart1a.pdf (4 pages, 111655 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
- 35 compressed objects within 1 object stream
+ 61 PDF objects out of 1000 (max. 8388607)
+ 43 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

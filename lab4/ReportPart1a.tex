@@ -1,4 +1,4 @@
-\documentclass[12pt,twoside]{article}
+\documentclass[12pt,twoside, parskip=full]{scrartcl}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsfonts}
@@ -6,14 +6,19 @@
 \usepackage{fullpage}
 \usepackage[vmargin = 1in,hmargin=1in]{geometry}
 \usepackage[retainorgcmds]{IEEEtrantools}
+
 \begin{document}
 \begin{flushleft}
-	\author{Oliver}
+
 Oliver Hoffman and Faiyam Rahman
 \\CS 5460: Parallel and Distributed
-\\Lab 4, part 1a
+\\Lab 4, Report
 \\April 28, 2015
 \end{flushleft}
+
+\textbf{Part 1.A} 
+
+
 Assume a computation domain of size $NxN$, a stencil of size $(2K-1)x(2K-1)$ as well as a ghost boundary parallelization method. Assume we break the computation domain into subdomains of size $XY$, where $X|N$ and $Y|N$. We want to find the pair $(X,Y)$ such that the ratio of computation to communication per 1 iteration is optimal. We assert that the ratio of computation to communication is:
 \begin{flushleft}
 \begin{IEEEeqnarray*}{rCl}
@@ -148,4 +153,59 @@ We now present without further justification formulas for each of the $\mathbb{A
 \]
 \end{flushleft}
 \end{flushleft}
+
+\textbf{Part 1.B} 
+
+We came up with a model for communication cost in a message-passing machine based on latency and throughput. Develop a  model for the communication cost in a shared memory machine, and explain how your model can be used to estimate performance.
+
+For the case of \textbf{message-passing}, we saw that the communication cost to send a message could be summarize as:
+
+\begin{equation}
+      \text{comm} = \text{t}_{s} + m * \text{t}_{w}
+\end{equation}
+where:
+
+\begin{itemize}
+\item $\text{t}_{s}$ is the time required to prepare a message being sent both at the sending and receiving processors. This includes the time to prepare the message (adding header and error correction information), the time to execute the routing algorithm based on the type of network, and time to establish an interface for communication. 
+
+\item $\text{t}_{w}$ is the time to transfer a word
+
+\item \textit{m} is the message size
+\end{itemize}
+Developing a communication cost model for \textbf{shared memory} machines is much more complicated due to a variety of reasons:
+
+\begin{itemize}
+	\item Memory layout differs across systems: giving minimal control over where specific data items are located. In case of distributed systems, this is particularly important because it is difficult to know if the data item is a local or remote shared address space (and the time to access each varies).
+	
+	\item Cache also raises an issue, since depending on the program, a data item stored in a processor's cache may be needed by another processor. This adds an extra overhead when accessing such data item.
+	
+	\item Different data items will have different access costs: based on what was explained above, depending on the origin and use of a data item, its location may affect the communication cost. Moreover, since cache lines are generally longer than 1 word, different words might have different latencies associated with them based on whether they are in the same cache line or not.
+	
+\end{itemize}
+
+Having said this, we base our model on the following:
+
+\begin{itemize}
+	\item As an initial idea, it is easy to see that accessing a remote word results in a cache line being fetched into local cache. The time associated with this includes coherence overheads, network overheads and memory overheads. While all these overheads will vary much depending on what data item is accessed, we assume it is constant and call it $\text{t}_{s}$. Based on what we have read on literature, it is safe to assume that this constant cost of $\text{t}_{s}$ is associated with gaining access to a contiguous chunk of \textit{m} words of shared data, even if \textit{m} is greater than the cache line size. 
+	
+	\item Moreover, we also assume that accessing shared data is costlier than accessing local data, and so we assign a per-word access cost of $\text{t}_{w}$ to shared data. 
+	
+	
+\end{itemize}
+
+Based on this, our model is equivalent to the message passing one:
+
+\begin{equation}
+\text{comm} = \text{t}_{s} + m * \text{t}_{w}
+\end{equation}
+
+to show the communication cost of sharing a single chunk of m words between a pair of processors.
+
+\begin{itemize}
+\item The difference in this case is that $\text{t}_{s}$ is likely to be much smaller than in the message passing case. Note that this model is based on read-only access and between 2 processors. If multiple processes access the same data, then, just like in the message passing paradigm (where one process sends many others the message), the cost is multiplied by the number of processes. If the access is read write, then the cost will be incurred again by subsequent access from more processors (just like in the case of message passing, where a message can be sent back and forth). 
+
+\item Having this generalized model based on \textit{p} being the number of processors can be very helpful when analyzing costs as it is generalizable to both shared memory and message passing.   
+
+
+\end{itemize}
 \end{document}
