@@ -188,7 +188,9 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil, int n
     return updated_pmag;
 }
 
-// Expected use: ./filter image.jpg stencil.pgm num_threads num_repetitions_of_stencil
+// Expected use: 
+// gcc -o filter -fopenmp filter.c io.c utils.c
+// ./filter image.jpg stencil.pgm num_threads num_repetitions_of_stencil
 int main(int argc, char **argv) {
 
 
