@@ -243,11 +243,11 @@ StencilMatrix *readStencil(const char *filename)
     while (fgetc(fp) != '\n');
 
     // Allocate space for the data in the stencil data
-    stencil->data = (char **)malloc(stencil->y * sizeof(char *));
+    stencil->data = (float **)malloc(stencil->y * sizeof(float *));
     checkPointer(stencil->data, "Failed to allocate stencil **data on the heap");
     int i;
     for(i = 0; i < stencil->y; i++){
-        stencil->data[i] = (char *)malloc(stencil->x * sizeof(char));
+        stencil->data[i] = (float *)malloc(stencil->x * sizeof(float));
         checkPointer(stencil->data[i], "Failed to allocate data[i] on the heap");
     }
 
@@ -265,7 +265,8 @@ StencilMatrix *readStencil(const char *filename)
       {
         sscanf(line, "%d %[^\t\n]", &p, line);
         // needs fixing 
-        //stencil->data[y][x] = -4+(8*p)/(M-1); 
+        //
+        //stencil->data[y][x] = ((8*((float)p)/M) - 4);
         stencil->data[y][x] = p; 
        // printf("%d ", p);
         ++x;        

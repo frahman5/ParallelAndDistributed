@@ -82,6 +82,25 @@ PPMImageMatrix *copyImageMatrix(PPMImageMatrix *og_pmag)
     image and returns the updated pixel value. 
     Does not modify the original image.
 */  
+int getRealRGB(float valRGB, int ksum)
+{
+    if (ksum <= 0)
+    {
+        ksum = 1;
+    }
+    valRGB /= ksum;
+
+    if(valRGB > 255)
+    {
+        valRGB = 255;
+    } 
+    else if(valRGB < 0)
+    {
+        valRGB = 0;
+    }
+    return (int) valRGB;
+}
+
 PPMPixel *applyStencilToOnePixel(
         PPMImageMatrix *pmag, 
         int imag_row_center, 
@@ -102,6 +121,8 @@ PPMPixel *applyStencilToOnePixel(
     int val_red = 0;
     int val_green = 0;
     int val_blue = 0;
+
+    int sum = 0;
     for(stencil_row = 0; stencil_row < stencil->y; stencil_row++) {
         for(stencil_col = 0; stencil_col < stencil->x; stencil_col++) {
             
@@ -114,19 +135,20 @@ PPMPixel *applyStencilToOnePixel(
             // update the values of red blue and green
             if ((image_row >= 0) && (image_col >= 0) && (image_row < pmag->y) && (image_col < pmag->x)) {
 
-                val_red += stencil->data[stencil_row][stencil_col] * (pmag->data[image_row][image_col]).red;
-                val_green += stencil->data[stencil_row][stencil_col] * (pmag->data[image_row][image_col]).green;
-                val_blue += stencil->data[stencil_row][stencil_col] * (pmag->data[image_row][image_col]).blue;
+                val_red += (stencil->data[stencil_row][stencil_col]) * (pmag->data[image_row][image_col]).red;
+                val_green += (stencil->data[stencil_row][stencil_col]) * (pmag->data[image_row][image_col]).green;
+                val_blue += (stencil->data[stencil_row][stencil_col]) * (pmag->data[image_row][image_col]).blue;
             } 
 
+            sum += stencil->data[stencil_row][stencil_col];
         }
     }
 
     PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
     checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
-    new_pixel->green = val_green;
-    new_pixel->blue = val_blue;
-    new_pixel->red = val_red;
+    new_pixel->green = getRealRGB((float)val_green, sum);
+    new_pixel->blue = getRealRGB((float)val_blue, sum);
+    new_pixel->red = getRealRGB((float)val_red, sum);
 
     return new_pixel;
 }
@@ -138,9 +160,6 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil, int n
     
     
     PPMImageMatrix *updated_pmag = copyImageMatrix(pmag);
-    PPMImageMatrix *updated_pmag2 = copyImageMatrix(pmag);
-    checkCopy(updated_pmag, pmag);
-
     // logImageToFile(updated_pmag);
 
     #pragma omp parallel shared (updated_pmag, pmag, stencil) num_threads(number_threads)
@@ -155,12 +174,13 @@ PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil, int n
             row = i / pmag->x; // relies on the fact that i and row are ints, so this truncates to floor(i/x)
             col = i % pmag->x;
                 //logToFileWithTwoInts("From applyStencil: Applying stencil to pixel (%d, %d) from thread %d\n",  row, col, omp_get_thread_num());
-                //printf("From applyStencil: Applying stencil to pixel (%d, %d) from thread %d\n",  row, col, omp_get_thread_num());
+            //printf("From applyStencil: Applying stencil to pixel (%d, %d) from thread %d\n",  row, col, omp_get_thread_num());
                // scanf("%d", &temp);
             //Check if changes in updated image are correct
             new_pixel = applyStencilToOnePixel(pmag, row, col, stencil);
-            updated_pmag->data[row][col] = *new_pixel;
-            
+            updated_pmag->data[row][col].red = new_pixel->red;
+            updated_pmag->data[row][col].blue = new_pixel->blue;
+            updated_pmag->data[row][col].green = new_pixel->green;
         }
     }
     

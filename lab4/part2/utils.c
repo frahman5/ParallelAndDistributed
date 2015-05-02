@@ -21,7 +21,7 @@ void printStencilMatrix(StencilMatrix *stencil) {
     int row, col;
     for (row = 0; row < stencil->y; row++){
         for (col = 0; col < stencil->x; col++) {
-            printf("Stencil[%d][%d]: %d\n", row, col, stencil->data[row][col]);
+            printf("Stencil[%d][%d]: %f\n", row, col, stencil->data[row][col]);
         }
     }
 }

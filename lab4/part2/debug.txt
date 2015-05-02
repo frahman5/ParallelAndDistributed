@@ -1,193 +1,253 @@
 P6
-Width: 140
-Height: 105
+Width: 5017
+Height: 3344
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+Copy Pmag (x, y): (5017, 3344)
 
-Copy Pmag (x, y): (140, 105)
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
-***While creating copy_pmag, we allocate 105 number of rows in the data**
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
-Copy Pmag (x, y): (140, 105)
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
- ****** The original and copy Image Matrices are both the same, yo! ***** 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
 
+Copy Pmag (x, y): (5017, 3344)
 
 
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
+
+Copy Pmag (x, y): (5017, 3344)
+
+
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
+
+Copy Pmag (x, y): (5017, 3344)
+
+
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
+
+Copy Pmag (x, y): (5017, 3344)
+
+
+***While creating copy_pmag, we allocate 3344 number of rows in the data**
+
+Copy Pmag (x, y): (5017, 3344)

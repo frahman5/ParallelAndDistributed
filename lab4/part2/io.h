@@ -8,19 +8,19 @@ typedef struct {
 } PPMPixel;
 
 typedef struct {
-     int x, y;
+     int x, y, max;
      PPMPixel *data;
 } PPMImage;
 
 typedef struct {
-    int x, y;
+    int x, y, max;
     PPMPixel **data;
 } PPMImageMatrix;
 
 // Typedef to hold a stencil as a struct
 typedef struct {
-     int x, y;
-     char **data;
+    int x, y;
+    float **data;
 } StencilMatrix;
 
 /***************************************
