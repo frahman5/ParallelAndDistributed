@@ -10,44 +10,12 @@ int checkPointer(void *pointer, char *error_message) {
         printf("%s\n", error_message);
         exit(0);
     }
-
     return 1;
 }
 
-void logToFile(char *message)
-{
-    FILE* fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, message);
-    fclose(fp);
-
-}
-
-void logToFileWithInt(char *formatString, int var)
-{
-    FILE* fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, formatString, var);
-    fclose(fp);
-
-}
-
-void logToFileWithTwoInts(char *formatString, int var, int var2) {
-    FILE *fp = fopen(DEBUG_FILE, "a+");
-    fprintf(fp, formatString, var, var2);
-    fclose(fp);
-}
-
-
-// Prints an Array with an associated message
-void logCharArrayToFile(char *array, int sz, char *message) {
-    int j;
-    logToFile(message);
-    logToFile("[ ");
-    for (j = 0; j < sz; j++) {
-        logToFileWithInt("%d ", array[j]);
-    }
-    logToFile("]\n");
-}
-
+/***************************
+* Print to console functions
+****************************/
 void printStencilMatrix(StencilMatrix *stencil) {
     printf("\nStencil: \n");
     int row, col;
@@ -58,6 +26,60 @@ void printStencilMatrix(StencilMatrix *stencil) {
     }
 }
 
+
+/*************************
+* Log to File functions
+*************************/
+/*
+    Logs a message in the DEBUG_FILE
+*/
+void logToFile(char *message)
+{
+    FILE* fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, message);
+    fclose(fp);
+
+}
+
+/*
+    Logs a message with int in the DEBUG_FILE
+*/
+void logToFileWithInt(char *formatString, int var)
+{
+    FILE* fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, formatString, var);
+    fclose(fp);
+
+}
+
+/*
+    Logs a message with 2 ints in the DEBUG_FILE
+*/
+void logToFileWithTwoInts(char *formatString, int var, int var2) {
+    FILE *fp = fopen(DEBUG_FILE, "a+");
+    fprintf(fp, formatString, var, var2);
+    fclose(fp);
+}
+
+
+/*
+    Logs an array of chars in the DBEUG_FILE
+*/
+void logCharArrayToFile(char *array, int sz, char *message) {
+    int j;
+    logToFile(message);
+    logToFile("[ ");
+    for (j = 0; j < sz; j++) {
+        logToFileWithInt("%d ", array[j]);
+    }
+    logToFile("]\n");
+}
+
+
+/*
+    Prints the contents of a PPImage Matrix in the
+    DEBUG_FILE
+*/
 void logImageToFile(PPMImageMatrix *imag) {
     logToFile("About to print your image, sir\n");
     int row, col;

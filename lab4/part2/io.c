@@ -1,20 +1,14 @@
 #include "io.h"
 
-#define CREATOR "Faiyam Rahman"
+#define CREATOR "Faiyam Rahman and Oliver Hoffman"
 #define RGB_COMPONENT_COLOR 255
 
-
+/*******************************
+* String manipulation functions
+********************************/
 /*
-  Receives the filename of the JGP image and returns the name 
-  of the expected output.
-*/
-char *getOutputImageName(char *filepath, char *desired_ending) {
-
-    return str_replace(filepath, "jpg", desired_ending);
-}
-
-/*
-  Replaces "rep" in the original string with "with"
+  Replaces the content of a string with the indicated 
+  substring. 
 */
 char *str_replace(char *orig, char *rep, char *with) {
     char *result; // the return string
@@ -60,6 +54,12 @@ char *str_replace(char *orig, char *rep, char *with) {
     return result;
 }
 
+/***************************************
+* Format conversion functions
+***************************************/
+/*
+  Transforms a JPEG to PPM and returns the filename
+*/
 char *jpegToPPM(char *filepath) {
 
     char *output_file = str_replace(filepath, "jpg", "ppm");
@@ -75,12 +75,15 @@ char *jpegToPPM(char *filepath) {
     return output_file;
 }
 
+/*
+  Transforms a PPM to JPEG and returns the filename.
+*/
 char *ppmToJPEG(char *filepath) {
 
     char *output_file = str_replace(filepath, ".ppm", "_filtered.jpg");
 
     // Write the call to jpegtopnm as a string
-    char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
+    char *system_call = (char *)malloc((strlen(filepath) + 200) * sizeof(char));
     checkPointer(system_call, "Failed to allocate space on heap for system_call");
 
     // Make the call to jpegtopnm, converting the file, and return to user    
@@ -90,6 +93,12 @@ char *ppmToJPEG(char *filepath) {
     return output_file;
 }
 
+/**********************
+* System call functions
+***********************/
+/*
+  Opens the image given the filepath
+*/
 void openImage(char *filepath)
 {
     // Write the call to jpegtopnm as a string
@@ -102,6 +111,13 @@ void openImage(char *filepath)
     int status = system(system_call);
 }
 
+
+/******************************
+* Data structure manipulations
+*******************************/
+/*
+  Transforms a PPMIMageMatrix to its equivalent PPMImage structure
+*/
 PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix) {
 
     // Allocate the PPMImage
@@ -129,6 +145,9 @@ PPMImage *convertPPMImageMatrixToPPMImage(PPMImageMatrix *pimagmatrix) {
     return pimage;
 }
 
+/*
+  Transforms a PPMImage to its equivalent PPMImageMatrix structure
+*/
 PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
 
     // Allocate the image matrix 
@@ -160,119 +179,12 @@ PPMImageMatrix *convertPPMImageToPPMImageMatrix(PPMImage *pimage) {
     return pimagmatrix;
 }
 
-
-PPMImage *readPPM_P6(const char *filename)
-{
-     char buff[16];
-     PPMImage *img;
-     FILE *fp;
-     int c, rgb_comp_color;
-
-     //open PPM file for reading
-     fp = fopen(filename, "rb");
-     if (!fp) {
-          fprintf(stderr, "Unable to open file '%s'\n", filename);
-          exit(1);
-     }
-
-     //read image format
-     if (!fgets(buff, sizeof(buff), fp)) {
-          perror(filename);
-          exit(1);
-     }
-
-    //check the image format
-    logToFile(buff);
-    if (buff[0] != 'P' || buff[1] != '6') {
-         fprintf(stderr, "Invalid image format (must be 'P6')\n");
-         exit(1);
-    }
-
-    //alloc memory form image
-    img = (PPMImage *)malloc(sizeof(PPMImage));
-    if (!img) {
-         fprintf(stderr, "Unable to allocate memory\n");
-         exit(1);
-    }
-
-    //check for comments
-    c = getc(fp);
-    while (c == '#') {
-    while (getc(fp) != '\n') ;
-         c = getc(fp);
-    }
-
-    ungetc(c, fp);
-    //read image size information
-    if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
-         fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
-         exit(1);
-    }
-    logToFileWithInt("Width: %d\n", img->x);
-    logToFileWithInt("Height: %d\n", img->y);
-
-    //read rgb component
-    if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
-         fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
-         exit(1);
-    }
-    // logToFileWithInt("RGB Comp Color: %d\n", rgb_comp_color);
-
-    //check rgb component depth
-    if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
-         fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
-         exit(1);
-    }
-
-    while (fgetc(fp) != '\n') ;
-    //memory allocation for pixel data
-    img->data = (PPMPixel*)malloc(img->x * img->y * sizeof(PPMPixel));
-
-    if (!img) {
-         fprintf(stderr, "Unable to allocate memory\n");
-         exit(1);
-    }
-
-    //read pixel data from file
-    if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
-         fprintf(stderr, "Error loading image '%s'\n", filename);
-         exit(1);
-    }
-    // logCharArrayToFile((char *)img->data, 3 * img->x * img->y, "Pixel values for image\n");
-
-    fclose(fp);
-    return img;
-}
-
-void writePPM(char *filename, PPMImage *img)
-{
-    FILE *fp;
-    //open file for output
-    fp = fopen(filename, "wb");
-    if (!fp) {
-         fprintf(stderr, "Unable to open file '%s'\n", filename);
-         exit(1);
-    }
-
-    //write the header file
-    //image format
-    fprintf(fp, "P6\n");
-
-    //comments
-    fprintf(fp, "# Created by %s\n",CREATOR);
-
-    //image size
-    fprintf(fp, "%d %d\n",img->x,img->y);
-
-    // rgb component depth
-    fprintf(fp, "%d\n",RGB_COMPONENT_COLOR);
-
-    // pixel data
-    fwrite(img->data, 3 * img->x, img->y, fp);
-    fclose(fp);
-}
-
-
+/**********************
+* Read files functions
+***********************/
+/*
+  Reads the stencil from the PGM file
+*/
 StencilMatrix *readStencil(const char *filename)
 {
      char buff[16];
@@ -363,33 +275,130 @@ StencilMatrix *readStencil(const char *filename)
     }
 
     return stencil;
-
-
 }
 
-// void changeColorPPM(PPMImage *img)
-// {
-//     int i;
-//     if(img){
+/*
+  Reads the PPM image resulting from JPEG transformation
+  into a PPImage data structure
+*/
+PPMImage *readPPM_P6(const char *filename)
+{
+     char buff[16];
+     PPMImage *img;
+     FILE *fp;
+     int c, rgb_comp_color;
 
-//          for(i=0;i<img->x*img->y;i++){
-//               img->data[i].red=RGB_COMPONENT_COLOR-img->data[i].red;
-//               img->data[i].green=RGB_COMPONENT_COLOR-img->data[i].green;
-//               img->data[i].blue=RGB_COMPONENT_COLOR-img->data[i].blue;
-//          }
-//     }
-// }
+     //open PPM file for reading
+     fp = fopen(filename, "rb");
+     if (!fp) {
+          fprintf(stderr, "Unable to open file '%s'\n", filename);
+          exit(1);
+     }
 
-// int main(int argc, char **argv){
-//     char *ppm_file = jpegToPPM(argv[1]);
-//     PPMImage *pimag = readPPM(ppm_file);
+     //read image format
+     if (!fgets(buff, sizeof(buff), fp)) {
+          perror(filename);
+          exit(1);
+     }
 
-//     // Convert the
-//     // Initalize the libnetpbm program
-//     // PPMImage *image;
-//     // image = readPPM("feep.ppm");
-//     // changeColorPPM(image);
-//     // writePPM("new_feep.ppm",image);
-//     // printf("Press any key...");
-//     // getchar();
-// }
+    //check the image format
+    logToFile(buff);
+    if (buff[0] != 'P' || buff[1] != '6') {
+         fprintf(stderr, "Invalid image format (must be 'P6')\n");
+         exit(1);
+    }
+
+    //alloc memory form image
+    img = (PPMImage *)malloc(sizeof(PPMImage));
+    if (!img) {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
+    //check for comments
+    c = getc(fp);
+    while (c == '#') {
+    while (getc(fp) != '\n') ;
+         c = getc(fp);
+    }
+
+    ungetc(c, fp);
+    //read image size information
+    if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
+         fprintf(stderr, "Invalid image size (error loading '%s')\n", filename);
+         exit(1);
+    }
+    logToFileWithInt("Width: %d\n", img->x);
+    logToFileWithInt("Height: %d\n", img->y);
+
+    //read rgb component
+    if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
+         fprintf(stderr, "Invalid rgb component (error loading '%s')\n", filename);
+         exit(1);
+    }
+    // logToFileWithInt("RGB Comp Color: %d\n", rgb_comp_color);
+
+    //check rgb component depth
+    if (rgb_comp_color!= RGB_COMPONENT_COLOR) {
+         fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
+         exit(1);
+    }
+
+    while (fgetc(fp) != '\n') ;
+    //memory allocation for pixel data
+    img->data = (PPMPixel*)malloc(img->x * img->y * sizeof(PPMPixel));
+
+    if (!img) {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
+    //read pixel data from file
+    if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
+         fprintf(stderr, "Error loading image '%s'\n", filename);
+         exit(1);
+    }
+    // logCharArrayToFile((char *)img->data, 3 * img->x * img->y, "Pixel values for image\n");
+
+    fclose(fp);
+    return img;
+}
+
+/************************
+* Write files functions
+*************************/
+/*
+  Writes the contents of a PPMImage structure to a 
+  PPM file
+*/
+void writePPM(char *filename, PPMImage *img)
+{
+    FILE *fp;
+    //open file for output
+    fp = fopen(filename, "wb");
+    if (!fp) {
+         fprintf(stderr, "Unable to open file '%s'\n", filename);
+         exit(1);
+    }
+
+    //write the header file
+    //image format
+    fprintf(fp, "P6\n");
+
+    //comments
+    fprintf(fp, "# Created by %s\n",CREATOR);
+
+    //image size
+    fprintf(fp, "%d %d\n",img->x,img->y);
+
+    // rgb component depth
+    fprintf(fp, "%d\n",RGB_COMPONENT_COLOR);
+
+    // pixel data
+    fwrite(img->data, 3 * img->x, img->y, fp);
+    fclose(fp);
+}
+
+
+
+

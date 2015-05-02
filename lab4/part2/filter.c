@@ -1,6 +1,5 @@
 #include "filter.h"
 
-
 /*
     Frees a PPMImageMatrix from memory
 */
@@ -29,7 +28,9 @@ void checkCopy(PPMImageMatrix *pmag1, PPMImageMatrix *pmag2) {
 }
 
 
-
+/*
+    Checks if 2 pixels are equal
+*/
 int checkEqualPixel2(PPMPixel pixel1, PPMPixel pixel2) {
 
     return (pixel1.red == pixel2.red) && 
@@ -37,6 +38,9 @@ int checkEqualPixel2(PPMPixel pixel1, PPMPixel pixel2) {
            (pixel1.green == pixel2.green);
 }
 
+/*
+    Checks if the contents of PPMImage are equal to the ones of a PPMIMageMatrix
+*/
 int checkConversion2(PPMImage *pimag, PPMImageMatrix *pimagmatrix) {
     int i;
     
@@ -130,27 +134,36 @@ PPMPixel *applyStencilToOnePixel(
 /*
     Applies aa stencil to the entire image by iterating through each pixel
 */
-PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil) {
-    int row, col;
+PPMImageMatrix *applyStencil(PPMImageMatrix *pmag, StencilMatrix *stencil, int number_threads) {
+    
+    
     PPMImageMatrix *updated_pmag = copyImageMatrix(pmag);
+    PPMImageMatrix *updated_pmag2 = copyImageMatrix(pmag);
     checkCopy(updated_pmag, pmag);
 
     // logImageToFile(updated_pmag);
 
-    PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
-    checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
-    for (row = 0; row < pmag->y; row++) {
-        for (col = 0; col < pmag->x; col++) {
-            logToFileWithTwoInts("From applyStencil: Applying stencil to pixel (%d, %d)\n",  row, col);
+    #pragma omp parallel shared (updated_pmag, pmag, stencil) num_threads(number_threads)
+    {
+        int row, col, temp;
+        int i = 0;
+        PPMPixel *new_pixel = (PPMPixel *)malloc(sizeof(PPMPixel));
+        checkPointer(new_pixel, "Failed to allocate new_pixel in applyStencil\n");
 
+        #pragma omp for schedule(static)
+        for(i = 0; i < pmag->x * pmag->y; i++) {
+            row = i / pmag->x; // relies on the fact that i and row are ints, so this truncates to floor(i/x)
+            col = i % pmag->x;
+                //logToFileWithTwoInts("From applyStencil: Applying stencil to pixel (%d, %d) from thread %d\n",  row, col, omp_get_thread_num());
+                //printf("From applyStencil: Applying stencil to pixel (%d, %d) from thread %d\n",  row, col, omp_get_thread_num());
+               // scanf("%d", &temp);
             //Check if changes in updated image are correct
             new_pixel = applyStencilToOnePixel(pmag, row, col, stencil);
-        
-            updated_pmag->data[row][col].red = new_pixel->red;
-            updated_pmag->data[row][col].blue = new_pixel->blue;
-            updated_pmag->data[row][col].green = new_pixel->green;
+            updated_pmag->data[row][col] = *new_pixel;
+            
         }
     }
+    
     freePPMImageMatrix(pmag);
     return updated_pmag;
 }
@@ -189,12 +202,17 @@ int main(int argc, char **argv) {
         checkConversion2(pimag, pimagmatrix);
 
         // Apply the stencil
+        clock_t begin, end;
+        double time_spent;
+        begin = clock();
         int i = 0;
         for (i = 0; i < stencil_reps; ++i)
         {
-            pimagmatrix = applyStencil(pimagmatrix, stencil);
+            pimagmatrix = applyStencil(pimagmatrix, stencil, num_threads);
         }
-            
+        end = clock();
+        time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+        printf("Time spent for %d threads = %.11f seconds\n", num_threads,time_spent);
 
         // Take the resultant image matrix structure and save it to file as a PPM
         PPMImage *filtered_image = convertPPMImageMatrixToPPMImage(pimagmatrix);
