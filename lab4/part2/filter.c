@@ -82,13 +82,13 @@ PPMImageMatrix *copyImageMatrix(PPMImageMatrix *og_pmag)
     image and returns the updated pixel value. 
     Does not modify the original image.
 */  
-int getRealRGB(float valRGB, int ksum)
+int getRealRGB(float valRGB, int sum)
 {
-    if (ksum <= 0)
+    if (sum <= 0)
     {
-        ksum = 1;
+        sum = 1;
     }
-    valRGB /= ksum;
+    valRGB /= sum;
 
     if(valRGB > 255)
     {
