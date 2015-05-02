@@ -63,6 +63,7 @@ char *str_replace(char *orig, char *rep, char *with) {
 char *jpegToPPM(char *filepath) {
 
     char *output_file = str_replace(filepath, "jpg", "ppm");
+    printf("Original: %s and New one: %s\n", filepath, output_file);
 
     // Write the call to jpegtopnm as a string
     char *system_call = (char *)malloc((strlen(filepath) + 30) * sizeof(char));
