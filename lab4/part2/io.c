@@ -252,26 +252,24 @@ StencilMatrix *readStencil(const char *filename)
     }
 
     // Read from file and assign to stencil data
-    char * line = NULL;
+    char *line = NULL;
     size_t len = 0;
     ssize_t read;
     int y = 0;
     int x = 0;
 
+    float adjusted_p; // PGM values are nonnegative. Our adjusted values rescale them from -4 to 4. 
+    printf("M value: %d\n", M);
     while ((read = getline(&line, &len, fp)) != -1) 
     {
       x = 0;
       while(x < stencil->x)
       {
         sscanf(line, "%d %[^\t\n]", &p, line);
-        // needs fixing 
-        //
-        //stencil->data[y][x] = ((8*((float)p)/M) - 4);
-        stencil->data[y][x] = p; 
-       // printf("%d ", p);
+        adjusted_p = -4.0 + (8.0 * p)/(M - 1.0);
+        stencil->data[y][x] = adjusted_p;
         ++x;        
       }
-      //printf("\n");
       ++y;  
     }
 

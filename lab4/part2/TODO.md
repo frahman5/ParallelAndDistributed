@@ -9,7 +9,3 @@ Improtant:
 		- The parallelization works, but it is not optimal. It automatically splits the images
 		  in different chunks based on the number of threads, but does not take into account
 		  anything else.
-
-
-part 1b
-read stencil properly
