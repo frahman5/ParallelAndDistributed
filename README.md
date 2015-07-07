@@ -22,3 +22,10 @@ To compile and run test.c with 4 processors:
     - mpicc api.c test.c -o test
     
     - mpirun -np 4 test
+    
+    
+## Lab 4
+
+**Part 1**: The meat of this section is the report, which involves a detailed mathematical analysis of the Computation to Communication ratio in applying some transformational stencil to a square domain. We also present a mathematical model for the commmunication cost in a message passing computation. 
+
+**Part 2**: In this part of the lab, we wrote a C program that reads in a stencil and image, applies the stencil to the image, and then spits out the result as a JPG. 
